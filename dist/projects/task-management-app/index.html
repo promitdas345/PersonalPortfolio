@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Management App | Promit's Projects</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/projects" class="nav-link">Projects</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="task-management-app">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2">Task Management App</h2>
+          <p class="text-gray-600 mb-2">Realtime collaboration, kanban-style boards, and focus analytics for busy student teams.</p>
+          <p class="text-sm text-gray-500">Tech: Node.js, Express, MongoDB, Socket.IO</p>
+        </header>
+        <figure class="mb-6">
+          <img src="/public/images/placeholder.png" alt="Task Management App hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600">
+            <li>Delivered live board updates with Socket.IO and optimistic UI patterns.</li><li>Role-based access control plus passwordless magic links for onboarding.</li><li>Weekly focus insights built with aggregated completion stats.</li>
+          </ul>
+        </section>
+        <section class="mb-6 prose max-w-none">
+          <p>This app grew out of my own need to coordinate coursework, research, and freelance gigs. I built a kanban-first interface with drag-and-drop cards, subtasks, and recurring task templates. Users invite teammates, assign work, and track velocity charts generated nightly.</p><p>The backend exposes a clean REST API plus WebSocket gateways for realtime events. MongoDB change streams keep the Socket.IO layer in sync, and JSON Web Tokens secure every request. I containerized the stack so deployments to Fly.io or Render only take a few minutes.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Interactive Demo</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        
+        <p class="mt-8"><a href="/projects" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+      © 2025 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'task-management-app';</script>
+    <script src="/public/project-demos.js" defer></script>
+  </body>
+</html>

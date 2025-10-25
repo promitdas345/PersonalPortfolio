@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projects | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/projects" class="nav-link">Projects</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8">
+      <h2 class="text-3xl font-semibold mb-6 section">Projects</h2>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class="project-card section">
+            <h3 class="text-xl font-semibold mb-1">Data Visualization Dashboard</h3>
+            <p class="mb-2">An interactive dashboard that visualizes complex datasets using charts and graphs.</p>
+            <div class="project-tags">
+              <span class="tag">Python</span><span class="tag">Plotly</span><span class="tag">Dash</span>
+            </div>
+            <div class="project-actions">
+              <a href="/projects/data-visualization-dashboard" class="btn btn-secondary">View Project</a>
+            </div>
+          </div><div class="project-card section">
+            <h3 class="text-xl font-semibold mb-1">Task Management App</h3>
+            <p class="mb-2">A full-stack web application for managing tasks, built with Node.js, Express, and a NoSQL database.</p>
+            <div class="project-tags">
+              <span class="tag">Node.js</span><span class="tag">Express</span><span class="tag">MongoDB</span><span class="tag">Socket.IO</span>
+            </div>
+            <div class="project-actions">
+              <a href="/projects/task-management-app" class="btn btn-secondary">View Project</a>
+            </div>
+          </div><div class="project-card section">
+            <h3 class="text-xl font-semibold mb-1">Statistical Analysis Toolkit</h3>
+            <p class="mb-2">A collection of Python scripts and notebooks that automate common statistical tests and generate reports.</p>
+            <div class="project-tags">
+              <span class="tag">Python</span><span class="tag">Pandas</span><span class="tag">SciPy</span><span class="tag">Jupyter</span>
+            </div>
+            <div class="project-actions">
+              <a href="/projects/statistical-analysis-toolkit" class="btn btn-secondary">View Project</a>
+            </div>
+          </div>
+      </div>
+      <section class="mt-8 section">
+        <h3 class="text-2xl font-semibold mb-2">Arcade Throwback: Pac-Man</h3>
+        <p class="text-gray-600 mb-4">
+          I rebuilt the maze, ghost logic, and scoring system from the original arcade classic using nothing but vanilla JavaScript and the Canvas API. Play it below or <a href="/pacman" class="text-blue-600 hover:underline">open the standalone view →</a>
+        </p>
+              <section class="pacman-panel section">
+        <div class="pacman-hud">
+          <div>
+            <p class="hud-label">Score</p>
+            <p id="pacmanScore" class="hud-value">0</p>
+          </div>
+          <div>
+            <p class="hud-label">Lives</p>
+            <p id="pacmanLives" class="hud-value">3</p>
+          </div>
+          <div>
+            <p class="hud-label">Level</p>
+            <p id="pacmanLevel" class="hud-value">1</p>
+          </div>
+        </div>
+        <div class="pacman-status">
+          <p id="pacmanStatus" class="status-text">Press “Start / Reset” to begin.</p>
+          <div class="pacman-buttons">
+            <button id="pacmanStart" class="btn btn-primary">Start / Reset</button>
+            <button id="pacmanPause" class="btn btn-secondary">Pause</button>
+          </div>
+        </div>
+        <canvas
+          id="pacmanCanvas"
+          width="456"
+          height="504"
+          role="img"
+          aria-label="Pac-Man playfield"
+        ></canvas>
+      </section>
+      <section class="game-instructions section">
+        <h3 class="text-xl font-semibold mb-2">How to play</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600">
+          <li>Use the arrow keys or WASD to steer Pac-Man through the maze.</li>
+          <li>Eat every pellet to advance; power pellets let you chomp ghosts for bonus points.</li>
+          <li>Queue your next move before an intersection to glide through turns like the arcade classic.</li>
+          <li>You have three lives. Colliding with a ghost without a power-up costs one life.</li>
+        </ul>
+      </section>
+
+      </section>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+      © 2025 Promit. All rights reserved.
+    </footer>
+    <script src="/public/pacman.js" defer></script>
+  </body>
+</html>
