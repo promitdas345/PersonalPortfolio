@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/projects" class="nav-link">Projects</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8">
+      <section class="mb-8 section">
+        <h2 class="text-3xl font-semibold mb-4">Welcome!</h2>
+        <p class="mb-2 font-semibold text-gray-600">Mission: turning data-rich ideas into intelligent systems that feel effortless and human.</p>
+        <p class="mb-2">Hello, I'm Promit — a computer science and statistics student at Memorial University of Newfoundland. I build data tools, immersive interfaces, and teaching resources that help people understand complex systems.</p>
+        <p>Explore my recent work and check out the blog for tutorials, project write‑ups, and reflections on my journey through tech.</p>
+        <div class="social-links">
+          <a href="https://github.com/" aria-label="GitHub" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.24c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.34-1.77-1.34-1.77-1.09-.76.08-.74.08-.74 1.2.09 1.83 1.25 1.83 1.25 1.07 1.83 2.8 1.3 3.48.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.43 11.43 0 0 1 6.02 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.92 1.23 3.23 0 4.62-2.8 5.64-5.48 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12 12 0 0 0 12 0Z" />
+            </svg>
+          </a>
+          <a href="https://www.linkedin.com/" aria-label="LinkedIn" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.45 20.45h-3.55v-5.6c0-1.34-.02-3.07-1.87-3.07-1.88 0-2.17 1.47-2.17 2.98v5.69H9.31V9h3.41v1.56h.05c.47-.89 1.61-1.83 3.32-1.83 3.55 0 4.21 2.34 4.21 5.39v6.33ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z" />
+            </svg>
+          </a>
+          <a href="mailto:promitd@mun.ca" aria-label="Email">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v.01l8 5 8-5V6H4Zm0 12h16V8.64l-8 5-8-5V18Z" />
+            </svg>
+          </a>
+        </div>
+      </section>
+      <section class="mb-8 section">
+        <h2 class="text-2xl font-semibold mb-4">Latest Posts</h2>
+        <ul class="list-disc list-inside space-y-1">
+          {{ postsList }}
+        </ul>
+        <p class="mt-4"><a href="/blog" class="text-blue-600 hover:underline">View all posts →</a></p>
+      </section>
+      <section class="section">
+        <h2 class="text-2xl font-semibold mb-4">Recent Projects</h2>
+        <ul class="list-disc list-inside space-y-1">
+          {{ projectsList }}
+        </ul>
+        <p class="mt-4"><a href="/projects" class="text-blue-600 hover:underline">View all projects →</a></p>
+      </section>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+      © 2025 Promit. All rights reserved.
+    </footer>
+  </body>
+</html>

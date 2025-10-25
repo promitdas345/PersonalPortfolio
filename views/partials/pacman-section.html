@@ -1,0 +1,39 @@
+      <section class="pacman-panel section">
+        <div class="pacman-hud">
+          <div>
+            <p class="hud-label">Score</p>
+            <p id="pacmanScore" class="hud-value">0</p>
+          </div>
+          <div>
+            <p class="hud-label">Lives</p>
+            <p id="pacmanLives" class="hud-value">3</p>
+          </div>
+          <div>
+            <p class="hud-label">Level</p>
+            <p id="pacmanLevel" class="hud-value">1</p>
+          </div>
+        </div>
+        <div class="pacman-status">
+          <p id="pacmanStatus" class="status-text">Press “Start / Reset” to begin.</p>
+          <div class="pacman-buttons">
+            <button id="pacmanStart" class="btn btn-primary">Start / Reset</button>
+            <button id="pacmanPause" class="btn btn-secondary">Pause</button>
+          </div>
+        </div>
+        <canvas
+          id="pacmanCanvas"
+          width="456"
+          height="504"
+          role="img"
+          aria-label="Pac-Man playfield"
+        ></canvas>
+      </section>
+      <section class="game-instructions section">
+        <h3 class="text-xl font-semibold mb-2">How to play</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600">
+          <li>Use the arrow keys or WASD to steer Pac-Man through the maze.</li>
+          <li>Eat every pellet to advance; power pellets let you chomp ghosts for bonus points.</li>
+          <li>Queue your next move before an intersection to glide through turns like the arcade classic.</li>
+          <li>You have three lives. Colliding with a ghost without a power-up costs one life.</li>
+        </ul>
+      </section>

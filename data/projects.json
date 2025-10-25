@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "slug": "data-visualization-dashboard",
+    "title": "Data Visualization Dashboard",
+    "description": "An interactive dashboard that visualizes complex datasets using charts and graphs.",
+    "summary": "A Plotly Dash experience that lets analysts explore millions of rows with fluid filtering and storytelling visuals.",
+    "technologies": ["Python", "Plotly", "Dash"],
+    "link": "",
+    "image": "/public/images/placeholder.png",
+    "highlights": [
+      "Reduced exploratory analysis time by 60% through prebuilt insight panels.",
+      "Implemented server-side data paging so the dashboard scales to 5M+ records.",
+      "Designed adaptive color systems for dark/light palettes."
+    ],
+    "content": "<p>The dashboard ingests CSV exports and database snapshots, cleans them with Pandas, and then streams curated data frames into Plotly Dash components. I focused on making interactions feel instantaneous—drill-down filters update cross-highlights in under 200ms thanks to memoized queries and lightweight JSON payloads.</p><p>Once the analysis is complete, analysts can export any state of the dashboard to a branded PDF report. The export pipeline renders the Plotly figures headlessly and stitches them together with narrative text.</p>"
+  },
+  {
+    "id": 2,
+    "slug": "task-management-app",
+    "title": "Task Management App",
+    "description": "A full-stack web application for managing tasks, built with Node.js, Express, and a NoSQL database.",
+    "summary": "Realtime collaboration, kanban-style boards, and focus analytics for busy student teams.",
+    "technologies": ["Node.js", "Express", "MongoDB", "Socket.IO"],
+    "link": "",
+    "image": "/public/images/placeholder.png",
+    "highlights": [
+      "Delivered live board updates with Socket.IO and optimistic UI patterns.",
+      "Role-based access control plus passwordless magic links for onboarding.",
+      "Weekly focus insights built with aggregated completion stats."
+    ],
+    "content": "<p>This app grew out of my own need to coordinate coursework, research, and freelance gigs. I built a kanban-first interface with drag-and-drop cards, subtasks, and recurring task templates. Users invite teammates, assign work, and track velocity charts generated nightly.</p><p>The backend exposes a clean REST API plus WebSocket gateways for realtime events. MongoDB change streams keep the Socket.IO layer in sync, and JSON Web Tokens secure every request. I containerized the stack so deployments to Fly.io or Render only take a few minutes.</p>"
+  },
+  {
+    "id": 3,
+    "slug": "statistical-analysis-toolkit",
+    "title": "Statistical Analysis Toolkit",
+    "description": "A collection of Python scripts and notebooks that automate common statistical tests and generate reports.",
+    "summary": "CLI + notebook helpers that wrap SciPy/Pandas patterns into shareable templates.",
+    "technologies": ["Python", "Pandas", "SciPy", "Jupyter"],
+    "link": "",
+    "image": "/public/images/placeholder.png",
+    "highlights": [
+      "One-command t-tests, ANOVA, chi-square, and regression diagnostics with Markdown exports.",
+      "Auto generates visualizations (violin plots, QQ plots) to accompany reports.",
+      "Packaged as a pip-installable module consumed across multiple research teams."
+    ],
+    "content": "<p>The toolkit started as a notebook of helper functions and evolved into a polished package. It standardizes experiment analysis: users point to a CSV, select the hypothesis test, and receive both an interactive notebook and a static Markdown summary with conclusions.</p><p>I leaned heavily on Pandas for data wrangling, SciPy/statsmodels for statistical routines, and nbconvert/WeasyPrint for publishing. Continuous integration runs unit tests against synthetic datasets so every release remains trustworthy.</p>"
+  }
+]

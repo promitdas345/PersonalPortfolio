@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pac-Man | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/projects" class="nav-link">Projects</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8">
+      <section class="mb-6 section">
+        <h2 class="text-3xl font-semibold mb-2">Play Pac-Man</h2>
+        <p class="text-gray-600">
+          This is a handmade remake of the original maze: accurate pellet placement, four ghosts with unique personalities, wrap-around tunnels, and responsive controls—all powered by vanilla JavaScript and the Canvas API.
+        </p>
+      </section>
+      {{ pacmanSection }}
+    </main>
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+      © 2025 Promit. All rights reserved.
+    </footer>
+    <script src="/public/pacman.js" defer></script>
+  </body>
+</html>
