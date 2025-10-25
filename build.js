@@ -10,6 +10,7 @@ const DATA_DIR = path.join(BASE_DIR, 'data');
 const POSTS_FILE = path.join(DATA_DIR, 'posts.json');
 const PROJECTS_FILE = path.join(DATA_DIR, 'projects.json');
 const PACMAN_SECTION_FILE = path.join(VIEWS_DIR, 'partials', 'pacman-section.html');
+const CHESS_SECTION_FILE = path.join(VIEWS_DIR, 'partials', 'chess-section.html');
 
 function slugify(text) {
   return text
@@ -38,6 +39,7 @@ async function renderTemplate(templateName, variables = {}) {
 let postsCache = null;
 let projectsCache = null;
 let pacmanSectionCache = null;
+let chessSectionCache = null;
 
 async function loadPosts() {
   if (!postsCache) {
@@ -74,6 +76,13 @@ async function loadPacmanSection() {
     pacmanSectionCache = await fs.readFile(PACMAN_SECTION_FILE, 'utf8');
   }
   return pacmanSectionCache;
+}
+
+async function loadChessSection() {
+  if (!chessSectionCache) {
+    chessSectionCache = await fs.readFile(CHESS_SECTION_FILE, 'utf8');
+  }
+  return chessSectionCache;
 }
 
 async function ensureDir(dirPath) {
@@ -153,6 +162,7 @@ function buildOwnershipSection(text) {
 async function buildProjectsPages() {
   const projects = await loadProjects();
   const pacmanSection = await loadPacmanSection();
+  const chessSection = await loadChessSection();
 
   const projectsHtml = await renderTemplate('projects.html', {
     projectsList: projects
@@ -172,6 +182,7 @@ async function buildProjectsPages() {
       )
       .join(''),
     pacmanSection,
+    chessSection,
   });
   await writePage(path.join('projects', 'index.html'), projectsHtml);
 
@@ -233,11 +244,14 @@ async function buildStaticPages() {
   const about = await renderTemplate('about.html');
   const contact = await renderTemplate('contact.html');
   const pacmanSection = await loadPacmanSection();
+  const chessSection = await loadChessSection();
   const pacman = await renderTemplate('pacman.html', { pacmanSection });
+  const chess = await renderTemplate('chess.html', { chessSection });
 
   await writePage(path.join('about', 'index.html'), about);
   await writePage(path.join('contact', 'index.html'), contact);
   await writePage(path.join('pacman', 'index.html'), pacman);
+  await writePage(path.join('chess', 'index.html'), chess);
 }
 
 async function build404Page() {

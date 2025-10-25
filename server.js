@@ -23,6 +23,7 @@ const DATA_DIR = path.join(BASE_DIR, 'data');
 const POSTS_FILE = path.join(DATA_DIR, 'posts.json');
 const PROJECTS_FILE = path.join(DATA_DIR, 'projects.json');
 const PACMAN_SECTION_FILE = path.join(VIEWS_DIR, 'partials', 'pacman-section.html');
+const CHESS_SECTION_FILE = path.join(VIEWS_DIR, 'partials', 'chess-section.html');
 
 function slugify(text) {
   return text
@@ -71,6 +72,7 @@ async function renderTemplate(templateName, variables = {}) {
 let postsCache = null;
 let projectsCache = null;
 let pacmanSectionCache = null;
+let chessSectionCache = null;
 
 async function loadPosts() {
   if (!postsCache) {
@@ -108,6 +110,13 @@ async function loadPacmanSection() {
     pacmanSectionCache = await fs.readFile(PACMAN_SECTION_FILE, 'utf8');
   }
   return pacmanSectionCache;
+}
+
+async function loadChessSection() {
+  if (!chessSectionCache) {
+    chessSectionCache = await fs.readFile(CHESS_SECTION_FILE, 'utf8');
+  }
+  return chessSectionCache;
 }
 
 /**
@@ -282,6 +291,7 @@ async function router(req, res) {
   if (pathname === '/projects') {
     const projects = await loadProjects();
     const pacmanSection = await loadPacmanSection();
+    const chessSection = await loadChessSection();
     const html = await renderTemplate('projects.html', {
       projectsList: projects
         .map(
@@ -300,6 +310,7 @@ async function router(req, res) {
         )
         .join(''),
       pacmanSection,
+      chessSection,
     });
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(html);
@@ -367,6 +378,14 @@ async function router(req, res) {
   if (pathname === '/pacman') {
     const pacmanSection = await loadPacmanSection();
     const html = await renderTemplate('pacman.html', { pacmanSection });
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(html);
+    return;
+  }
+
+  if (pathname === '/chess') {
+    const chessSection = await loadChessSection();
+    const html = await renderTemplate('chess.html', { chessSection });
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(html);
     return;

@@ -12,17 +12,27 @@ document.addEventListener('DOMContentLoaded', () => {
     status: document.getElementById('pacmanStatus'),
     startButton: document.getElementById('pacmanStart'),
     pauseButton: document.getElementById('pacmanPause'),
+    volumeSlider: document.getElementById('pacmanVolume'),
+    volumeValue: document.getElementById('pacmanVolumeValue'),
   };
 
   ui.pauseButton.disabled = true;
 
-  const game = createPacmanGame(canvas, ctx, ui);
+  const sounds = createSoundBoard();
+  const game = createPacmanGame(canvas, ctx, ui, sounds);
 
-  ui.startButton.addEventListener('click', () => game.start());
-  ui.pauseButton.addEventListener('click', () => game.togglePause());
+  ui.startButton.addEventListener('click', () => {
+    sounds.unlock();
+    game.start();
+  });
+  ui.pauseButton.addEventListener('click', () => {
+    sounds.unlock();
+    game.togglePause();
+  });
 
   const handledKeys = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D', ' ']);
   window.addEventListener('keydown', evt => {
+    sounds.unlock();
     if (!handledKeys.has(evt.key)) return;
     const direction = mapKeyToDirection(evt.key);
     if (direction) {
@@ -33,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
       game.togglePause();
     }
   });
+
+  setupTouchControls(game, ui, sounds);
+  setupVolumeControl(ui, sounds);
 });
 
 function mapKeyToDirection(key) {
@@ -40,25 +53,96 @@ function mapKeyToDirection(key) {
     case 'ArrowUp':
     case 'w':
     case 'W':
+    case 'up':
       return { dx: 0, dy: -1 };
     case 'ArrowDown':
     case 's':
     case 'S':
+    case 'down':
       return { dx: 0, dy: 1 };
     case 'ArrowLeft':
     case 'a':
     case 'A':
+    case 'left':
       return { dx: -1, dy: 0 };
     case 'ArrowRight':
     case 'd':
     case 'D':
+    case 'right':
       return { dx: 1, dy: 0 };
     default:
       return null;
   }
 }
 
-function createPacmanGame(canvas, ctx, ui) {
+function setupTouchControls(game, ui, sounds) {
+  const buttons = document.querySelectorAll('[data-pacman-direction]');
+  if (!buttons.length) return;
+
+  const prefersTouch = window.matchMedia('(pointer: coarse)').matches;
+  if (prefersTouch && ui.status) {
+    ui.status.textContent = 'Tap Start, then use the on-screen arrows to move Pac-Man.';
+  }
+
+  buttons.forEach(btn => {
+    const directionToken = btn.dataset.pacmanDirection;
+    if (!directionToken) return;
+
+    const handlePress = evt => {
+      evt.preventDefault();
+      sounds.unlock();
+      const direction = mapKeyToDirection(directionToken);
+      if (direction) {
+        game.setPacmanDirection(direction);
+      }
+      btn.classList.add('is-pressed');
+    };
+
+    const release = evt => {
+      if (evt) evt.preventDefault();
+      btn.classList.remove('is-pressed');
+    };
+
+    if (window.PointerEvent) {
+      btn.addEventListener('pointerdown', handlePress);
+      btn.addEventListener('pointerup', release);
+      btn.addEventListener('pointerleave', release);
+      btn.addEventListener('pointercancel', release);
+    } else {
+      btn.addEventListener('touchstart', handlePress, { passive: false });
+      btn.addEventListener('touchend', release);
+      btn.addEventListener('click', handlePress);
+    }
+  });
+}
+
+function setupVolumeControl(ui, sounds) {
+  if (!ui.volumeSlider || typeof sounds.setVolume !== 'function') return;
+  const slider = ui.volumeSlider;
+  const valueDisplay = ui.volumeValue;
+  const clampPercent = raw => Math.min(100, Math.max(0, Number(raw) || 0));
+
+  const updateLabel = percent => {
+    if (valueDisplay) {
+      valueDisplay.textContent = `${percent}%`;
+    }
+  };
+
+  const initial = clampPercent(slider.value || 75);
+  slider.value = String(initial);
+  updateLabel(initial);
+  sounds.setVolume(initial / 100);
+
+  slider.addEventListener('input', evt => {
+    const percent = clampPercent(evt.target.value);
+    updateLabel(percent);
+    sounds.unlock();
+    sounds.setVolume(percent / 100);
+  });
+}
+
+function createPacmanGame(canvas, ctx, ui, sounds) {
+  const audio = sounds || createSilentSoundBoard();
   const TILE_SIZE = 24;
   const LEVEL_BLUEPRINT = [
     '###################',
@@ -143,8 +227,10 @@ function createPacmanGame(canvas, ctx, ui) {
     spawnActors();
     syncHud();
     setStatus('Ready! Use arrow keys or WASD to queue your first move.');
+    audio.start();
     state.lastTime = performance.now();
     state.animationFrame = requestAnimationFrame(loop);
+    syncAudioLoop();
   }
 
   function togglePause() {
@@ -152,6 +238,7 @@ function createPacmanGame(canvas, ctx, ui) {
     state.paused = !state.paused;
     ui.pauseButton.textContent = state.paused ? 'Resume' : 'Pause';
     setStatus(state.paused ? 'Paused' : 'Game on! Keep going.');
+    syncAudioLoop();
   }
 
   function isRunning() {
@@ -178,6 +265,7 @@ function createPacmanGame(canvas, ctx, ui) {
     }
 
     drawGame();
+    syncAudioLoop();
     if (state.running) {
       state.animationFrame = requestAnimationFrame(loop);
     }
@@ -231,6 +319,7 @@ function createPacmanGame(canvas, ctx, ui) {
     if (state.frightenedTimer <= 0) {
       state.ghosts.forEach(g => (g.frightened = false));
       state.frightenedTimer = 0;
+      syncAudioLoop();
     }
   }
 
@@ -241,6 +330,7 @@ function createPacmanGame(canvas, ctx, ui) {
       state.score += 10;
       state.pelletsLeft -= 1;
       syncHud();
+      audio.pellet();
       if (state.pelletsLeft <= 0) {
         nextLevel();
       }
@@ -249,6 +339,7 @@ function createPacmanGame(canvas, ctx, ui) {
       state.score += 50;
       state.pelletsLeft -= 1;
       syncHud();
+      audio.power();
       triggerPowerPellet();
       if (state.pelletsLeft <= 0) {
         nextLevel();
@@ -262,15 +353,18 @@ function createPacmanGame(canvas, ctx, ui) {
       ghost.frightened = true;
     });
     setStatus('Power up! Ghosts are frightened.');
+    syncAudioLoop();
   }
 
   function nextLevel() {
     state.level += 1;
     setStatus(`Level ${state.level}! The ghosts move faster.`);
+    audio.level();
     resetLevelGrid();
     spawnActors();
     syncHud();
     state.freezeTimer = START_DELAY;
+    syncAudioLoop();
   }
 
   function checkCollisions() {
@@ -286,6 +380,7 @@ function createPacmanGame(canvas, ctx, ui) {
           state.score += 200;
           syncHud();
           setStatus('Nice! Ghost eaten for 200 pts.');
+          audio.ghost();
           respawnGhost(ghost);
         } else {
           loseLife();
@@ -298,6 +393,7 @@ function createPacmanGame(canvas, ctx, ui) {
   function loseLife() {
     state.lives -= 1;
     syncHud();
+    audio.death();
     if (state.lives <= 0) {
       gameOver();
       return;
@@ -305,13 +401,16 @@ function createPacmanGame(canvas, ctx, ui) {
     setStatus(`Careful! ${state.lives} ${state.lives === 1 ? 'life' : 'lives'} remaining.`);
     spawnActorsOnly();
     state.freezeTimer = START_DELAY;
+    syncAudioLoop();
   }
 
   function gameOver() {
     state.gameOver = true;
     state.running = false;
     setStatus('Game over! Press Start / Reset to try again.');
+    audio.gameOver();
     ui.pauseButton.disabled = true;
+    syncAudioLoop();
   }
 
   function beginMove(actor, dir) {
@@ -632,10 +731,196 @@ function createPacmanGame(canvas, ctx, ui) {
     ui.status.textContent = text;
   }
 
+  function syncAudioLoop() {
+    if (!audio || typeof audio.setLoop !== 'function') return;
+    if (!state.running || state.gameOver || state.paused || state.freezeTimer > 0) {
+      audio.setLoop('mute');
+    } else if (state.frightenedTimer > 0) {
+      audio.setLoop('frightened');
+    } else {
+      audio.setLoop('chase');
+    }
+  }
+
   return {
     start,
     togglePause,
     isRunning,
     setPacmanDirection,
+  };
+}
+
+function createSilentSoundBoard() {
+  const noop = () => {};
+  return {
+    unlock: noop,
+    setVolume: noop,
+    setLoop: noop,
+    pellet: noop,
+    power: noop,
+    ghost: noop,
+    death: noop,
+    start: noop,
+    level: noop,
+    gameOver: noop,
+  };
+}
+
+function createSoundBoard() {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return createSilentSoundBoard();
+
+  let ctx;
+  let masterGain;
+  let unlocked = false;
+  let normalizedVolume = 0.75;
+  const MIN_MASTER_GAIN = 0;
+  const MAX_MASTER_GAIN = 0.45;
+  let loopHandle = null;
+  let loopMode = 'mute';
+
+  const LOOP_CONFIG = {
+    chase: {
+      pattern: [
+        { frequency: 620, duration: 0.08, type: 'square', volume: 0.35 },
+        { frequency: 660, duration: 0.08, type: 'square', volume: 0.35, delay: 0.08 },
+        { frequency: 700, duration: 0.08, type: 'square', volume: 0.35, delay: 0.16 },
+        { frequency: 760, duration: 0.12, type: 'square', volume: 0.35, delay: 0.28 },
+      ],
+      cadence: 520,
+    },
+    frightened: {
+      pattern: [
+        { frequency: 420, duration: 0.12, type: 'triangle', volume: 0.28 },
+        { frequency: 360, duration: 0.12, type: 'triangle', volume: 0.28, delay: 0.12 },
+      ],
+      cadence: 420,
+    },
+  };
+
+  function applyMasterGain() {
+    if (masterGain) {
+      masterGain.gain.value = MIN_MASTER_GAIN + normalizedVolume * (MAX_MASTER_GAIN - MIN_MASTER_GAIN);
+    }
+  }
+
+  function ensureContext() {
+    if (ctx) return;
+    ctx = new AudioCtx();
+    masterGain = ctx.createGain();
+    masterGain.connect(ctx.destination);
+    applyMasterGain();
+  }
+
+  function unlock() {
+    ensureContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+    unlocked = true;
+  }
+
+  function setVolume(percent) {
+    normalizedVolume = Math.min(Math.max(percent, 0), 1);
+    applyMasterGain();
+  }
+
+  function playTone({
+    frequency = 440,
+    duration = 0.2,
+    type = 'sine',
+    volume = 0.25,
+    glideTo,
+    delay = 0,
+  }) {
+    if (!unlocked) return;
+    ensureContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+    const startTime = ctx.currentTime + (delay || 0);
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+    if (glideTo) {
+      oscillator.frequency.linearRampToValueAtTime(glideTo, startTime + duration);
+    }
+    const startVolume = Math.max(volume, 0.0001);
+    gain.gain.setValueAtTime(startVolume, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    oscillator.connect(gain);
+    gain.connect(masterGain);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 0.05);
+  }
+
+  function playSequence(steps) {
+    steps.forEach(step => playTone(step));
+  }
+
+  function stopLoop() {
+    if (loopHandle) {
+      clearInterval(loopHandle);
+      loopHandle = null;
+    }
+  }
+
+  function setLoop(mode) {
+    if (loopMode === mode) return;
+    loopMode = mode;
+    stopLoop();
+    if (mode === 'mute') return;
+    const config = LOOP_CONFIG[mode];
+    if (!config) return;
+    const run = () => playSequence(config.pattern);
+    run();
+    loopHandle = setInterval(run, config.cadence);
+  }
+
+  return {
+    unlock,
+    setVolume,
+    setLoop,
+    pellet: () =>
+      playSequence([
+        { frequency: 1046, duration: 0.05, type: 'square', volume: 0.4 },
+        { frequency: 880, duration: 0.05, type: 'square', volume: 0.38, delay: 0.045 },
+      ]),
+    power: () =>
+      playSequence([
+        { frequency: 620, duration: 0.22, type: 'triangle', volume: 0.5 },
+        { frequency: 520, duration: 0.25, type: 'triangle', volume: 0.48, delay: 0.18, glideTo: 220 },
+      ]),
+    ghost: () =>
+      playSequence([
+        { frequency: 330, duration: 0.16, type: 'sawtooth', volume: 0.45 },
+        { frequency: 660, duration: 0.2, type: 'sawtooth', volume: 0.45, delay: 0.12 },
+      ]),
+    death: () =>
+      playSequence([
+        { frequency: 520, duration: 0.2, type: 'square', volume: 0.5 },
+        { frequency: 420, duration: 0.2, type: 'square', volume: 0.5, delay: 0.18 },
+        { frequency: 260, duration: 0.45, type: 'triangle', volume: 0.55, delay: 0.36, glideTo: 110 },
+      ]),
+    start: () =>
+      playSequence([
+        { frequency: 784, duration: 0.18, type: 'square', volume: 0.42 },
+        { frequency: 523, duration: 0.18, type: 'square', volume: 0.42, delay: 0.18 },
+        { frequency: 659, duration: 0.18, type: 'square', volume: 0.42, delay: 0.36 },
+        { frequency: 392, duration: 0.28, type: 'triangle', volume: 0.4, delay: 0.54 },
+      ]),
+    level: () =>
+      playSequence([
+        { frequency: 440, duration: 0.12, type: 'square', volume: 0.35 },
+        { frequency: 660, duration: 0.12, type: 'square', volume: 0.35, delay: 0.1 },
+      ]),
+    gameOver: () =>
+      playSequence([
+        { frequency: 200, duration: 0.4, type: 'sine', volume: 0.35 },
+        { frequency: 150, duration: 0.5, type: 'sine', volume: 0.32, delay: 0.28, glideTo: 90 },
+      ]),
   };
 }

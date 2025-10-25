@@ -19,6 +19,18 @@
             <button id="pacmanStart" class="btn btn-primary">Start / Reset</button>
             <button id="pacmanPause" class="btn btn-secondary">Pause</button>
           </div>
+          <div class="pacman-audio-controls" aria-label="Audio volume">
+            <label for="pacmanVolume" class="hud-label">Volume</label>
+            <input
+              id="pacmanVolume"
+              type="range"
+              min="0"
+              max="100"
+              value="75"
+              aria-label="Adjust Pac-Man volume"
+            />
+            <span id="pacmanVolumeValue" class="hud-value">75%</span>
+          </div>
         </div>
         <canvas
           id="pacmanCanvas"
@@ -35,5 +47,18 @@
           <li>Eat every pellet to advance; power pellets let you chomp ghosts for bonus points.</li>
           <li>Queue your next move before an intersection to glide through turns like the arcade classic.</li>
           <li>You have three lives. Colliding with a ghost without a power-up costs one life.</li>
+          <li>On phones or tablets, tap the on-screen arrows below to queue turns.</li>
         </ul>
+        <div class="pacman-mobile-controls" aria-label="Touch direction pad">
+          <p class="mobile-controls__label">Tap to steer Pac-Man on touch devices</p>
+          <div class="pacman-dpad">
+            <button type="button" class="pacman-control-btn" data-pacman-direction="up" aria-label="Move up">↑</button>
+            <div class="pacman-dpad-bottom-row">
+              <button type="button" class="pacman-control-btn" data-pacman-direction="left" aria-label="Move left">←</button>
+              <button type="button" class="pacman-control-btn" data-pacman-direction="down" aria-label="Move down">↓</button>
+              <button type="button" class="pacman-control-btn" data-pacman-direction="right" aria-label="Move right">→</button>
+            </div>
+          </div>
+          <p class="mobile-controls__hint">Tip: tap rapidly ahead of intersections to queue turns, just like the arcade original.</p>
+        </div>
       </section>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chess | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/projects" class="nav-link">Projects</a></li>
+            <li><a href="/chess" class="nav-link is-active">Chess</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8">
+      <section class="mb-6 section">
+        <h2 class="text-3xl font-semibold mb-2">Strategy Lab: Chess</h2>
+        <p class="text-gray-600">
+          Built with vanilla JavaScript, this board mirrors official chess rules using the open-source chess.js engine plus a lightweight evaluation bot. Practice endgames, play locally with a friend, or take on the analytic bot.
+        </p>
+      </section>
+      {{ chessSection }}
+    </main>
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+      © 2025 Promit. All rights reserved.
+    </footer>
+    <script src="/public/vendor/chess.min.js" defer></script>
+    <script src="/public/chess.js" defer></script>
+  </body>
+</html>

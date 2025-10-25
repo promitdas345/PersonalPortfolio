@@ -1,0 +1,46 @@
+      <section class="chess-panel section">
+        <div class="chess-header">
+          <h3 class="text-2xl font-semibold mb-1">Play Live Chess</h3>
+          <p class="text-gray-600">
+            Practice tactics against a built-in bot or pass-and-play with a friend. Legal moves, captures, checkmate detection, and undo are all handled for you.
+          </p>
+        </div>
+        <div class="chess-layout">
+          <div class="chess-board-wrapper">
+            <div
+              id="chessBoard"
+              class="chess-board"
+              role="application"
+              aria-label="Interactive chess board"
+            ></div>
+            <p class="chess-hint-text">
+              Tip: click a piece to highlight its legal moves. Pawns auto-promote to a queen for speed.
+            </p>
+          </div>
+          <div class="chess-sidebar">
+            <div class="chess-status">
+              <p class="hud-label">Turn</p>
+              <p id="chessTurn" class="chess-turn">White to move</p>
+              <p id="chessStatus" class="status-text" aria-live="polite">
+                Click “New Game” to begin.
+              </p>
+            </div>
+            <label for="chessMode" class="hud-label">Opponent</label>
+            <select id="chessMode" class="chess-select" aria-label="Select chess opponent type">
+              <option value="bot-easy">Bot - Casual</option>
+              <option value="bot-medium">Bot - Analytical</option>
+              <option value="human">Two Players</option>
+            </select>
+            <div class="chess-buttons">
+              <button id="chessNewGame" class="btn btn-primary">New Game</button>
+              <button id="chessUndo" class="btn btn-secondary">Undo</button>
+              <button id="chessFlip" class="btn btn-secondary">Flip Board</button>
+              <button id="chessHint" class="btn btn-secondary">Hint</button>
+            </div>
+            <div class="chess-history">
+              <p class="hud-label">Move list</p>
+              <ol id="chessHistory" class="chess-history-list"></ol>
+            </div>
+          </div>
+        </div>
+      </section>
