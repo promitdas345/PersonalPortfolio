@@ -1,5 +1,26 @@
 [
   {
+    "slug": "leadership-principles-playbook",
+    "title": "Mapping My Projects to Amazon's Leadership Principles",
+    "date": "2025-10-25",
+    "excerpt": "A candid breakdown of how my shipped projects demonstrate Ownership, Customer Obsession, and Dive Deep.",
+    "content": "<p>The most frequent coaching tip I hear about Amazon interviews is to anchor every story to a leadership principle. This post is my living playbook that connects the systems on this site to those principles so I can answer behavioral loops with confidence.</p><p><strong>Customer Obsession:</strong> The Plotly Dash data visualization dashboard exists because four analytics squads were spending hours wrangling CSVs. I interviewed each team, prototyped KPIs they cared about, and kept iterating until the filters cut their analysis time by 60&nbsp;percent.</p><p><strong>Ownership:</strong> The task management app's role-based access control demanded schema changes, JWT updates, and a security review. I owned every layer — from modeling permissions to writing runbooks — and led the post-launch retrospective.</p><p><strong>Dive Deep:</strong> To keep cross-filter interactions under 200&nbsp;ms I instrumented the API, added query tracing, and built CloudWatch dashboards that alerted us whenever p95 latency drifted.</p><p>I keep the post updated with new stories so I always have STAR-ready examples for Customer Obsession, Ownership, Dive Deep, Bias for Action, and Deliver Results.</p>"
+  },
+  {
+    "slug": "instrumenting-dashboards-on-aws",
+    "title": "Instrumenting Dashboards on AWS for Sub-200 ms Filters",
+    "date": "2025-10-18",
+    "excerpt": "How I wired CloudWatch, structured logging, and caching to keep Plotly Dash experiences responsive at scale.",
+    "content": "<p>Analysts loved the flexibility of the Dash UI, but once we crossed 5&nbsp;million rows the filters started to drag. In this post I cover the profiling and observability work that brought the experience back to \"buttery smooth.\"</p><p>I containerized the Dash front end on AWS Fargate and split the heavy lifting into a FastAPI microservice. Structured logs flowed into CloudWatch Log Insights so I could query slow endpoints and correlate them with Redis cache misses. We also added Redshift materialized views plus a thin caching layer inside the Dash callbacks.</p><p>The end result: p50 filter latency sits at 180&nbsp;ms, p95 at 320&nbsp;ms, and we have alarms that ping my on-call Slack channel whenever either drifts. The post includes code snippets for the middleware, tracing IDs, and Terraform bits that provisioned the dashboards.</p>"
+  },
+  {
+    "slug": "dsa-to-system-design-notes",
+    "title": "From DSA Reps to System Design Notes",
+    "date": "2025-10-10",
+    "excerpt": "Documenting how I rotate through LeetCode, mock interviews, and architecture one-pagers each week.",
+    "content": "<p>Preparing for Amazon means flexing both DSA speed and system design fundamentals. I use a repeating loop: graphs on Mondays, DP or math on Wednesdays, and a design prompt each Friday that I whiteboard and turn into a short write-up.</p><p>The post includes my rubric for judging solutions (correctness, complexity, test cases, and communication) plus the checklists I use for design prompts: requirements, APIs, data model, scaling levers, and failure modes.</p><p>I also explain how I translate those notes back into my portfolio — for example, the websocket scaling lessons from mock interviews turned into the Socket.IO gateway optimizations inside my task management app.</p>"
+  },
+  {
     "slug": "welcome",
     "title": "Welcome to My Portfolio Blog",
     "date": "2025-10-24",

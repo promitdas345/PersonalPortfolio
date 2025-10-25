@@ -113,6 +113,244 @@ main > section:first-of-type {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.8rem;
+  color: var(--color-light-sea-green);
+  margin-bottom: 0.5rem;
+}
+
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.hero-text,
+.hero-briefing {
+  background: #f8fbff;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 8px 28px rgba(10, 37, 64, 0.15);
+}
+
+.hero-objective {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-oxford-blue);
+}
+
+.availability-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.availability-label {
+  display: block;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-light-sea-green);
+}
+
+.resume-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.resume-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.resume-card,
+.skills-panel {
+  background: #fefefe;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(10, 37, 64, 0.08);
+  padding: 1.75rem;
+  box-shadow: 0 12px 30px rgba(10, 37, 64, 0.12);
+}
+
+.resume-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 0;
+}
+
+.resume-meta dt {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-slate-gray);
+  margin-bottom: 0.25rem;
+}
+
+.resume-meta dd {
+  margin: 0;
+  color: var(--color-oxford-blue);
+  font-weight: 600;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.skill-group {
+  background: #f4f7fb;
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 1px dashed rgba(0, 163, 163, 0.35);
+}
+
+.skill-group h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: var(--color-oxford-blue);
+}
+
+.skill-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--color-slate-gray);
+  font-size: 0.95rem;
+}
+
+.build-grid,
+.leadership-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.build-grid article,
+.leadership-grid article,
+.principle-grid article,
+.info-grid article {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(10, 37, 64, 0.08);
+  background: #f8fbff;
+  box-shadow: 0 6px 20px rgba(10, 37, 64, 0.12);
+}
+
+.project-impact {
+  font-size: 0.95rem;
+  color: var(--color-light-sea-green);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.info-grid,
+.principle-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.leadership-grid ul,
+.principle-grid ul {
+  margin: 0.75rem 0 0 0;
+  padding-left: 1.25rem;
+  color: var(--color-oxford-blue);
+}
+
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checklist li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.checklist li::before {
+  content: '✔';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-light-sea-green);
+  font-weight: 700;
+}
+
+.pill-list {
+  list-style: none;
+  margin: 0 0 1rem 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pill-list li {
+  background: rgba(0, 163, 163, 0.1);
+  color: var(--color-oxford-blue);
+  border: 1px solid rgba(0, 163, 163, 0.2);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.contact-details {
+  background: #f8fbff;
+  border-radius: 1rem;
+  border: 1px solid rgba(10, 37, 64, 0.08);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.contact-details ul {
+  margin: 0.75rem 0 0 0;
+  padding-left: 1.25rem;
+  color: var(--color-oxford-blue);
+}
+
+@media (min-width: 900px) {
+  .hero-section {
+    flex-direction: row;
+  }
+
+  .hero-text,
+  .hero-briefing {
+    flex: 1;
+  }
+
+  .resume-section {
+    flex-direction: row;
+  }
+
+  .resume-card,
+  .skills-panel {
+    flex: 1;
+  }
+
+  .build-grid,
+  .leadership-grid,
+  .info-grid,
+  .principle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .project-card,
 .game-instructions,
 .pacman-panel {

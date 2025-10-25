@@ -91,6 +91,11 @@ async function loadProjects() {
     projectsCache = JSON.parse(data).map((project, index) => ({
       highlights: [],
       content: '',
+      technologies: [],
+      metrics: [],
+      architecture: [],
+      impactHeadline: '',
+      ownership: '',
       ...project,
       slug: project.slug || slugify(project.title || `project-${index + 1}`),
     }));
@@ -226,6 +231,30 @@ async function router(req, res) {
       .map(item => `<li>${item}</li>`);
     const highlightsList =
       highlightItems.length > 0 ? highlightItems.join('') : '<li>More details coming soon.</li>';
+    const metricsItems = (project.metrics || []).map(item => `<li>${item}</li>`);
+    const metricsSection = metricsItems.length
+      ? `<section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Impact & Metrics</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600">
+            ${metricsItems.join('')}
+          </ul>
+        </section>`
+      : '';
+    const architectureItems = (project.architecture || []).map(item => `<li>${item}</li>`);
+    const architectureSection = architectureItems.length
+      ? `<section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">System Architecture</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600">
+            ${architectureItems.join('')}
+          </ul>
+        </section>`
+      : '';
+    const ownershipSection = project.ownership
+      ? `<section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Ownership & Learnings</h3>
+          <p class="text-gray-600">${project.ownership}</p>
+        </section>`
+      : '';
     const ctaButton =
       project.link && project.link.trim().length > 0
         ? `<p class="mt-4"><a href="${project.link}" class="btn btn-primary" target="_blank" rel="noopener">View Repository</a></p>`
@@ -236,6 +265,9 @@ async function router(req, res) {
       summary: project.summary || project.description,
       technologies: project.technologies.join(', '),
       highlightsList,
+      metricsSection,
+      architectureSection,
+      ownershipSection,
       content: project.content,
       image: project.image,
       ctaButton,
@@ -257,6 +289,7 @@ async function router(req, res) {
             `<div class="project-card section">
               <h3 class="text-xl font-semibold mb-1">${proj.title}</h3>
               <p class="mb-2">${proj.description}</p>
+              ${proj.impactHeadline ? `<p class="project-impact">${proj.impactHeadline}</p>` : ''}
               <div class="project-tags">
                 ${proj.technologies.map(tech => `<span class="tag">${tech}</span>`).join('')}
               </div>
