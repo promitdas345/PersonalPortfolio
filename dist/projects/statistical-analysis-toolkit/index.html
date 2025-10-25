@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistical Analysis Toolkit | Promit's Projects</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/projects" class="nav-link">Projects</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="statistical-analysis-toolkit">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2">Statistical Analysis Toolkit</h2>
+          <p class="text-gray-600 mb-2">CLI + notebook helpers that wrap SciPy/Pandas patterns into shareable templates.</p>
+          <p class="text-sm text-gray-500">Tech: Python, Pandas, SciPy, Jupyter</p>
+        </header>
+        <figure class="mb-6">
+          <img src="/public/images/placeholder.png" alt="Statistical Analysis Toolkit hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600">
+            <li>One-command t-tests, ANOVA, chi-square, and regression diagnostics with Markdown exports.</li><li>Auto generates visualizations (violin plots, QQ plots) to accompany reports.</li><li>Packaged as a pip-installable module consumed across multiple research teams.</li>
+          </ul>
+        </section>
+        <section class="mb-6 prose max-w-none">
+          <p>The toolkit started as a notebook of helper functions and evolved into a polished package. It standardizes experiment analysis: users point to a CSV, select the hypothesis test, and receive both an interactive notebook and a static Markdown summary with conclusions.</p><p>I leaned heavily on Pandas for data wrangling, SciPy/statsmodels for statistical routines, and nbconvert/WeasyPrint for publishing. Continuous integration runs unit tests against synthetic datasets so every release remains trustworthy.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Interactive Demo</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        
+        <p class="mt-8"><a href="/projects" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+      © 2025 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'statistical-analysis-toolkit';</script>
+    <script src="/public/project-demos.js" defer></script>
+  </body>
+</html>

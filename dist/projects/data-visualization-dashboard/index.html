@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Visualization Dashboard | Promit's Projects</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/projects" class="nav-link">Projects</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="data-visualization-dashboard">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2">Data Visualization Dashboard</h2>
+          <p class="text-gray-600 mb-2">A Plotly Dash experience that lets analysts explore millions of rows with fluid filtering and storytelling visuals.</p>
+          <p class="text-sm text-gray-500">Tech: Python, Plotly, Dash</p>
+        </header>
+        <figure class="mb-6">
+          <img src="/public/images/placeholder.png" alt="Data Visualization Dashboard hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600">
+            <li>Reduced exploratory analysis time by 60% through prebuilt insight panels.</li><li>Implemented server-side data paging so the dashboard scales to 5M+ records.</li><li>Designed adaptive color systems for dark/light palettes.</li>
+          </ul>
+        </section>
+        <section class="mb-6 prose max-w-none">
+          <p>The dashboard ingests CSV exports and database snapshots, cleans them with Pandas, and then streams curated data frames into Plotly Dash components. I focused on making interactions feel instantaneous—drill-down filters update cross-highlights in under 200ms thanks to memoized queries and lightweight JSON payloads.</p><p>Once the analysis is complete, analysts can export any state of the dashboard to a branded PDF report. The export pipeline renders the Plotly figures headlessly and stitches them together with narrative text.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Interactive Demo</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        
+        <p class="mt-8"><a href="/projects" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+      © 2025 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'data-visualization-dashboard';</script>
+    <script src="/public/project-demos.js" defer></script>
+  </body>
+</html>

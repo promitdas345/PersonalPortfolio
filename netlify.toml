@@ -1,0 +1,29 @@
+[build]
+  command = "node build.js"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/projects"
+  to = "/projects/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/about"
+  to = "/about/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/contact"
+  to = "/contact/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pacman"
+  to = "/pacman/index.html"
+  status = 200
