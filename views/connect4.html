@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connect 4 | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+    <link rel="stylesheet" href="/public/inline-editor.css" />
+    <style>
+      .c4-page {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .c4-hero {
+        text-align: center;
+        margin-bottom: 2rem;
+        animation: c4FadeIn 0.6s ease-out;
+      }
+
+      .c4-hero h2 {
+        font-size: 2.4rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ef4444, #facc15);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .c4-hero p {
+        color: #94a3b8;
+        font-size: 1.05rem;
+        max-width: 520px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      /* ─── game container ─── */
+      .c4-game-wrapper {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+        animation: c4SlideUp 0.5s ease-out 0.15s both;
+      }
+
+      .c4-board-container {
+        position: relative;
+        border-radius: 20px;
+        padding: 12px 12px 16px;
+        background: linear-gradient(145deg, #1e2a4a, #0f1729);
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(255, 255, 255, 0.06),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      }
+
+      #c4-canvas {
+        display: block;
+        border-radius: 12px;
+        cursor: pointer;
+        max-width: 100%;
+        height: auto !important;
+      }
+
+      /* ─── status bar ─── */
+      .c4-status-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        min-height: 48px;
+        padding: 0.6rem 1.6rem;
+        border-radius: 100px;
+        background: rgba(30, 41, 59, 0.8);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        transition: all 0.3s ease;
+      }
+
+      #c4-status {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        letter-spacing: 0.01em;
+      }
+
+      /* ─── controls ─── */
+      .c4-controls {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      #c4-reset {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        border: none;
+        border-radius: 100px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow:
+          0 4px 15px rgba(59, 130, 246, 0.35),
+          0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        letter-spacing: 0.01em;
+      }
+
+      #c4-reset:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 6px 25px rgba(59, 130, 246, 0.5),
+          0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      }
+
+      #c4-reset:active {
+        transform: translateY(0);
+      }
+
+      /* ─── score legend ─── */
+      .c4-legend {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        margin-top: 0.5rem;
+      }
+
+      .c4-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: #94a3b8;
+        font-weight: 500;
+      }
+
+      .c4-dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .c4-dot--player {
+        background: radial-gradient(circle at 35% 35%, #f87171, #dc2626);
+      }
+
+      .c4-dot--ai {
+        background: radial-gradient(circle at 35% 35%, #fde047, #ca8a04);
+      }
+
+      /* ─── tip box ─── */
+      .c4-tip {
+        margin-top: 1.5rem;
+        padding: 1rem 1.4rem;
+        border-radius: 12px;
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        max-width: 560px;
+        text-align: center;
+      }
+
+      .c4-tip p {
+        color: #64748b;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      .c4-tip strong {
+        color: #94a3b8;
+      }
+
+      /* ─── responsive ─── */
+      @media (max-width: 640px) {
+        .c4-hero h2 {
+          font-size: 1.8rem;
+        }
+        .c4-board-container {
+          padding: 8px 8px 12px;
+          border-radius: 14px;
+        }
+        #c4-canvas {
+          border-radius: 8px;
+        }
+        .c4-legend {
+          gap: 1.2rem;
+        }
+      }
+
+      /* ─── animations ─── */
+      @keyframes c4FadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes c4SlideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/projects" class="nav-link">Projects</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container py-8 c4-page">
+      <section class="c4-hero">
+        <h2>Connect 4</h2>
+        <p>
+          Challenge an AI powered by minimax with alpha‑beta pruning.
+          It searches millions of positions and has never been beaten.
+          <strong>Can you be the first?</strong>
+        </p>
+      </section>
+
+      <div class="c4-game-wrapper">
+        <div class="c4-status-bar">
+          <span id="c4-status">🔴 Your turn — click a column</span>
+        </div>
+
+        <div class="c4-board-container">
+          <canvas id="c4-canvas" width="560" height="560"></canvas>
+        </div>
+
+        <div class="c4-controls">
+          <button id="c4-reset" type="button">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 1v5h5"/>
+              <path d="M3.5 10a5 5 0 1 0 1-7l-3.5 3"/>
+            </svg>
+            New Game
+          </button>
+        </div>
+
+        <div class="c4-legend">
+          <span class="c4-legend-item">
+            <span class="c4-dot c4-dot--player"></span> You
+          </span>
+          <span class="c4-legend-item">
+            <span class="c4-dot c4-dot--ai"></span> AI
+          </span>
+        </div>
+
+        <div class="c4-tip">
+          <p>
+            <strong>Tip:</strong> Connect 4 is a solved game — with perfect play, the first player can always force a win.
+            This AI plays near-perfectly. Your best strategy is to control the centre columns.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+      © 2025 Promit. All rights reserved.
+    </footer>
+
+    <script src="/public/connect4.js" defer></script>
+    <script src="/public/inline-editor.js?v=2"></script>
+    {{ analytics }}
+  </body>
+</html>
