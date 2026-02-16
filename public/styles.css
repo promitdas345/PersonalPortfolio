@@ -435,6 +435,8 @@ button,
 }
 
 input[type='text'],
+input[type='password'],
+input[type='date'],
 input[type='email'],
 textarea {
   font-size: 1rem;
@@ -445,6 +447,12 @@ textarea {
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
+
+.hidden {
+  display: none !important;
+}
+
+
 
 input:focus,
 textarea:focus {
@@ -593,6 +601,136 @@ p, li, a {
   color: var(--color-slate-gray);
 }
 
+.blog-card {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid rgba(10, 37, 64, 0.12);
+  border-radius: 1rem;
+  background: #f8fbff;
+  padding: 1rem;
+}
+
+.blog-card-media img,
+.blog-card-media video {
+  width: 100%;
+  border-radius: 0.75rem;
+  max-height: 360px;
+  object-fit: cover;
+}
+
+.blog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+}
+
+.blog-tag {
+  font-size: 0.78rem;
+  border-radius: 999px;
+  background: rgba(0, 163, 163, 0.15);
+  border: 1px solid rgba(0, 163, 163, 0.3);
+  color: var(--color-oxford-blue);
+  padding: 0.2rem 0.55rem;
+}
+
+.blog-engagement {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: var(--color-slate-gray);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.blog-linkedin {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.post-media-grid {
+  margin: 1rem 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.post-media-item {
+  margin: 0;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  border: 1px solid rgba(10, 37, 64, 0.15);
+  background: #f8fbff;
+}
+
+.post-media-item img {
+  width: 100%;
+  display: block;
+}
+
+.post-media-item video {
+  width: 100%;
+  display: block;
+  background: #000;
+}
+
+.post-media-item figcaption {
+  padding: 0.55rem 0.7rem;
+  color: var(--color-slate-gray);
+  font-size: 0.9rem;
+}
+
+.preview-banner {
+  margin-bottom: 1rem;
+  background: #fff4d2;
+  border: 1px solid #f0c653;
+  color: #7d5d00;
+  border-radius: 0.7rem;
+  padding: 0.6rem 0.75rem;
+  font-weight: 600;
+}
+
+.post-reactions {
+  margin-top: 0.65rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.reaction-btn {
+  border: 1px solid rgba(10, 37, 64, 0.2);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-oxford-blue);
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+.reaction-btn:hover {
+  border-color: var(--color-light-sea-green);
+  color: var(--color-light-sea-green);
+}
+
+.reaction-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.reaction-status {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-slate-gray);
+}
+
+.reaction-status.success {
+  color: #0f766e;
+}
+
+.reaction-status.error {
+  color: var(--color-crimson);
+}
+
 .list-disc {
   list-style-type: disc;
 }
@@ -652,6 +790,14 @@ p, li, a {
   font-size: 0.85rem;
   margin-right: 0.5rem;
   margin-top: 0.35rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+details summary {
+  cursor: pointer;
 }
 
 .section {
@@ -952,158 +1098,6 @@ p, li, a {
   box-shadow: 0 4px 8px rgba(10, 37, 64, 0.25) inset;
 }
 
-.chess-panel {
-  margin-top: 2rem;
-  position: relative;
-}
-
-.chess-header p {
-  color: var(--color-slate-gray);
-}
-
-.chess-layout {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin-top: 1.5rem;
-}
-
-.chess-board-wrapper {
-  flex: 1 1 320px;
-}
-
-.chess-board {
-  display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 0.35rem;
-  padding: 1rem;
-  border-radius: 1.25rem;
-  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.6));
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-.chess-square {
-  width: 100%;
-  aspect-ratio: 1;
-  border: none;
-  border-radius: 0.65rem;
-  background: #f7f6f5;
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
-}
-
-.chess-square.is-dark {
-  background: #c7d0dd;
-}
-
-.chess-square.is-selected {
-  box-shadow: 0 0 0 3px rgba(0, 163, 163, 0.7);
-}
-
-.chess-square.is-legal-target {
-  box-shadow: inset 0 0 0 4px rgba(255, 177, 0, 0.5);
-}
-
-.chess-square.is-last-move {
-  outline: 3px solid rgba(59, 130, 246, 0.6);
-}
-
-.chess-square.is-checked {
-  background: #fecdd3;
-}
-
-.chess-square.is-hint {
-  box-shadow: inset 0 0 0 4px rgba(34, 197, 94, 0.7);
-}
-
-.chess-square:disabled {
-  cursor: not-allowed;
-  opacity: 0.75;
-}
-
-.chess-hint-text {
-  font-size: 0.9rem;
-  color: var(--color-slate-gray);
-  margin-top: 0.75rem;
-}
-
-.chess-sidebar {
-  flex: 1 1 260px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.chess-status {
-  padding: 1rem;
-  border-radius: 1rem;
-  background: #0a2540;
-  color: #fff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-.chess-turn {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin: 0.2rem 0;
-}
-
-.chess-select {
-  padding: 0.65rem 0.75rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(10, 37, 64, 0.2);
-  font-size: 1rem;
-}
-
-.chess-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.chess-history {
-  border: 1px solid rgba(10, 37, 64, 0.1);
-  border-radius: 1rem;
-  padding: 1rem;
-  background: #f8fbff;
-}
-
-.chess-history-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 240px;
-  overflow-y: auto;
-  font-family: 'Inter', sans-serif;
-}
-
-.chess-history-list li {
-  display: grid;
-  grid-template-columns: 40px 1fr 1fr;
-  gap: 0.4rem;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid rgba(10, 37, 64, 0.1);
-  font-size: 0.95rem;
-}
-
-.chess-history-list li:last-child {
-  border-bottom: none;
-}
-
-.chess-move-index {
-  font-weight: 600;
-  color: var(--color-slate-gray);
-}
-
-.chess-history-empty {
-  color: var(--color-slate-gray);
-  padding: 0.5rem 0;
-}
-
 .mobile-controls__label {
   font-weight: 600;
   color: var(--color-oxford-blue);
@@ -1126,6 +1120,14 @@ p, li, a {
   text-align: center;
 }
 
+.block {
+  display: block;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -1139,13 +1141,5 @@ p, li, a {
   .site-header .container {
     flex-direction: column;
     gap: 0.75rem;
-  }
-
-  .chess-layout {
-    flex-direction: column;
-  }
-
-  .chess-board {
-    padding: 0.75rem;
   }
 }

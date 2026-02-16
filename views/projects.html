@@ -9,6 +9,7 @@
     />
     <title>Projects | Promit's Portfolio</title>
     <link rel="stylesheet" href="/public/styles.css" />
+    <link rel="stylesheet" href="/public/inline-editor.css" />
   </head>
   <body>
     <header class="site-header">
@@ -18,7 +19,6 @@
           <ul class="flex space-x-4 text-lg">
             <li><a href="/" class="nav-link">Home</a></li>
             <li><a href="/projects" class="nav-link">Projects</a></li>
-            <li><a href="/chess" class="nav-link">Chess</a></li>
             <li><a href="/blog" class="nav-link">Blog</a></li>
             <li><a href="/about" class="nav-link">About</a></li>
             <li><a href="/contact" class="nav-link">Contact</a></li>
@@ -28,7 +28,7 @@
     </header>
     <main class="container py-8">
       <h2 class="text-3xl font-semibold mb-6 section">Projects</h2>
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-inline-dynamic="projects">
         {{ projectsList }}
       </div>
       <section class="mt-8 section">
@@ -38,19 +38,12 @@
         </p>
         {{ pacmanSection }}
       </section>
-      <section class="mt-8 section">
-        <h3 class="text-2xl font-semibold mb-2">Strategy Lab: Chess</h3>
-        <p class="text-gray-600 mb-4">
-          This browser-based board layers the chess.js rules engine with a minimax-powered bot, legal move visualizations, and undo/flip controls. Try it now or <a href="/chess" class="text-blue-600 hover:underline">open the dedicated view →</a>
-        </p>
-        {{ chessSection }}
-      </section>
     </main>
     <footer class="site-footer py-4 text-center text-sm text-gray-600">
       © 2025 Promit. All rights reserved.
     </footer>
     <script src="/public/pacman.js" defer></script>
-    <script src="/public/vendor/chess.min.js" defer></script>
-    <script src="/public/chess.js" defer></script>
+      <script src="/public/inline-editor.js?v=2"></script>
+  {{ analytics }}
   </body>
 </html>

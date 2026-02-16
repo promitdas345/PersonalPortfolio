@@ -1,3 +1,15 @@
 node_modules
 dist
 .DS_Store
+data/admin-auth.json
+data/admin-store.json
+admin.cookies
+.env
+.env.local
+.env.development
+.env.production
+
+# Sensitive personal files
+*.pdf
+1.html
+transcript*.html

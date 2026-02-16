@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog Editor | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/public/blog-editor.css" />
+  </head>
+  <body>
+    <div id="editor-topbar">
+      <div class="editor-topbar-inner">
+        <div class="editor-topbar-left">
+          <a href="/blog" class="editor-back-link">&larr; Blog</a>
+          <span id="editor-status" class="editor-status">New post</span>
+        </div>
+        <div class="editor-topbar-right">
+          <button id="btn-preview" type="button" class="editor-btn editor-btn-secondary" disabled>Preview</button>
+          <button id="btn-save-draft" type="button" class="editor-btn editor-btn-secondary">Save draft</button>
+          <button id="btn-publish" type="button" class="editor-btn editor-btn-primary">Publish</button>
+        </div>
+      </div>
+    </div>
+
+    <main class="editor-main">
+      <div class="editor-meta-section">
+        <input id="post-title" type="text" class="editor-title-input" placeholder="Post title" autocomplete="off" />
+        <textarea id="post-excerpt" class="editor-excerpt-input" placeholder="Write a short excerpt or summary (optional)" rows="2"></textarea>
+
+        <div class="editor-meta-row">
+          <label class="editor-meta-label">
+            Date
+            <input id="post-date" type="date" />
+          </label>
+          <label class="editor-meta-label">
+            Status
+            <select id="post-status">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="in_review">In Review</option>
+              <option value="scheduled">Scheduled</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="editor-meta-label">
+          Hashtags <small>(comma-separated)</small>
+          <input id="post-hashtags" type="text" placeholder="tech, webdev, portfolio" />
+        </label>
+
+        <label class="editor-meta-label">
+          LinkedIn post URL <small>(optional — cross-post)</small>
+          <input id="post-linkedin" type="url" placeholder="https://linkedin.com/posts/..." />
+        </label>
+      </div>
+
+      <div class="editor-content-section">
+        <div id="quill-toolbar">
+          <span class="ql-formats">
+            <select class="ql-header">
+              <option value="1">H1</option>
+              <option value="2">H2</option>
+              <option value="3">H3</option>
+              <option value="4">H4</option>
+              <option selected>Normal</option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+            <button class="ql-strike"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-blockquote"></button>
+            <button class="ql-code-block"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-list" value="ordered"></button>
+            <button class="ql-list" value="bullet"></button>
+            <button class="ql-indent" value="-1"></button>
+            <button class="ql-indent" value="+1"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-link"></button>
+            <button class="ql-image"></button>
+            <button class="ql-video"></button>
+          </span>
+          <span class="ql-formats">
+            <select class="ql-align">
+              <option selected></option>
+              <option value="center"></option>
+              <option value="right"></option>
+              <option value="justify"></option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-clean"></button>
+          </span>
+        </div>
+        <div id="quill-editor"></div>
+      </div>
+
+      <p id="editor-error" class="editor-error"></p>
+    </main>
+
+    <input type="hidden" id="post-data" value='{{ postJson }}' />
+    <input type="hidden" id="csrf-token" value="{{ csrfToken }}" />
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
+    <script src="/public/blog-editor.js"></script>
+    {{ analytics }}
+  </body>
+</html>

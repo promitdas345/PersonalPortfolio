@@ -82,5 +82,56 @@
     ],
     "ownership": "Wrote the module, docs, and teaching labs, onboarded two research assistants, and review incoming issues/PRs just like an open-source maintainer.",
     "content": "<p>The toolkit started as a notebook of helper functions and evolved into a polished package. It standardizes experiment analysis: users point to a CSV, select the hypothesis test, and receive both an interactive notebook and a static Markdown summary with conclusions.</p><p>I leaned heavily on Pandas for data wrangling, SciPy/statsmodels for statistical routines, and nbconvert/WeasyPrint for publishing. Continuous integration runs unit tests against synthetic datasets so every release remains trustworthy.</p>"
+  },
+  {
+    "id": 4,
+    "slug": "flappy-bird-ai",
+    "title": "Flappy Bird AI",
+    "description": "NEAT-powered Flappy Bird where an evolving agent learns to clear pipes locally in the browser.",
+    "summary": "Watch a NEAT autoplayer learn Flappy Bird: mutate/crossover, evaluate, keep the best genome, and repeat.",
+    "technologies": ["JavaScript", "p5.js", "NEAT"],
+    "link": "https://github.com/promitdas345/FlappyBirdAi",
+    "image": "/public/flappy-bird-ai/images/background.png",
+    "impactHeadline": "Live NEAT training loop runs fully client-side; the best genome is cached and replayed instantly.",
+    "highlights": [
+      "Implemented Flappy physics, obstacle spawning, and collision checks in p5.js with responsive rendering.",
+      "Built a NEAT implementation (genomes, species, mutation/crossover) so the bird learns without labels.",
+      "Persists the best genome locally and seeds the next population to speed up future runs."
+    ],
+    "metrics": [
+      "100% offline-capable; training and replay run fully in-browser.",
+      "Autoplayer typically reaches double-digit scores within a few generations on a laptop."
+    ],
+    "architecture": [
+      "Game loop + rendering handled by p5.js; physics and collision checks drive the fitness signal.",
+      "Custom NEAT stack (genomes, species, crossover/mutation, innovation history) evolves the bird agent.",
+      "LocalStorage caches the top-performing genome to replay and seed new generations."
+    ],
+    "ownership": "Solo build: game physics, NEAT implementation, visualizer, and local persistence of best genomes.",
+    "content": "<p>This project pairs a classic Flappy Bird clone with a NEAT autoplayer. Each generation of birds gets fitness from how far they travel before crashing; genomes mutate and crossover, and the best genome is stored locally so reruns start from a strong baseline.</p><p>The loop is simple to follow: spawn a population, simulate flights, score by distance, breed the fittest, repeat. A lightweight brain visualizer shows the network structure so you can see why the agent flaps when it does.</p>"
+  },
+  {
+    "id": 5,
+    "slug": "neurodivergent-support-app",
+    "title": "Neurodivergent Support App (In Progress)",
+    "description": "In-progress app to help neurodivergent students manage routines, sensory load, and focus.",
+    "summary": "A guided companion with configurable routines, sensory check-ins, and low-stimulus UI patterns.",
+    "technologies": ["TypeScript", "React", "Node.js", "PostgreSQL"],
+    "link": "",
+    "image": "/public/images/placeholder.png",
+    "impactHeadline": "Designing with neurodivergent peers: calm defaults, structured routines, and optional analytics.",
+    "highlights": [
+      "Co-designing with students to define calming color palettes and typography that avoid sensory overload.",
+      "Building routine templates (class, study, commute) with reminders and adjustable pacing.",
+      "Planning a privacy-first analytics layer to surface gentle nudges without tracking PII."
+    ],
+    "metrics": [],
+    "architecture": [
+      "React front-end with offline-friendly caching; minimal motion and strong focus states.",
+      "API layer in Node.js with PostgreSQL for templates and user preferences; feature-flagged rollout.",
+      "Background jobs to batch reminder deliveries and feedback summaries without spamming users."
+    ],
+    "ownership": "Leading design and build; currently prototyping flows, defining accessibility guardrails, and stubbing the API.",
+    "content": "<p>This project is co-designed with neurodivergent classmates to make daily routines feel calmer and predictable. The UI defaults to low-stimulus colors, strong focus indicators, and motion reduced by default. Routines come with adjustable pacing and optional reminders.</p><p>I'm prototyping the React front-end with offline caching, while the Node/PostgreSQL backend will store templates and preferences. Analytics are opt-in and anonymized; the goal is to provide gentle, user-controlled insights rather than surveillance.</p>"
   }
 ]
