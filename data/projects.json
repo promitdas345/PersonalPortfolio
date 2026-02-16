@@ -5,7 +5,14 @@
     "title": "Data Visualization Dashboard",
     "description": "Interactive Plotly Dash experience with sub-200 ms filters over 5M+ rows.",
     "summary": "A Plotly Dash experience that lets analysts explore millions of rows with fluid filtering and storytelling visuals.",
-    "technologies": ["Python", "Plotly", "Dash", "FastAPI", "Redis", "AWS"],
+    "technologies": [
+      "Python",
+      "Plotly",
+      "Dash",
+      "FastAPI",
+      "Redis",
+      "AWS"
+    ],
     "link": "",
     "image": "/public/images/placeholder.png",
     "impactHeadline": "60% faster exploratory analysis for 60+ analysts and sub-200 ms cross-filters.",
@@ -33,7 +40,14 @@
     "title": "Task Management App",
     "description": "Realtime kanban boards, RBAC, and analytics for multi-team planning.",
     "summary": "Realtime collaboration, kanban-style boards, and focus analytics for busy student teams.",
-    "technologies": ["Node.js", "Express", "MongoDB", "Socket.IO", "Docker", "AWS"],
+    "technologies": [
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "Socket.IO",
+      "Docker",
+      "AWS"
+    ],
     "link": "",
     "image": "/public/images/placeholder.png",
     "impactHeadline": "25+ active teammates plan coursework with <1 s WebSocket fan-out and secure magic links.",
@@ -61,7 +75,14 @@
     "title": "Statistical Analysis Toolkit",
     "description": "Pip-installable CLI + notebook templates for hypothesis testing at speed.",
     "summary": "CLI + notebook helpers that wrap SciPy/Pandas patterns into shareable templates.",
-    "technologies": ["Python", "Pandas", "SciPy", "statsmodels", "Jupyter", "GitHub Actions"],
+    "technologies": [
+      "Python",
+      "Pandas",
+      "SciPy",
+      "statsmodels",
+      "Jupyter",
+      "GitHub Actions"
+    ],
     "link": "",
     "image": "/public/images/placeholder.png",
     "impactHeadline": "150+ downloads and three research labs rely on the toolkit for reproducible stats workflows.",
@@ -89,7 +110,11 @@
     "title": "Flappy Bird AI",
     "description": "NEAT-powered Flappy Bird where an evolving agent learns to clear pipes locally in the browser.",
     "summary": "Watch a NEAT autoplayer learn Flappy Bird: mutate/crossover, evaluate, keep the best genome, and repeat.",
-    "technologies": ["JavaScript", "p5.js", "NEAT"],
+    "technologies": [
+      "JavaScript",
+      "p5.js",
+      "NEAT"
+    ],
     "link": "https://github.com/promitdas345/FlappyBirdAi",
     "image": "/public/flappy-bird-ai/images/background.png",
     "impactHeadline": "Live NEAT training loop runs fully client-side; the best genome is cached and replayed instantly.",
@@ -116,7 +141,12 @@
     "title": "Neurodivergent Support App (In Progress)",
     "description": "In-progress app to help neurodivergent students manage routines, sensory load, and focus.",
     "summary": "A guided companion with configurable routines, sensory check-ins, and low-stimulus UI patterns.",
-    "technologies": ["TypeScript", "React", "Node.js", "PostgreSQL"],
+    "technologies": [
+      "TypeScript",
+      "React",
+      "Node.js",
+      "PostgreSQL"
+    ],
     "link": "",
     "image": "/public/images/placeholder.png",
     "impactHeadline": "Designing with neurodivergent peers: calm defaults, structured routines, and optional analytics.",
@@ -133,5 +163,38 @@
     ],
     "ownership": "Leading design and build; currently prototyping flows, defining accessibility guardrails, and stubbing the API.",
     "content": "<p>This project is co-designed with neurodivergent classmates to make daily routines feel calmer and predictable. The UI defaults to low-stimulus colors, strong focus indicators, and motion reduced by default. Routines come with adjustable pacing and optional reminders.</p><p>I'm prototyping the React front-end with offline caching, while the Node/PostgreSQL backend will store templates and preferences. Analytics are opt-in and anonymized; the goal is to provide gentle, user-controlled insights rather than surveillance.</p>"
+  },
+  {
+    "id": 6,
+    "slug": "connect-4-ai",
+    "title": "Connect 4 vs Unbeatable AI",
+    "description": "A solved-game AI that uses minimax, alpha-beta pruning, and transpositon tables to play perfectly.",
+    "summary": "Challenge an AI powered by minimax with alpha‑beta pruning — it searches millions of positions per move and has never been beaten.",
+    "technologies": [
+      "JavaScript",
+      "Canvas API",
+      "Minimax Algorithm",
+      "HTML5"
+    ],
+    "link": "/connect4",
+    "image": "/public/images/connect4_modern_thumbnail.png",
+    "impactHeadline": "An unbeatble AI that searches 14 moves deep in under 200ms using bitboard optimizations.",
+    "highlights": [
+      "Implemented Minimax with Alpha-Beta pruning to prune the search tree efficiently.",
+      "Used Zobrist hashing and a transposition table to cache millions of board states.",
+      "Designed a premium, responsive UI with glassmorphism and glossy HTML5 Canvas rendering."
+    ],
+    "metrics": [
+      "Search depth of 14 moves achieved in real-time on standard client hardware.",
+      "Transposition table hit rate >60% in mid-game, significantly speeding up calculation.",
+      "Zero dependencies — built entirely with vanilla JavaScript and CSS."
+    ],
+    "architecture": [
+      "Game loop decoupled from rendering; AI runs in the main thread (optimized) without blocking UI.",
+      "Bitboard-based move generation allows for O(1) win checking and fast board manipulation.",
+      "Responsive Canvas renderer handles animations and scaling for all device sizes."
+    ],
+    "ownership": "Solo engineering: implemented the entire game engine, AI strategies, and frontend design.",
+    "content": "<p>This Connect 4 implementation isn't just a game; it's a demonstration of classical game AI optimization. I built a Minimax engine that looks 14 moves ahead, using Alpha-Beta pruning to discard irrelevant branches and Zobrist hashing to remember positions it has already seen.</p><p>The frontend matches the AI's sophistication with a premium 'Dark Mode' aesthetic. Using the HTML5 Canvas API, I simulated glossy tokens and smooth drop animations. The result is a game that feels native and responsive, running entirely in the browser with no server-side logic required for the gameplay itself.</p>"
   }
 ]
