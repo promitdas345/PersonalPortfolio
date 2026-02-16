@@ -24,8 +24,10 @@
     /* Weights for the centre-column heuristic (columns 0–6) */
     const COL_SCORE = [0, 1, 2, 3, 2, 1, 0];
 
-    /* Search depth — 12 is enough for perfect play in practice */
-    const MAX_DEPTH = 14;
+    /* Search depth — 10 is strong; iterative deepening + time limit keep it fast */
+    const MAX_DEPTH = 10;
+    const TIME_BUDGET_MS = 1000; // 1-second time limit per AI move
+    const TT_MAX_SIZE = 500000; // cap transposition table entries
 
     /* Transposition table (Zobrist hashing) */
     const ZOBRIST = [];
@@ -57,6 +59,9 @@
     let hashValue = 0;
     let moveCount = 0;
     const transpositionTable = new Map();
+    let killerMoves = [];  // killer moves per depth for move ordering
+    let searchDeadline = 0; // timestamp when AI must stop searching
+    let searchAborted = false; // flag set when time runs out
 
     /* ─── board operations ─────────────────────────────────── */
     function initBoard() {
@@ -70,6 +75,8 @@
         hashValue = 0;
         moveCount = 0;
         transpositionTable.clear();
+        killerMoves = [];
+        searchAborted = false;
     }
 
     function canPlay(col) {
@@ -219,19 +226,30 @@
         return score;
     }
 
-    /* ─── move ordering (search centre first) ──────────────── */
+    /* ─── move ordering (killers first, then centre-out) ───── */
     const MOVE_ORDER = [3, 2, 4, 1, 5, 0, 6]; // centre-out
 
-    function orderedMoves() {
+    function orderedMoves(depth) {
         const moves = [];
+        const killer = killerMoves[depth];
+        // Try killer move first if it's valid
+        if (killer !== undefined && canPlay(killer)) {
+            moves.push(killer);
+        }
         for (const c of MOVE_ORDER) {
-            if (canPlay(c)) moves.push(c);
+            if (canPlay(c) && c !== killer) moves.push(c);
         }
         return moves;
     }
 
     /* ─── minimax with alpha-beta pruning ──────────────────── */
     function minimax(depth, alpha, beta, maximizing) {
+        // Check time budget periodically (every node is cheap; check always)
+        if (Date.now() >= searchDeadline) {
+            searchAborted = true;
+            return 0; // value doesn't matter — will be discarded
+        }
+
         // Check transposition table
         const ttKey = hashValue;
         const cached = transpositionTable.get(ttKey);
@@ -249,8 +267,9 @@
         if (boardFull()) return 0;
         if (depth === 0) return evaluate();
 
-        const moves = orderedMoves();
+        const moves = orderedMoves(depth);
         let bestScore;
+        let bestMove = moves[0];
         let flag;
 
         if (maximizing) {
@@ -260,13 +279,15 @@
                 dropPiece(col, AI);
                 const score = minimax(depth - 1, alpha, beta, false);
                 undoPiece(col);
-                if (score > bestScore) bestScore = score;
+                if (searchAborted) return 0;
+                if (score > bestScore) { bestScore = score; bestMove = col; }
                 if (score > alpha) {
                     alpha = score;
                     flag = 0; // EXACT
                 }
                 if (alpha >= beta) {
                     flag = 1; // LOWER
+                    killerMoves[depth] = col; // record killer move
                     break;
                 }
             }
@@ -277,25 +298,36 @@
                 dropPiece(col, PLAYER);
                 const score = minimax(depth - 1, alpha, beta, true);
                 undoPiece(col);
-                if (score < bestScore) bestScore = score;
+                if (searchAborted) return 0;
+                if (score < bestScore) { bestScore = score; bestMove = col; }
                 if (score < beta) {
                     beta = score;
                     flag = 0; // EXACT
                 }
                 if (alpha >= beta) {
                     flag = -1; // UPPER
+                    killerMoves[depth] = col; // record killer move
                     break;
                 }
             }
         }
 
+        // Store in transposition table, cap size
+        if (transpositionTable.size >= TT_MAX_SIZE) {
+            // Clear half the table to amortize cleanup cost
+            const iter = transpositionTable.keys();
+            const half = TT_MAX_SIZE >> 1;
+            for (let i = 0; i < half; i++) {
+                transpositionTable.delete(iter.next().value);
+            }
+        }
         transpositionTable.set(ttKey, { score: bestScore, depth, flag });
 
         return bestScore;
     }
 
     function aiBestMove() {
-        const moves = orderedMoves();
+        const moves = orderedMoves(0);
         if (moves.length === 0) return -1;
 
         // First move: always play centre
@@ -315,22 +347,44 @@
             undoPiece(col);
         }
 
-        // Iterative deepening with the full depth
+        // True iterative deepening with time budget
         let bestCol = moves[0];
-        let bestScore = -Infinity;
-
-        // Use adaptive depth based on remaining moves
         const remaining = ROWS * COLS - moveCount;
-        const searchDepth = Math.min(MAX_DEPTH, remaining);
+        const maxDepth = Math.min(MAX_DEPTH, remaining);
 
-        for (const col of moves) {
-            dropPiece(col, AI);
-            const score = minimax(searchDepth - 1, -Infinity, Infinity, false);
-            undoPiece(col);
-            if (score > bestScore) {
-                bestScore = score;
-                bestCol = col;
+        searchDeadline = Date.now() + TIME_BUDGET_MS;
+        searchAborted = false;
+
+        for (let depth = 2; depth <= maxDepth; depth += 2) {
+            killerMoves = []; // reset killers each iteration
+            let iterBest = moves[0];
+            let iterScore = -Infinity;
+
+            for (const col of moves) {
+                dropPiece(col, AI);
+                const score = minimax(depth - 1, -Infinity, Infinity, false);
+                undoPiece(col);
+
+                if (searchAborted) break;
+
+                if (score > iterScore) {
+                    iterScore = score;
+                    iterBest = col;
+                }
+
+                // Found a winning move — play it immediately
+                if (score >= 100000) {
+                    return iterBest;
+                }
             }
+
+            // Only use this iteration's result if it completed fully
+            if (!searchAborted) {
+                bestCol = iterBest;
+            }
+
+            // Stop deepening if time is almost up
+            if (Date.now() >= searchDeadline) break;
         }
 
         return bestCol;
