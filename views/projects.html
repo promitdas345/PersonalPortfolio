@@ -1,49 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Case studies covering data visualization, realtime collaboration, and statistical tooling with AWS-ready architecture details."
-    />
-    <title>Projects | Promit's Portfolio</title>
-    <link rel="stylesheet" href="/public/styles.css" />
-    <link rel="stylesheet" href="/public/inline-editor.css" />
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="container flex justify-between items-center py-4">
-        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
-        <nav>
-          <ul class="flex space-x-4 text-lg">
-            <li><a href="/" class="nav-link">Home</a></li>
-            <li><a href="/projects" class="nav-link">Projects</a></li>
-            <li><a href="/blog" class="nav-link">Blog</a></li>
-            <li><a href="/about" class="nav-link">About</a></li>
-            <li><a href="/contact" class="nav-link">Contact</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-    <main class="container py-8">
-      <h2 class="text-3xl font-semibold mb-6 section">Projects</h2>
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-inline-dynamic="projects">
-        {{ projectsList }}
-      </div>
-      <section class="mt-8 section">
-        <h3 class="text-2xl font-semibold mb-2">Arcade Throwback: Pac-Man</h3>
-        <p class="text-gray-600 mb-4">
-          I rebuilt the maze, ghost logic, and scoring system from the original arcade classic using nothing but vanilla JavaScript and the Canvas API. Play it below or <a href="/pacman" class="text-blue-600 hover:underline">open the standalone view →</a>
-        </p>
-        {{ pacmanSection }}
-      </section>
-    </main>
-    <footer class="site-footer py-4 text-center text-sm text-gray-600">
-      © 2025 Promit. All rights reserved.
-    </footer>
-    <script src="/public/pacman.js" defer></script>
-      <script src="/public/inline-editor.js?v=2"></script>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Case studies covering data visualization, realtime collaboration, and statistical tooling with AWS-ready architecture details." />
+  <title>Projects | Promit's Portfolio</title>
+  <link rel="stylesheet" href="/public/styles.css" />
+  <link rel="stylesheet" href="/public/inline-editor.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container flex justify-between items-center py-4">
+      <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+      <nav>
+        <ul class="flex space-x-4 text-lg">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/projects" class="nav-link">Projects</a></li>
+          <li><a href="/blog" class="nav-link">Blog</a></li>
+          <li><a href="/about" class="nav-link">About</a></li>
+          <li><a href="/contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main class="container py-8">
+    <h2 class="text-3xl font-semibold mb-6 section">Projects</h2>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-inline-dynamic="projects">
+      {{ projectsList }}
+    </div>
+    <section class="mt-8 section">
+      <h3 class="text-2xl font-semibold mb-2">Arcade Throwback: Pac-Man</h3>
+      <p class="text-gray-600 mb-4">
+        I rebuilt the maze, ghost logic, and scoring system from the original arcade classic using nothing but vanilla
+        JavaScript and the Canvas API. Play it below or <a href="/pacman" class="text-blue-600 hover:underline">open the
+          standalone view →</a>
+      </p>
+      {{ pacmanSection }}
+    </section>
+    <section class="mt-8 section">
+      <h3 class="text-2xl font-semibold mb-2">🤖 Connect 4 vs Unbeatable AI</h3>
+      <p class="text-gray-600 mb-4">
+        Challenge an AI powered by minimax with alpha‑beta pruning — it searches millions of positions per move and has
+        never been beaten. Built with vanilla JavaScript and the Canvas API.
+        <a href="/connect4" class="text-blue-600 hover:underline">Play Connect 4 →</a>
+      </p>
+    </section>
+  </main>
+  <footer class="site-footer py-4 text-center text-sm text-gray-600">
+    © 2025 Promit. All rights reserved.
+  </footer>
+  <script src="/public/pacman.js" defer></script>
+  <script src="/public/inline-editor.js?v=2"></script>
   {{ analytics }}
-  </body>
+</body>
+
 </html>
