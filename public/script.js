@@ -1,38 +1,46 @@
-// Client-side JavaScript for the portfolio site
-
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('contactForm');
-  if (form) {
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const statusEl = document.getElementById('formStatus');
-      statusEl.classList.remove('success', 'error');
-      statusEl.textContent = 'Sending…';
-      const formData = {
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        message: document.getElementById('message').value.trim(),
-      };
-      try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-        const result = await response.json();
-        if (result.success) {
-          statusEl.textContent = 'Thank you! Your message has been sent.';
-          statusEl.classList.add('success');
-          form.reset();
-        } else {
-          statusEl.textContent = 'There was a problem sending your message.';
-          statusEl.classList.add('error');
-        }
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = 'An error occurred. Please try again later.';
-        statusEl.classList.add('error');
+  const statusEl = document.getElementById('formStatus');
+  if (!form || !statusEl) return;
+
+  const setStatus = (message, variant) => {
+    statusEl.textContent = message;
+    statusEl.classList.remove('success', 'error');
+    if (variant) statusEl.classList.add(variant);
+  };
+
+  const grabFormData = () => {
+    return ['name', 'email', 'message'].reduce((acc, field) => {
+      const input = document.getElementById(field);
+      acc[field] = input ? input.value.trim() : '';
+      return acc;
+    }, {});
+  };
+
+  form.addEventListener('submit', async evt => {
+    evt.preventDefault();
+    setStatus('Sending...');
+    const payload = grabFormData();
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        throw new Error(`Contact form failed: ${response.status}`);
       }
-    });
-  }
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error('Server rejected message');
+      }
+      setStatus('Thanks! I will get back to you shortly.', 'success');
+      form.reset();
+    } catch (err) {
+      console.error('Contact form error', err);
+      setStatus('Could not send message right now. Email me directly?', 'error');
+    }
+  });
 });
+

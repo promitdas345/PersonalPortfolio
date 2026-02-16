@@ -29,16 +29,23 @@ function renderDataVizDemo(mount) {
     { week: 10, region: 'APAC', engagement: 90, retention: 67, sessions: 24 },
   ];
 
+  const state = {
+    metric: 'engagement',
+    region: 'All',
+  };
+
   const controls = createElement('div', { class: 'demo-controls' });
   const metricSelect = createElement('select');
   ['engagement', 'retention', 'sessions'].forEach(metric => {
     metricSelect.appendChild(createElement('option', { value: metric, text: metric }));
   });
+  metricSelect.value = state.metric;
   const regionSelect = createElement('select');
   const regions = ['All', ...new Set(dataset.map(d => d.region))];
   regions.forEach(region => {
     regionSelect.appendChild(createElement('option', { value: region, text: region }));
   });
+  regionSelect.value = state.region;
   controls.append(
     createElement('label', { text: 'Metric', style: 'font-weight:600' }),
     metricSelect,
@@ -59,16 +66,14 @@ function renderDataVizDemo(mount) {
   const summary = createElement('div', { class: 'stat-output', style: 'margin-top:1.25rem;background:#eef4ff;' });
   mount.appendChild(summary);
 
-  function filteredData() {
-    const currentMetric = metricSelect.value;
-    const currentRegion = regionSelect.value;
+  function getSeries() {
     return dataset
-      .filter(d => currentRegion === 'All' || d.region === currentRegion)
-      .map(d => ({ label: `W${d.week}`, value: d[currentMetric] }));
+      .filter(d => state.region === 'All' || d.region === state.region)
+      .map(d => ({ label: `W${d.week}`, value: d[state.metric] }));
   }
 
-  function drawChart() {
-    const data = filteredData();
+  function paintChart() {
+    const data = getSeries();
     if (!data.length) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       summary.textContent = 'No samples for this region yet.';
@@ -109,15 +114,21 @@ function renderDataVizDemo(mount) {
     const values = data.map(d => d.value);
     const avg = values.reduce((sum, v) => sum + v, 0) / values.length;
     summary.innerHTML = `
-      <strong>Insight</strong>
-      <p>Avg ${metricSelect.value}: ${avg.toFixed(1)} • Peak ${Math.max(...values).toFixed(1)}</p>
-      <p>Data points: ${values.length} (${regionSelect.value})</p>
+      <strong>Quick read</strong>
+      <p>${state.metric} avg: ${avg.toFixed(1)} • peak: ${Math.max(...values).toFixed(1)}</p>
+      <p>Samples: ${values.length} (${state.region})</p>
     `;
   }
 
-  metricSelect.addEventListener('change', drawChart);
-  regionSelect.addEventListener('change', drawChart);
-  drawChart();
+  metricSelect.addEventListener('change', () => {
+    state.metric = metricSelect.value;
+    paintChart();
+  });
+  regionSelect.addEventListener('change', () => {
+    state.region = regionSelect.value;
+    paintChart();
+  });
+  paintChart();
 }
 
 function renderTaskManagerDemo(mount) {
@@ -195,7 +206,7 @@ function renderTaskManagerDemo(mount) {
       }
     });
   } else {
-    ['Define success metrics', 'Implement authentication', 'Ship beta build'].forEach((task, idx) => {
+    ['Polish landing page', 'Hook up auth', 'Ship the beta build'].forEach((task, idx) => {
       columnEls[columns[idx]].appendChild(createTaskElement(task, idx));
     });
   }
@@ -275,6 +286,76 @@ function renderStatsDemo(mount) {
   actionBtn.addEventListener('click', runStats);
 }
 
+function renderFlappyDemo(mount) {
+  mount.innerHTML = '';
+  const section = mount.closest('#projectDemo');
+  const heading = section ? section.querySelector('h3') : null;
+  if (heading) heading.textContent = 'How it works (illustrated)';
+
+  const intro = createElement('p', { class: 'text-gray-700' });
+  intro.textContent =
+    'Flappy Bird AI evolves an agent with NEAT. The bird sees gaps ahead, feeds those inputs into a neural net, and decides when to flap. Fitness is the distance survived; the best genomes breed and mutate each generation.';
+
+  const figure = createElement('figure', { style: 'margin:1rem 0;' });
+  figure.innerHTML = `
+    <svg viewBox="0 0 720 360" role="img" aria-label="Diagram of Flappy Bird AI gameplay and neural net" style="width:100%;border-radius:14px;border:1px solid rgba(10,37,64,0.12);box-shadow:0 12px 28px rgba(10,37,64,0.12);background:linear-gradient(180deg,#cde8ff,#f8fbff);">
+      <defs>
+        <linearGradient id="pipe" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#10b981"/>
+          <stop offset="100%" stop-color="#0ea271"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="280" width="720" height="80" fill="#dbeafe" />
+      <rect x="360" y="0" width="60" height="120" fill="url(#pipe)" rx="6" />
+      <rect x="360" y="220" width="60" height="140" fill="url(#pipe)" rx="6" />
+      <rect x="520" y="0" width="60" height="150" fill="url(#pipe)" rx="6" />
+      <rect x="520" y="230" width="60" height="130" fill="url(#pipe)" rx="6" />
+      <ellipse cx="180" cy="190" rx="22" ry="16" fill="#fbbf24" stroke="#0f172a" stroke-width="2" />
+      <circle cx="188" cy="182" r="3" fill="#0f172a" />
+      <path d="M202 190 l12 -6 l0 12 z" fill="#f97316" stroke="#c2410c" stroke-width="1" />
+      <text x="170" y="175" font-family="Inter, sans-serif" font-size="14" fill="#0f172a">Bird (agent)</text>
+      <line x1="210" y1="190" x2="340" y2="150" stroke="#0f172a" stroke-width="2" marker-end="url(#arrow)"/>
+      <line x1="210" y1="195" x2="340" y2="230" stroke="#0f172a" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="360" y="140" width="140" height="120" rx="10" fill="#fff" stroke="#0f172a" stroke-width="2" />
+      <text x="430" y="160" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#0f172a">NEAT Neural Net</text>
+      <circle cx="390" cy="190" r="10" fill="#38bdf8" />
+      <circle cx="390" cy="220" r="10" fill="#38bdf8" />
+      <circle cx="430" cy="205" r="10" fill="#a855f7" />
+      <circle cx="470" cy="205" r="10" fill="#34d399" />
+      <line x1="390" y1="190" x2="430" y2="205" stroke="#0f172a" stroke-width="1.5" />
+      <line x1="390" y1="220" x2="430" y2="205" stroke="#0f172a" stroke-width="1.5" />
+      <line x1="430" y1="205" x2="470" y2="205" stroke="#0f172a" stroke-width="1.5" />
+      <text x="480" y="208" font-family="Inter, sans-serif" font-size="12" fill="#0f172a">Flap?</text>
+      <line x1="500" y1="205" x2="560" y2="205" stroke="#f97316" stroke-width="2" marker-end="url(#arrow)"/>
+      <text x="570" y="210" font-family="Inter, sans-serif" font-size="12" fill="#f97316">Action</text>
+      <text x="360" y="320" font-family="Inter, sans-serif" font-size="13" fill="#0f172a" text-anchor="middle">Fitness = distance survived. Best genome is saved and breeds the next generation.</text>
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto">
+          <path d="M0 0 L10 5 L0 10 z" fill="#0f172a" />
+        </marker>
+      </defs>
+    </svg>
+  `;
+
+  const list = createElement('ul', { class: 'list-disc list-inside text-gray-700', style: 'margin:1rem 0 0.5rem 0;' });
+  [
+    'Sensors feed gap position and bird state into the neural net.',
+    'The net outputs a flap/no-flap decision each frame.',
+    'Fitness = distance survived; top genomes are saved and used to seed the next generation.'
+  ].forEach(item => list.appendChild(createElement('li', { text: item })));
+
+  const cta = createElement('a', {
+    href: 'https://github.com/promitdas345/FlappyBirdAi',
+    target: '_blank',
+    rel: 'noopener',
+    class: 'btn btn-primary',
+    style: 'margin-top:0.75rem;display:inline-flex;',
+    text: 'View GitHub repo'
+  });
+
+  mount.append(intro, figure, list, cta);
+}
+
 function hydrateProjectDemo() {
   const container = document.querySelector('[data-project-slug]');
   if (!container) return;
@@ -286,6 +367,7 @@ function hydrateProjectDemo() {
     'data-visualization-dashboard': renderDataVizDemo,
     'task-management-app': renderTaskManagerDemo,
     'statistical-analysis-toolkit': renderStatsDemo,
+    'flappy-bird-ai': renderFlappyDemo,
   };
 
   const renderer = registry[slug];

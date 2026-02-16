@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="{{ title }} — a blog post by Promit Das." />
+    <meta name="description" content="{{ title }} - a blog post by Promit Das." />
     <title>{{ title }} | Promit's Blog</title>
     <link rel="stylesheet" href="/public/styles.css" />
+    <link rel="stylesheet" href="/public/inline-editor.css" />
   </head>
   <body>
     <header class="site-header">
@@ -15,7 +16,6 @@
           <ul class="flex space-x-4 text-lg">
             <li><a href="/" class="nav-link">Home</a></li>
             <li><a href="/projects" class="nav-link">Projects</a></li>
-            <li><a href="/chess" class="nav-link">Chess</a></li>
             <li><a href="/blog" class="nav-link">Blog</a></li>
             <li><a href="/about" class="nav-link">About</a></li>
             <li><a href="/contact" class="nav-link">Contact</a></li>
@@ -23,18 +23,37 @@
         </nav>
       </div>
     </header>
-    <main class="container py-8 max-w-3xl mx-auto">
-      <article class="prose max-w-none section">
-        <h1 class="mb-2">{{ title }}</h1>
-        <p class="text-sm text-gray-600 mb-4">{{ date }} • {{ readingTime }} min read</p>
-        <div>
+    <main class="container py-8 max-w-3xl mx-auto post-container" data-post-slug="{{ slug }}">
+      {{ previewBanner }}
+      <button id="delete-post-btn" class="delete-post-btn" aria-label="Delete post" title="Delete this post" style="display: none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
+      <article class="prose max-w-none section" data-post-id="{{ postId }}">
+        <h1 class="mb-2" data-post-field="title">{{ title }}</h1>
+        <p class="text-sm text-gray-600 mb-4">
+          <span data-post-field="date">{{ date }}</span> &bull; {{ readingTime }} min read
+        </p>
+        {{ hashtags }}
+        {{ mediaGallery }}
+        <div data-post-field="contentMarkdown">
           {{ content }}
         </div>
+        {{ engagement }}
+        {{ reactionControls }}
+        {{ linkedinSource }}
       </article>
-      <p class="mt-8"><a href="/blog" class="text-blue-600 hover:underline">← Back to blog</a></p>
+      <p class="mt-8"><a href="/blog" class="text-blue-600 hover:underline">&larr; Back to blog</a></p>
     </main>
     <footer class="site-footer py-4 text-center text-sm text-gray-600">
-      © 2025 Promit. All rights reserved.
+      &copy; 2025 Promit. All rights reserved.
     </footer>
+    <script src="/public/post-reactions.js"></script>
+    <script src="/public/inline-editor.js?v=2"></script>
+  {{ analytics }}
   </body>
 </html>
