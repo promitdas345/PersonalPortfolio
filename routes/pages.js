@@ -169,6 +169,10 @@ function createPageRoutes(deps) {
       const analytics = await getAnalyticsHtml();
       return sendHtml(res, await renderTemplate('pacman.html', { pacmanSection: await loadPacmanSection(), analytics }));
     }
+    if (normalizedPathname === '/connect4') {
+      const analytics = await getAnalyticsHtml();
+      return sendHtml(res, await renderTemplate('connect4.html', { analytics }));
+    }
 
     return false; // not handled
   }

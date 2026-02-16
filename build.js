@@ -162,10 +162,12 @@ async function buildStaticPages() {
   const contact = await renderTemplate('contact.html');
   const pacmanSection = await loadPacmanSection();
   const pacman = await renderTemplate('pacman.html', { pacmanSection });
+  const connect4 = await renderTemplate('connect4.html');
 
   await writePage(path.join('about', 'index.html'), about);
   await writePage(path.join('contact', 'index.html'), contact);
   await writePage(path.join('pacman', 'index.html'), pacman);
+  await writePage(path.join('connect4', 'index.html'), connect4);
 }
 
 async function build404Page() {
