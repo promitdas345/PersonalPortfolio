@@ -135,7 +135,16 @@ function createAppServer() {
 
 if (require.main === module) {
   auth.loadAdminAuthRecord()
-    .then(() => auth.ensureAdminStore())
+    .then(record => {
+      if (record.isNew) {
+        console.log('\n--- ADMIN SETUP ---');
+        console.log(`Admin account created with username: ${record.username}`);
+        console.log(`Password: ${ADMIN_DEFAULT_PASSWORD}`);
+        console.log('PLEASE SAVE THIS PASSWORD NOW. It is stored as a hash and cannot be recovered.');
+        console.log('-------------------\n');
+      }
+      return auth.ensureAdminStore();
+    })
     .then(() => {
       auth.startScheduler();
       const server = createAppServer();

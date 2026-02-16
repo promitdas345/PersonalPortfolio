@@ -82,7 +82,7 @@ function createApiRoutes(deps) {
           }
           return sendJson(res, 401, { success: false, error: 'Invalid username/email or password.' });
         }
-        const { token, session } = auth.createSession(user, req);
+        const { token, session } = await auth.createSession(user, req);
         const cookie = serializeCookie(auth.ADMIN_SESSION_COOKIE, token, {
           path: '/',
           maxAge: Math.floor(auth.ADMIN_SESSION_TTL_MS / 1000),
@@ -129,7 +129,7 @@ function createApiRoutes(deps) {
     if (normalizedPathname === '/api/admin/logout' && method === 'POST') {
       const context = await auth.authContext(req);
       if (context.session && !enforceMutationGuards(req, res, context.session)) return;
-      if (context.session) auth.deleteSession(context.session.token);
+      if (context.session) await auth.deleteSession(context.session.token);
       const expiredCookie = serializeCookie(auth.ADMIN_SESSION_COOKIE, '', {
         path: '/',
         maxAge: 0,
