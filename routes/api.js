@@ -352,6 +352,39 @@ function createApiRoutes(deps) {
       }
     }
 
+    if (adminPostMatch && method === 'DELETE') {
+      const context = await auth.requireAuth(req, res);
+      if (!context || !auth.requireCapability(context, 'content.posts.archive', res)) return;
+      if (!enforceMutationGuards(req, res, context.session)) return;
+      const postId = decodeURIComponent(adminPostMatch[1]);
+      try {
+        const result = await updatePosts(posts => {
+          const index = posts.findIndex(post => post.id === postId);
+          if (index < 0) throw new Error('Post not found.');
+          const post = posts[index];
+          if (!canEditPost(context, post)) throw new Error('You cannot delete this post.');
+          posts.splice(index, 1);
+          return { result: post };
+        });
+        await auth.mutateStore(store => {
+          auth.addAudit(store, {
+            actorId: context.user.id,
+            action: 'post.delete',
+            entityType: 'post',
+            entityId: postId,
+            beforeJson: result.result,
+            afterJson: null,
+            ip: String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || ''),
+            userAgent: String(req.headers['user-agent'] || ''),
+          });
+        });
+        return sendJson(res, 200, { success: true });
+      } catch (err) {
+        const statusCode = err.message === 'Post not found.' ? 404 : err.message === 'You cannot delete this post.' ? 403 : 400;
+        return sendJson(res, statusCode, { success: false, error: err.message });
+      }
+    }
+
     if (normalizedPathname === '/api/posts' && method === 'GET') {
       return sendJson(res, 200, await loadPosts());
     }
