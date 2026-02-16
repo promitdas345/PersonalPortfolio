@@ -23,11 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const payload = grabFormData();
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds (increased from 15)
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       if (!response.ok) {
         throw new Error(`Contact form failed: ${response.status}`);
       }

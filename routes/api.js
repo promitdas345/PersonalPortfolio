@@ -570,6 +570,7 @@ function createApiRoutes(deps) {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           return sendJson(res, 400, { success: false, error: 'Please provide a valid email address.' });
         }
+        console.log(`[email] Attempting to send email from ${email} (${name})`);
         await transporter.sendMail({
           from: process.env.EMAIL_USER || 'noreply@example.com',
           replyTo: `"${name}" <${email}>`,
@@ -584,8 +585,10 @@ function createApiRoutes(deps) {
                <p><strong>Message:</strong></p>
                <p>${escapeHtml(message)}</p>`,
         });
+        console.log(`[email] ✓ Email sent successfully`);
         return sendJson(res, 200, { success: true });
       } catch (err) {
+        console.error(`[email] ✗ Failed to send email:`, err.message, err.code || '');
         return sendJson(res, err.message === 'Payload too large' ? 413 : err.message === 'Invalid JSON' ? 400 : 500, {
           success: false,
           error: err.message === 'Invalid JSON' ? err.message : 'Could not send email',
