@@ -1,14 +1,14 @@
 /**
- * Connect 4 — Unbeatable AI
+ * Connect 4 — Unbeatable AI (Bitboard Engine)
  *
- * AI uses minimax with alpha-beta pruning, iterative deepening,
- * move ordering, and a strong positional heuristic.
- * The AI plays a "solved-game" strategy: it will never lose.
+ * AI uses negamax with alpha-beta pruning, iterative deepening,
+ * bitboard representation, transposition table, and threat analysis.
+ * Bitboard gives O(1) win detection for massive speedup.
  *
  * Board representation:
  *   ROWS = 6, COLS = 7
- *   board[row][col] = 0 (empty) | 1 (player) | 2 (AI)
- *   row 0 = top, row 5 = bottom
+ *   board[row][col] = 0 (empty) | 1 (player) | 2 (AI)   (for UI)
+ *   Bitboard: 49-bit BigInt, column-major, 7 bits/col (6 rows + sentinel)
  */
 (function () {
     'use strict';
@@ -20,52 +20,45 @@
     const PLAYER = 1;
     const AI = 2;
     const WIN_LENGTH = 4;
+    const TOTAL_CELLS = ROWS * COLS; // 42
 
-    /* Weights for the centre-column heuristic (columns 0–6) */
     const COL_SCORE = [0, 1, 2, 3, 2, 1, 0];
+    const MAX_DEPTH = 30;
+    const TIME_BUDGET_MS = 3000;
 
-    /* Search depth — high depth with iterative deepening + time limit keeps it fast.
-       Deeper search lets the AI find forced wins, especially as first player. */
-    const MAX_DEPTH = 22;
-    const TIME_BUDGET_MS = 3000; // 3-second time limit per AI move
-    const TT_MAX_SIZE = 2000000; // cap transposition table entries
+    /* ─── bitboard constants ───────────────────────────────── */
+    const BB_H = ROWS + 1;           // 7 bits per column
+    const BB_H1 = BigInt(BB_H);       // 7n — horizontal shift
+    const BB_H2 = BigInt(BB_H - 1);   // 6n — diagonal \ shift
+    const BB_H3 = BigInt(BB_H + 1);   // 8n — diagonal / shift
+    const BB_DIRS = [1n, BB_H1, BB_H2, BB_H3]; // vert, horiz, diag\, diag/
 
-    /* Transposition table (Zobrist hashing) */
-    const ZOBRIST = [];
-    (function initZobrist() {
-        // Need random 32-bit numbers for each cell × each player
-        let seed = 123456789;
-        function rand32() {
-            seed ^= seed << 13;
-            seed ^= seed >> 17;
-            seed ^= seed << 5;
-            return seed >>> 0;
-        }
-        for (let r = 0; r < ROWS; r++) {
-            ZOBRIST[r] = [];
-            for (let c = 0; c < COLS; c++) {
-                ZOBRIST[r][c] = [0, rand32(), rand32()]; // [empty, player1, player2]
-            }
-        }
-    })();
+    // Precomputed column masks
+    const BB_COL_BOT = new Array(COLS);
+    const BB_COL_TOP = new Array(COLS);
+    let BB_BOARD = 0n;      // all playable positions
+    let BB_BOT_ROW = 0n;    // bottom bit of every column
+    for (let c = 0; c < COLS; c++) {
+        BB_COL_BOT[c] = 1n << BigInt(c * BB_H);
+        BB_COL_TOP[c] = 1n << BigInt(c * BB_H + ROWS);
+        BB_BOT_ROW |= BB_COL_BOT[c];
+        for (let r = 0; r < ROWS; r++) BB_BOARD |= 1n << BigInt(c * BB_H + r);
+    }
 
-    /* ─── game state ───────────────────────────────────────── */
+    /* ─── game state (UI) ──────────────────────────────────── */
     let board = [];
-    let heights = [];         // heights[col] = next available row (bottom-up)
+    let heights = [];
     let currentPlayer = PLAYER;
-    let firstPlayer = PLAYER; // who goes first (togglable)
+    let firstPlayer = PLAYER;
     let gameOver = false;
     let winCells = null;
     let moveHistory = [];
     let aiThinking = false;
-    let hashValue = 0;
     let moveCount = 0;
-    const transpositionTable = new Map();
-    let killerMoves = [];  // killer moves per depth for move ordering
-    let searchDeadline = 0; // timestamp when AI must stop searching
-    let searchAborted = false; // flag set when time runs out
+    let searchDeadline = 0;
+    let searchAborted = false;
 
-    /* ─── board operations ─────────────────────────────────── */
+    /* ─── board operations (UI) ────────────────────────────── */
     function initBoard() {
         board = Array.from({ length: ROWS }, () => Array(COLS).fill(EMPTY));
         heights = Array(COLS).fill(ROWS - 1);
@@ -74,21 +67,15 @@
         winCells = null;
         moveHistory = [];
         aiThinking = false;
-        hashValue = 0;
         moveCount = 0;
-        transpositionTable.clear();
-        killerMoves = [];
         searchAborted = false;
     }
 
-    function canPlay(col) {
-        return heights[col] >= 0;
-    }
+    function canPlay(col) { return heights[col] >= 0; }
 
     function dropPiece(col, player) {
         const row = heights[col];
         board[row][col] = player;
-        hashValue ^= ZOBRIST[row][col][player];
         heights[col]--;
         moveCount++;
         moveHistory.push(col);
@@ -97,22 +84,12 @@
     function undoPiece(col) {
         heights[col]++;
         const row = heights[col];
-        const player = board[row][col];
-        hashValue ^= ZOBRIST[row][col][player];
         board[row][col] = EMPTY;
         moveCount--;
         moveHistory.pop();
     }
 
-    function getValidColumns() {
-        const cols = [];
-        for (let c = 0; c < COLS; c++) {
-            if (canPlay(c)) cols.push(c);
-        }
-        return cols;
-    }
-
-    /* ─── win detection ────────────────────────────────────── */
+    /* ─── win detection (UI — for highlighting cells) ──────── */
     const DIRECTIONS = [[0, 1], [1, 0], [1, 1], [1, -1]];
 
     function checkWinAt(row, col) {
@@ -121,14 +98,12 @@
         for (const [dr, dc] of DIRECTIONS) {
             const cells = [[row, col]];
             for (let i = 1; i < WIN_LENGTH; i++) {
-                const r = row + dr * i;
-                const c = col + dc * i;
+                const r = row + dr * i, c = col + dc * i;
                 if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c] !== player) break;
                 cells.push([r, c]);
             }
             for (let i = 1; i < WIN_LENGTH; i++) {
-                const r = row - dr * i;
-                const c = col - dc * i;
+                const r = row - dr * i, c = col - dc * i;
                 if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c] !== player) break;
                 cells.push([r, c]);
             }
@@ -137,317 +112,290 @@
         return null;
     }
 
-    function lastMoveWins() {
-        if (moveHistory.length === 0) return false;
-        const col = moveHistory[moveHistory.length - 1];
-        const row = heights[col] + 1;
-        return checkWinAt(row, col) !== null;
+    function boardFull() { return moveCount >= TOTAL_CELLS; }
+
+    /* ═══ BITBOARD AI ENGINE ═══════════════════════════════ */
+
+    function bbHasWon(pos) {
+        for (const d of BB_DIRS) {
+            const m = pos & (pos >> d);
+            if ((m & (m >> (d + d))) !== 0n) return true;
+        }
+        return false;
     }
 
-    function boardFull() {
-        return moveCount >= ROWS * COLS;
+    function bbPossible(mask) {
+        return (mask + BB_BOT_ROW) & BB_BOARD;
     }
 
-    /* ─── heuristic evaluation ─────────────────────────────── */
-    /**
-     * Evaluate a window of 4 cells for one player.
-     * Scoring: 4-in-a-row = huge, 3+empty = high, 2+2empty = moderate
-     */
-    function evaluateWindow(countAI, countPlayer, countEmpty) {
-        if (countAI === 4) return 100000;
-        if (countPlayer === 4) return -100000;
-        if (countAI === 3 && countEmpty === 1) return 200;
-        if (countAI === 2 && countEmpty === 2) return 20;
-        if (countPlayer === 3 && countEmpty === 1) return -200;
-        if (countPlayer === 2 && countEmpty === 2) return -20;
-        return 0;
+    function bbCanPlay(mask, col) {
+        return (mask & BB_COL_TOP[col]) === 0n;
     }
 
-    /**
-     * Count threats: positions where placing one piece completes 4-in-a-row.
-     * Double threats (two simultaneous winning moves) almost guarantee a win.
-     * Odd/even row strategy: threats on specific rows matter differently.
-     */
-    function countThreats(player) {
-        let threats = 0;
-        let oddThreats = 0;
-        let evenThreats = 0;
+    /** Compute all squares where `pos` player would complete 4-in-a-row */
+    function bbWinSpots(pos, mask) {
+        let r = 0n;
+        // Vertical
+        r |= (pos << 1n) & (pos << 2n) & (pos << 3n);
+        // Horizontal
+        let p = (pos << BB_H1) & (pos << (BB_H1 + BB_H1));
+        r |= p & (pos << (BB_H1 * 3n));
+        r |= p & (pos >> BB_H1);
+        p = (pos >> BB_H1) & (pos >> (BB_H1 + BB_H1));
+        r |= p & (pos >> (BB_H1 * 3n));
+        r |= p & (pos << BB_H1);
+        // Diagonal /
+        p = (pos << BB_H3) & (pos << (BB_H3 + BB_H3));
+        r |= p & (pos << (BB_H3 * 3n));
+        r |= p & (pos >> BB_H3);
+        p = (pos >> BB_H3) & (pos >> (BB_H3 + BB_H3));
+        r |= p & (pos >> (BB_H3 * 3n));
+        r |= p & (pos << BB_H3);
+        // Diagonal \
+        p = (pos << BB_H2) & (pos << (BB_H2 + BB_H2));
+        r |= p & (pos << (BB_H2 * 3n));
+        r |= p & (pos >> BB_H2);
+        p = (pos >> BB_H2) & (pos >> (BB_H2 + BB_H2));
+        r |= p & (pos >> (BB_H2 * 3n));
+        r |= p & (pos << BB_H2);
+        return r & (BB_BOARD ^ mask);
+    }
 
+    function bbPopcount(x) {
+        let c = 0;
+        while (x) { x &= x - 1n; c++; }
+        return c;
+    }
+
+    /** Convert current UI board → bitboard (AI's perspective for negamax) */
+    function boardToBB() {
+        let aiPos = 0n, plPos = 0n;
         for (let c = 0; c < COLS; c++) {
-            const r = heights[c];
-            if (r < 0) continue; // column full
-
-            // Temporarily place piece
-            board[r][c] = player;
-            const wins = checkWinAt(r, c) !== null;
-            board[r][c] = EMPTY;
-
-            if (wins) {
-                threats++;
-                // Row 0=top (even), row 5=bottom (odd from bottom)
-                // In Connect 4 theory: first player benefits from odd-row threats
-                // (counting from bottom: row 5=1st(odd), row 4=2nd(even), etc.)
-                const rowFromBottom = ROWS - 1 - r;
-                if (rowFromBottom % 2 === 0) {
-                    evenThreats++;
-                } else {
-                    oddThreats++;
-                }
+            for (let r = 0; r < ROWS; r++) {
+                const bit = 1n << BigInt(c * BB_H + (ROWS - 1 - r));
+                if (board[r][c] === AI) aiPos |= bit;
+                else if (board[r][c] === PLAYER) plPos |= bit;
             }
         }
-        return { threats, oddThreats, evenThreats };
+        return { aiPos, plPos, mask: aiPos | plPos };
     }
 
-    function evaluate() {
-        let score = 0;
+    /* ─── transposition table ──────────────────────────────── */
+    const TT = new Map();
+    const TT_MAX = 4000000;
+    const TT_EXACT = 0, TT_LOWER = 1, TT_UPPER = -1;
 
-        // Centre column preference (all columns weighted)
-        for (let r = 0; r < ROWS; r++) {
-            for (let c = 0; c < COLS; c++) {
-                if (board[r][c] === AI) score += COL_SCORE[c] * 4;
-                else if (board[r][c] === PLAYER) score -= COL_SCORE[c] * 4;
-            }
+    function ttStore(key, score, depth, flag) {
+        if (TT.size >= TT_MAX) {
+            const it = TT.keys();
+            for (let i = 0; i < (TT_MAX >> 1); i++) TT.delete(it.next().value);
         }
-
-        // All horizontal windows
-        for (let r = 0; r < ROWS; r++) {
-            for (let c = 0; c <= COLS - WIN_LENGTH; c++) {
-                let ai = 0, pl = 0, em = 0;
-                for (let k = 0; k < WIN_LENGTH; k++) {
-                    if (board[r][c + k] === AI) ai++;
-                    else if (board[r][c + k] === PLAYER) pl++;
-                    else em++;
-                }
-                score += evaluateWindow(ai, pl, em);
-            }
-        }
-
-        // All vertical windows
-        for (let c = 0; c < COLS; c++) {
-            for (let r = 0; r <= ROWS - WIN_LENGTH; r++) {
-                let ai = 0, pl = 0, em = 0;
-                for (let k = 0; k < WIN_LENGTH; k++) {
-                    if (board[r + k][c] === AI) ai++;
-                    else if (board[r + k][c] === PLAYER) pl++;
-                    else em++;
-                }
-                score += evaluateWindow(ai, pl, em);
-            }
-        }
-
-        // Diagonal (top-left to bottom-right)
-        for (let r = 0; r <= ROWS - WIN_LENGTH; r++) {
-            for (let c = 0; c <= COLS - WIN_LENGTH; c++) {
-                let ai = 0, pl = 0, em = 0;
-                for (let k = 0; k < WIN_LENGTH; k++) {
-                    if (board[r + k][c + k] === AI) ai++;
-                    else if (board[r + k][c + k] === PLAYER) pl++;
-                    else em++;
-                }
-                score += evaluateWindow(ai, pl, em);
-            }
-        }
-
-        // Diagonal (bottom-left to top-right)
-        for (let r = WIN_LENGTH - 1; r < ROWS; r++) {
-            for (let c = 0; c <= COLS - WIN_LENGTH; c++) {
-                let ai = 0, pl = 0, em = 0;
-                for (let k = 0; k < WIN_LENGTH; k++) {
-                    if (board[r - k][c + k] === AI) ai++;
-                    else if (board[r - k][c + k] === PLAYER) pl++;
-                    else em++;
-                }
-                score += evaluateWindow(ai, pl, em);
-            }
-        }
-
-        // Threat analysis — double threats are nearly unstoppable
-        const aiThreats = countThreats(AI);
-        const plThreats = countThreats(PLAYER);
-
-        // Multiple simultaneous threats are extremely valuable
-        if (aiThreats.threats >= 2) score += 5000;
-        else if (aiThreats.threats === 1) score += 500;
-        if (plThreats.threats >= 2) score -= 5000;
-        else if (plThreats.threats === 1) score -= 500;
-
-        // Odd/even strategy bonus (first player benefits from odd threats)
-        score += aiThreats.oddThreats * 150;
-        score -= plThreats.oddThreats * 150;
-        score += aiThreats.evenThreats * 100;
-        score -= plThreats.evenThreats * 100;
-
-        return score;
+        TT.set(key, { score, depth, flag });
     }
 
-    /* ─── move ordering (killers + history heuristic, then centre-out) ── */
+    /* ─── negamax with alpha-beta ──────────────────────────── */
     const MOVE_ORDER = [3, 2, 4, 1, 5, 0, 6]; // centre-out
-    let historyTable = new Array(COLS).fill(0); // history heuristic scores
+    let nodeCount = 0;
 
-    function orderedMoves(depth) {
-        const killer = killerMoves[depth];
-        // Collect valid moves with their heuristic priority
-        const moves = [];
-        for (const c of MOVE_ORDER) {
-            if (canPlay(c)) {
-                moves.push(c);
-            }
-        }
-        // Sort by: killer first, then history score descending
-        moves.sort((a, b) => {
-            if (a === killer) return -1;
-            if (b === killer) return 1;
-            return historyTable[b] - historyTable[a];
-        });
-        return moves;
-    }
-
-    /* ─── minimax with alpha-beta pruning ──────────────────── */
-    function minimax(depth, alpha, beta, maximizing) {
-        // Check time budget periodically (every node is cheap; check always)
-        if (Date.now() >= searchDeadline) {
+    function negamax(position, mask, depth, alpha, beta, numMoves) {
+        nodeCount++;
+        // Time check every 4096 nodes
+        if ((nodeCount & 4095) === 0 && Date.now() >= searchDeadline) {
             searchAborted = true;
-            return 0; // value doesn't matter — will be discarded
+            return 0;
         }
 
-        // Check transposition table
-        const ttKey = hashValue;
-        const cached = transpositionTable.get(ttKey);
+        // Draw
+        if (numMoves >= TOTAL_CELLS) return 0;
+
+        const possible = bbPossible(mask);
+
+        // Can current player win immediately?
+        const myWins = bbWinSpots(position, mask);
+        if ((myWins & possible) !== 0n) return (TOTAL_CELLS + 1 - numMoves) >> 1;
+
+        // Upper bound: best possible score
+        let max = (TOTAL_CELLS - 1 - numMoves) >> 1;
+        if (max <= alpha) return max; // can't improve
+        if (beta > max) beta = max;
+
+        // TT lookup
+        const key = position + mask + BB_BOT_ROW;
+        const cached = TT.get(key);
         if (cached && cached.depth >= depth) {
-            if (cached.flag === 0) return cached.score;              // EXACT
-            if (cached.flag === 1 && cached.score >= beta) return cached.score;  // LOWER
-            if (cached.flag === -1 && cached.score <= alpha) return cached.score; // UPPER
+            if (cached.flag === TT_EXACT) return cached.score;
+            if (cached.flag === TT_LOWER && cached.score >= beta) return cached.score;
+            if (cached.flag === TT_UPPER && cached.score <= alpha) return cached.score;
+            // Tighten bounds
+            if (cached.flag === TT_LOWER && cached.score > alpha) alpha = cached.score;
+            if (cached.flag === TT_UPPER && cached.score < beta) beta = cached.score;
         }
 
-        // Terminal checks
-        if (lastMoveWins()) {
-            // The *previous* player just won
-            return maximizing ? -100000 - depth : 100000 + depth;
-        }
-        if (boardFull()) return 0;
-        if (depth === 0) return evaluate();
+        // Opponent's threats
+        const opponent = position ^ mask;
+        const oppWins = bbWinSpots(opponent, mask);
+        const forcedMoves = oppWins & possible;
 
-        const moves = orderedMoves(depth);
-        let bestScore;
-        let bestMove = moves[0];
-        let flag;
-
-        if (maximizing) {
-            bestScore = -Infinity;
-            flag = -1; // UPPER
-            for (const col of moves) {
-                dropPiece(col, AI);
-                const score = minimax(depth - 1, alpha, beta, false);
-                undoPiece(col);
-                if (searchAborted) return 0;
-                if (score > bestScore) { bestScore = score; bestMove = col; }
-                if (score > alpha) {
-                    alpha = score;
-                    flag = 0; // EXACT
-                }
-                if (alpha >= beta) {
-                    flag = 1; // LOWER
-                    killerMoves[depth] = col; // record killer move
-                    historyTable[col] += depth * depth; // history heuristic
-                    break;
-                }
-            }
-        } else {
-            bestScore = Infinity;
-            flag = 1; // LOWER
-            for (const col of moves) {
-                dropPiece(col, PLAYER);
-                const score = minimax(depth - 1, alpha, beta, true);
-                undoPiece(col);
-                if (searchAborted) return 0;
-                if (score < bestScore) { bestScore = score; bestMove = col; }
-                if (score < beta) {
-                    beta = score;
-                    flag = 0; // EXACT
-                }
-                if (alpha >= beta) {
-                    flag = -1; // UPPER
-                    killerMoves[depth] = col; // record killer move
-                    historyTable[col] += depth * depth; // history heuristic
-                    break;
-                }
+        if (forcedMoves !== 0n) {
+            // Must block. 2+ threats = loss
+            if ((forcedMoves & (forcedMoves - 1n)) !== 0n) {
+                const lossScore = -((TOTAL_CELLS - numMoves) >> 1);
+                ttStore(key, lossScore, depth, TT_EXACT);
+                return lossScore;
             }
         }
 
-        // Store in transposition table, cap size
-        if (transpositionTable.size >= TT_MAX_SIZE) {
-            // Clear half the table to amortize cleanup cost
-            const iter = transpositionTable.keys();
-            const half = TT_MAX_SIZE >> 1;
-            for (let i = 0; i < half; i++) {
-                transpositionTable.delete(iter.next().value);
+        // Don't play moves that let opponent win next turn (cell above is opp's win spot)
+        let safeMoves = possible;
+        for (let c = 0; c < COLS; c++) {
+            if (!bbCanPlay(mask, c)) continue;
+            const moveBase = BigInt(c * BB_H);
+            // Find the row this piece would land in
+            let moveBit = 0n;
+            for (let r = 0; r < ROWS; r++) {
+                const bit = 1n << (moveBase + BigInt(r));
+                if ((mask & bit) === 0n) { moveBit = bit; break; }
+            }
+            if (moveBit === 0n) continue;
+            // Cell directly above
+            const aboveBit = moveBit << 1n;
+            if ((aboveBit & oppWins) !== 0n) {
+                safeMoves &= ~moveBit;
             }
         }
-        transpositionTable.set(ttKey, { score: bestScore, depth, flag });
+
+        // If forced move, only play that
+        if (forcedMoves !== 0n) safeMoves = forcedMoves;
+
+        if (safeMoves === 0n) {
+            const lossScore = -((TOTAL_CELLS - numMoves) >> 1);
+            ttStore(key, lossScore, depth, TT_EXACT);
+            return lossScore;
+        }
+
+        if (depth === 0) {
+            // Simple eval: count available winning spots
+            const mySpotCount = bbPopcount(bbWinSpots(position, mask));
+            const oppSpotCount = bbPopcount(bbWinSpots(opponent, mask));
+            return mySpotCount - oppSpotCount;
+        }
+
+        let bestScore = -Infinity;
+        const origAlpha = alpha;
+
+        for (const c of MOVE_ORDER) {
+            if (!bbCanPlay(mask, c)) continue;
+            // Check this column is in safeMoves
+            let moveBit = 0n;
+            const moveBase = BigInt(c * BB_H);
+            for (let r = 0; r < ROWS; r++) {
+                const bit = 1n << (moveBase + BigInt(r));
+                if ((mask & bit) === 0n) { moveBit = bit; break; }
+            }
+            if (moveBit === 0n || (moveBit & safeMoves) === 0n) continue;
+
+            // Make move (flip perspective for negamax)
+            const newMask = mask | moveBit;
+            const newPos = opponent; // opponent becomes current player
+            const score = -negamax(newPos, newMask, depth - 1, -beta, -alpha, numMoves + 1);
+
+            if (searchAborted) return 0;
+
+            if (score > bestScore) bestScore = score;
+            if (score > alpha) alpha = score;
+            if (alpha >= beta) break;
+        }
+
+        if (bestScore !== -Infinity) {
+            let flag = TT_EXACT;
+            if (bestScore <= origAlpha) flag = TT_UPPER;
+            else if (bestScore >= beta) flag = TT_LOWER;
+            ttStore(key, bestScore, depth, flag);
+        }
 
         return bestScore;
     }
 
+    /* ─── aiBestMove ───────────────────────────────────────── */
     function aiBestMove() {
-        const moves = orderedMoves(0);
-        if (moves.length === 0) return -1;
+        if (moveCount === 0) return 3; // first move: centre
 
-        // First move: always play centre
-        if (moveCount <= 1) return 3;
+        const { aiPos, plPos, mask } = boardToBB();
 
         // Check for immediate win
-        for (const col of moves) {
-            dropPiece(col, AI);
-            if (lastMoveWins()) { undoPiece(col); return col; }
-            undoPiece(col);
+        const possible = bbPossible(mask);
+        const aiWins = bbWinSpots(aiPos, mask);
+        for (const c of MOVE_ORDER) {
+            if (!bbCanPlay(mask, c)) continue;
+            const base = BigInt(c * BB_H);
+            for (let r = 0; r < ROWS; r++) {
+                const bit = 1n << (base + BigInt(r));
+                if ((mask & bit) === 0n) {
+                    if ((bit & aiWins & possible) !== 0n) return c;
+                    break;
+                }
+            }
         }
 
         // Check for immediate block
-        for (const col of moves) {
-            dropPiece(col, PLAYER);
-            if (lastMoveWins()) { undoPiece(col); return col; }
-            undoPiece(col);
+        const plWins = bbWinSpots(plPos, mask);
+        for (const c of MOVE_ORDER) {
+            if (!bbCanPlay(mask, c)) continue;
+            const base = BigInt(c * BB_H);
+            for (let r = 0; r < ROWS; r++) {
+                const bit = 1n << (base + BigInt(r));
+                if ((mask & bit) === 0n) {
+                    if ((bit & plWins & possible) !== 0n) return c;
+                    break;
+                }
+            }
         }
 
-        // True iterative deepening with time budget
-        let bestCol = moves[0];
-        const remaining = ROWS * COLS - moveCount;
-        const maxDepth = Math.min(MAX_DEPTH, remaining);
+        // Iterative deepening negamax
+        // In negamax, AI is the "current player" — position = aiPos
+        let bestCol = 3;
+        const remaining = TOTAL_CELLS - moveCount;
+        const maxD = Math.min(MAX_DEPTH, remaining);
 
-        searchDeadline = Date.now() + TIME_BUDGET_MS;
+        // Adaptive time: more time for early critical moves
+        const timeBudget = moveCount <= 6 ? 5000 : TIME_BUDGET_MS;
+        searchDeadline = Date.now() + timeBudget;
         searchAborted = false;
+        TT.clear();
 
-        for (let depth = 1; depth <= maxDepth; depth++) {
-            killerMoves = []; // reset killers each iteration
-            historyTable = new Array(COLS).fill(0); // reset history each iteration
-            let iterBest = moves[0];
+        for (let d = 1; d <= maxD; d++) {
+            nodeCount = 0;
+            let iterBest = -1;
             let iterScore = -Infinity;
 
-            for (const col of moves) {
-                dropPiece(col, AI);
-                const score = minimax(depth - 1, -Infinity, Infinity, false);
-                undoPiece(col);
+            for (const c of MOVE_ORDER) {
+                if (!bbCanPlay(mask, c)) continue;
+
+                // Find the move bit for this column
+                const base = BigInt(c * BB_H);
+                let moveBit = 0n;
+                for (let r = 0; r < ROWS; r++) {
+                    const bit = 1n << (base + BigInt(r));
+                    if ((mask & bit) === 0n) { moveBit = bit; break; }
+                }
+                if (moveBit === 0n) continue;
+
+                const newMask = mask | moveBit;
+                const newPos = plPos; // opponent (player) becomes current
+                const score = -negamax(newPos, newMask, d - 1, -Infinity, -iterScore, moveCount + 1);
 
                 if (searchAborted) break;
 
                 if (score > iterScore) {
                     iterScore = score;
-                    iterBest = col;
-                }
-
-                // Found a winning move — play it immediately
-                if (score >= 100000) {
-                    return iterBest;
+                    iterBest = c;
                 }
             }
 
-            // Only use this iteration's result if it completed fully
-            if (!searchAborted) {
+            if (!searchAborted && iterBest >= 0) {
                 bestCol = iterBest;
             }
-
-            // Stop deepening if time is almost up
-            if (Date.now() >= searchDeadline) break;
+            if (searchAborted || Date.now() >= searchDeadline) break;
         }
 
         return bestCol;
@@ -460,7 +408,7 @@
     let canvas, ctx;
     const CELL = 80;
     const RADIUS = 32;
-    const HEADER_H = 80; // drop zone
+    const HEADER_H = 80;
     const BOARD_Y = HEADER_H;
     const BOARD_W = COLS * CELL;
     const BOARD_H = ROWS * CELL;
@@ -475,8 +423,8 @@
     let animTargetY = 0;
 
     function playerColor(p) {
-        if (p === PLAYER) return '#ef4444'; // red
-        if (p === AI) return '#facc15';     // yellow/gold
+        if (p === PLAYER) return '#ef4444';
+        if (p === AI) return '#facc15';
         return 'transparent';
     }
 
@@ -485,7 +433,6 @@
         const dpr = window.devicePixelRatio || 1;
         ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
 
-        // Board background
         const grad = ctx.createLinearGradient(0, BOARD_Y, 0, BOARD_Y + BOARD_H);
         grad.addColorStop(0, '#1e3a8a');
         grad.addColorStop(1, '#1e40af');
@@ -493,19 +440,16 @@
         ctx.fillStyle = grad;
         ctx.fill();
 
-        // Cells
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
                 const cx = c * CELL + CELL / 2;
                 const cy = BOARD_Y + r * CELL + CELL / 2;
 
-                // Hole shadow
                 ctx.beginPath();
                 ctx.arc(cx, cy + 2, RADIUS, 0, Math.PI * 2);
                 ctx.fillStyle = 'rgba(0,0,0,0.25)';
                 ctx.fill();
 
-                // Hole
                 ctx.beginPath();
                 ctx.arc(cx, cy, RADIUS, 0, Math.PI * 2);
                 if (board[r][c] !== EMPTY && !(animating && r === animRow && c === animCol)) {
@@ -517,7 +461,6 @@
                         ctx.lineWidth = 3;
                         ctx.stroke();
                     }
-                    // Glossy highlight
                     const glossGrad = ctx.createRadialGradient(cx - 8, cy - 10, 4, cx, cy, RADIUS);
                     glossGrad.addColorStop(0, 'rgba(255,255,255,0.5)');
                     glossGrad.addColorStop(1, 'rgba(255,255,255,0)');
@@ -530,7 +473,6 @@
             }
         }
 
-        // Hover indicator
         if (hoverCol >= 0 && !gameOver && !aiThinking && !animating && currentPlayer === PLAYER) {
             const cx = hoverCol * CELL + CELL / 2;
             ctx.beginPath();
@@ -544,12 +486,11 @@
             ctx.fill();
         }
 
-        // Drop animation
         if (animating) {
             const cx = animCol * CELL + CELL / 2;
             const startY = HEADER_H / 2;
             const progress = animFrame / ANIM_FRAMES;
-            const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+            const ease = 1 - Math.pow(1 - progress, 3);
             const cy = startY + (animTargetY - startY) * ease;
             ctx.beginPath();
             ctx.arc(cx, cy, RADIUS, 0, Math.PI * 2);
@@ -631,7 +572,6 @@
             aiThinking = true;
             draw();
 
-            // Let the UI repaint before the heavy computation
             setTimeout(() => {
                 const aiCol = aiBestMove();
                 const aiRow = heights[aiCol];
@@ -697,7 +637,6 @@
             if (col >= 0) handleColumnClick(col);
         });
 
-        // Touch support
         canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
             const rect = canvas.getBoundingClientRect();
@@ -711,7 +650,6 @@
         const resetBtn = $('#c4-reset');
         if (resetBtn) resetBtn.addEventListener('click', resetGame);
 
-        // First-move toggle
         const toggle = $('#c4-first-toggle');
         if (toggle) {
             toggle.addEventListener('click', (e) => {
