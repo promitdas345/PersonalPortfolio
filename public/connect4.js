@@ -52,6 +52,7 @@
     let board = [];
     let heights = [];         // heights[col] = next available row (bottom-up)
     let currentPlayer = PLAYER;
+    let firstPlayer = PLAYER; // who goes first (togglable)
     let gameOver = false;
     let winCells = null;
     let moveHistory = [];
@@ -647,12 +648,50 @@
 
         const resetBtn = $('#c4-reset');
         if (resetBtn) resetBtn.addEventListener('click', resetGame);
+
+        // First-move toggle
+        const toggle = $('#c4-first-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', (e) => {
+                const btn = e.target.closest('.c4-toggle-btn');
+                if (!btn || btn.classList.contains('active')) return;
+                toggle.querySelectorAll('.c4-toggle-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                firstPlayer = btn.dataset.first === 'ai' ? AI : PLAYER;
+                resetGame();
+            });
+        }
+    }
+
+    function triggerAiMove() {
+        setStatus('🤔 AI is thinking…');
+        aiThinking = true;
+        draw();
+
+        setTimeout(() => {
+            const aiCol = aiBestMove();
+            const aiRow = heights[aiCol];
+            dropPiece(aiCol, AI);
+            aiThinking = false;
+
+            animateDrop(aiCol, aiRow, AI, () => {
+                currentPlayer = PLAYER;
+                setStatus('🔴 Your turn — click a column');
+                draw();
+            });
+        }, 50);
     }
 
     function resetGame() {
         initBoard();
-        setStatus('🔴 Your turn — click a column');
-        draw();
+        if (firstPlayer === AI) {
+            currentPlayer = AI;
+            draw();
+            triggerAiMove();
+        } else {
+            setStatus('🔴 Your turn — click a column');
+            draw();
+        }
     }
 
     /* ─── high DPI canvas setup ────────────────────────────── */
