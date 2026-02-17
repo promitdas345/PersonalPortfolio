@@ -24,10 +24,11 @@
     /* Weights for the centre-column heuristic (columns 0–6) */
     const COL_SCORE = [0, 1, 2, 3, 2, 1, 0];
 
-    /* Search depth — 10 is strong; iterative deepening + time limit keep it fast */
-    const MAX_DEPTH = 10;
-    const TIME_BUDGET_MS = 1000; // 1-second time limit per AI move
-    const TT_MAX_SIZE = 500000; // cap transposition table entries
+    /* Search depth — high depth with iterative deepening + time limit keeps it fast.
+       Deeper search lets the AI find forced wins, especially as first player. */
+    const MAX_DEPTH = 22;
+    const TIME_BUDGET_MS = 3000; // 3-second time limit per AI move
+    const TT_MAX_SIZE = 2000000; // cap transposition table entries
 
     /* Transposition table (Zobrist hashing) */
     const ZOBRIST = [];
@@ -155,21 +156,57 @@
     function evaluateWindow(countAI, countPlayer, countEmpty) {
         if (countAI === 4) return 100000;
         if (countPlayer === 4) return -100000;
-        if (countAI === 3 && countEmpty === 1) return 50;
-        if (countAI === 2 && countEmpty === 2) return 5;
-        if (countPlayer === 3 && countEmpty === 1) return -50;
-        if (countPlayer === 2 && countEmpty === 2) return -5;
+        if (countAI === 3 && countEmpty === 1) return 200;
+        if (countAI === 2 && countEmpty === 2) return 20;
+        if (countPlayer === 3 && countEmpty === 1) return -200;
+        if (countPlayer === 2 && countEmpty === 2) return -20;
         return 0;
+    }
+
+    /**
+     * Count threats: positions where placing one piece completes 4-in-a-row.
+     * Double threats (two simultaneous winning moves) almost guarantee a win.
+     * Odd/even row strategy: threats on specific rows matter differently.
+     */
+    function countThreats(player) {
+        let threats = 0;
+        let oddThreats = 0;
+        let evenThreats = 0;
+
+        for (let c = 0; c < COLS; c++) {
+            const r = heights[c];
+            if (r < 0) continue; // column full
+
+            // Temporarily place piece
+            board[r][c] = player;
+            const wins = checkWinAt(r, c) !== null;
+            board[r][c] = EMPTY;
+
+            if (wins) {
+                threats++;
+                // Row 0=top (even), row 5=bottom (odd from bottom)
+                // In Connect 4 theory: first player benefits from odd-row threats
+                // (counting from bottom: row 5=1st(odd), row 4=2nd(even), etc.)
+                const rowFromBottom = ROWS - 1 - r;
+                if (rowFromBottom % 2 === 0) {
+                    evenThreats++;
+                } else {
+                    oddThreats++;
+                }
+            }
+        }
+        return { threats, oddThreats, evenThreats };
     }
 
     function evaluate() {
         let score = 0;
 
-        // Centre column preference
+        // Centre column preference (all columns weighted)
         for (let r = 0; r < ROWS; r++) {
-            score += COL_SCORE[board[r][3] === AI ? 3 : 0];
-            if (board[r][3] === AI) score += 3;
-            if (board[r][3] === PLAYER) score -= 3;
+            for (let c = 0; c < COLS; c++) {
+                if (board[r][c] === AI) score += COL_SCORE[c] * 4;
+                else if (board[r][c] === PLAYER) score -= COL_SCORE[c] * 4;
+            }
         }
 
         // All horizontal windows
@@ -224,22 +261,44 @@
             }
         }
 
+        // Threat analysis — double threats are nearly unstoppable
+        const aiThreats = countThreats(AI);
+        const plThreats = countThreats(PLAYER);
+
+        // Multiple simultaneous threats are extremely valuable
+        if (aiThreats.threats >= 2) score += 5000;
+        else if (aiThreats.threats === 1) score += 500;
+        if (plThreats.threats >= 2) score -= 5000;
+        else if (plThreats.threats === 1) score -= 500;
+
+        // Odd/even strategy bonus (first player benefits from odd threats)
+        score += aiThreats.oddThreats * 150;
+        score -= plThreats.oddThreats * 150;
+        score += aiThreats.evenThreats * 100;
+        score -= plThreats.evenThreats * 100;
+
         return score;
     }
 
-    /* ─── move ordering (killers first, then centre-out) ───── */
+    /* ─── move ordering (killers + history heuristic, then centre-out) ── */
     const MOVE_ORDER = [3, 2, 4, 1, 5, 0, 6]; // centre-out
+    let historyTable = new Array(COLS).fill(0); // history heuristic scores
 
     function orderedMoves(depth) {
-        const moves = [];
         const killer = killerMoves[depth];
-        // Try killer move first if it's valid
-        if (killer !== undefined && canPlay(killer)) {
-            moves.push(killer);
-        }
+        // Collect valid moves with their heuristic priority
+        const moves = [];
         for (const c of MOVE_ORDER) {
-            if (canPlay(c) && c !== killer) moves.push(c);
+            if (canPlay(c)) {
+                moves.push(c);
+            }
         }
+        // Sort by: killer first, then history score descending
+        moves.sort((a, b) => {
+            if (a === killer) return -1;
+            if (b === killer) return 1;
+            return historyTable[b] - historyTable[a];
+        });
         return moves;
     }
 
@@ -289,6 +348,7 @@
                 if (alpha >= beta) {
                     flag = 1; // LOWER
                     killerMoves[depth] = col; // record killer move
+                    historyTable[col] += depth * depth; // history heuristic
                     break;
                 }
             }
@@ -308,6 +368,7 @@
                 if (alpha >= beta) {
                     flag = -1; // UPPER
                     killerMoves[depth] = col; // record killer move
+                    historyTable[col] += depth * depth; // history heuristic
                     break;
                 }
             }
@@ -356,8 +417,9 @@
         searchDeadline = Date.now() + TIME_BUDGET_MS;
         searchAborted = false;
 
-        for (let depth = 2; depth <= maxDepth; depth += 2) {
+        for (let depth = 1; depth <= maxDepth; depth++) {
             killerMoves = []; // reset killers each iteration
+            historyTable = new Array(COLS).fill(0); // reset history each iteration
             let iterBest = moves[0];
             let iterScore = -Infinity;
 
