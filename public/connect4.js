@@ -129,7 +129,13 @@
     }
 
     function bbCanPlay(mask, col) {
-        return (mask & BB_COL_TOP[col]) === 0n;
+        // Check if the column has any possible move (a bit in bbPossible within the column)
+        const base = BigInt(col * BB_H);
+        for (let r = 0; r < ROWS; r++) {
+            const bit = 1n << (base + BigInt(r));
+            if ((mask & bit) === 0n) return true; // found empty cell
+        }
+        return false; // all rows filled
     }
 
     /** Compute all squares where `pos` player would complete 4-in-a-row */
