@@ -582,6 +582,18 @@
   border: 1px solid rgba(0, 163, 163, 0.12);
 }
 
+.template-badge.entry {
+  background: linear-gradient(135deg, #2b6cb0, #4299e1);
+}
+
+.template-badge.changer {
+  background: linear-gradient(135deg, #805ad5, #b794f4);
+}
+
+.template-badge.executive {
+  background: linear-gradient(135deg, #2d3748, #4a5568);
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .tutorial-step {
