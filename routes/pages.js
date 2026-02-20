@@ -173,6 +173,19 @@ function createPageRoutes(deps) {
       const analytics = await getAnalyticsHtml();
       return sendHtml(res, await renderTemplate('connect4.html', { analytics }));
     }
+    if (normalizedPathname === '/chess') {
+      const analytics = await getAnalyticsHtml();
+      return sendHtml(res, await renderTemplate('chess.html', { analytics }));
+    }
+    if (normalizedPathname === '/chess-v2') {
+      const analytics = await getAnalyticsHtml();
+      return sendHtml(res, await renderTemplate('chess-v2.html', { analytics }));
+    }
+
+    if (normalizedPathname === '/resume-tutorial') {
+      const analytics = await getAnalyticsHtml();
+      return sendHtml(res, await renderTemplate('resume-tutorial.html', { analytics }));
+    }
 
     return false; // not handled
   }
