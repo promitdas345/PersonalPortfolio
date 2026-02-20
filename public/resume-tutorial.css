@@ -330,7 +330,7 @@
 
 .template-preview {
   border-radius: 1rem;
-  overflow: hidden;
+  
   border: 1px solid rgba(10, 37, 64, 0.1);
   background: var(--color-white);
   box-shadow: 0 8px 28px rgba(10, 37, 64, 0.1);
@@ -374,8 +374,8 @@
   font-size: 0.82rem;
   line-height: 1.5;
   color: #333;
-  max-height: 520px;
-  overflow: hidden;
+  
+  
   position: relative;
 }
 
@@ -463,8 +463,8 @@
 /* Modern resume template */
 .template-resume.modern {
   font-size: 0.82rem;
-  max-height: 520px;
-  overflow: hidden;
+  
+  
   position: relative;
 }
 
@@ -536,7 +536,7 @@
   height: 4px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 999px;
-  overflow: hidden;
+  
 }
 
 .tpl-fill {
@@ -557,7 +557,7 @@
 
 /* Cover letter template adjustments */
 .cl-template {
-  max-height: 600px;
+  
 }
 
 .cl-name {
