@@ -173,6 +173,10 @@ function createPageRoutes(deps) {
       const analytics = await getAnalyticsHtml();
       return sendHtml(res, await renderTemplate('connect4.html', { analytics }));
     }
+    if (normalizedPathname === '/snake') {
+      const analytics = await getAnalyticsHtml();
+      return sendHtml(res, await renderTemplate('snake.html', { analytics }));
+    }
     if (normalizedPathname === '/chess') {
       const analytics = await getAnalyticsHtml();
       return sendHtml(res, await renderTemplate('chess.html', { analytics }));
