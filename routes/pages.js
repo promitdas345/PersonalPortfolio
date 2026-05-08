@@ -191,6 +191,11 @@ function createPageRoutes(deps) {
       return sendHtml(res, await renderTemplate('resume-tutorial.html', { analytics }));
     }
 
+    if (normalizedPathname === '/photography') {
+      const analytics = await getAnalyticsHtml();
+      return sendHtml(res, await renderTemplate('photography.html', { analytics }));
+    }
+
     return false; // not handled
   }
 
