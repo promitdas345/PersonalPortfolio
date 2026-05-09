@@ -196,40 +196,5 @@
     ],
     "ownership": "Solo engineering: implemented the entire game engine, AI strategies, and frontend design.",
     "content": "<p>This Connect 4 implementation isn't just a game; it's a demonstration of classical game AI optimization. I built a Minimax engine that looks 14 moves ahead, using Alpha-Beta pruning to discard irrelevant branches and Zobrist hashing to remember positions it has already seen.</p><p>The frontend matches the AI's sophistication with a premium 'Dark Mode' aesthetic. Using the HTML5 Canvas API, I simulated glossy tokens and smooth drop animations. The result is a game that feels native and responsive, running entirely in the browser with no server-side logic required for the gameplay itself.</p>"
-  },
-  {
-    "id": 7,
-    "slug": "chess-ai",
-    "title": "Chess vs AI",
-    "description": "A chess engine with negamax, alpha-beta pruning, quiescence search, and iterative deepening — all running in the browser.",
-    "summary": "Play chess against an AI that searches hundreds of thousands of positions per move using classical game-tree algorithms.",
-    "technologies": [
-      "JavaScript",
-      "Negamax",
-      "Alpha-Beta Pruning",
-      "Quiescence Search",
-      "HTML5"
-    ],
-    "link": "/chess",
-    "image": "/public/images/placeholder.png",
-    "impactHeadline": "AI searches 200K+ positions/move with iterative deepening, transposition tables, and null-move pruning.",
-    "highlights": [
-      "Complete legal move generation including castling, en passant, and pawn promotion.",
-      "Negamax search with alpha-beta pruning and iterative deepening up to depth 20.",
-      "Quiescence search eliminates the horizon effect by evaluating capture sequences.",
-      "Move ordering with MVV-LVA, killer moves, and history heuristic for faster pruning."
-    ],
-    "metrics": [
-      "Searches 200,000+ positions per move within a 3-second time budget.",
-      "Transposition table with Zobrist hashing caches 2M+ positions.",
-      "Zero dependencies — vanilla JavaScript running entirely client-side."
-    ],
-    "architecture": [
-      "Board represented as a 64-element array with signed integers encoding piece type and color.",
-      "Piece-square tables interpolate between midgame and endgame for positional evaluation.",
-      "Null-move pruning and late-move reductions dramatically speed up the search."
-    ],
-    "ownership": "Solo engineering: full chess engine, AI strategies, evaluation, and premium frontend design.",
-    "content": "<p>Inspired by Sebastian Lague's 'Coding Adventure: Chess' series, this project implements a complete chess engine from scratch. The AI uses negamax with alpha-beta pruning, iterative deepening, and quiescence search to play strong tactical chess.</p><p>The engine features Zobrist hashing for fast position identification, piece-square tables for positional awareness, and move ordering heuristics (MVV-LVA, killer moves) to maximize pruning efficiency. The premium UI renders a wooden-tone board with click-to-move interaction, legal move indicators, and a move history panel.</p>"
   }
 ]
