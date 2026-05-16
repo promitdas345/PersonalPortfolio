@@ -108,6 +108,9 @@
         img.src = event.target.result;
       };
       reader.readAsDataURL(file);
+      
+      // Clear input so the same file can be selected again
+      e.target.value = '';
     });
   }
 
