@@ -1,0 +1,633 @@
+/* ──────────────────────────────────────────────────────────────────
+   NeuroEdit — AI Image Editor Showcase Styles
+   ────────────────────────────────────────────────────────────────── */
+
+/* ── Showcase Section (Projects Page) ─────────────────────────── */
+.neuroedit-showcase {
+  background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #0a2540 100%);
+  border-radius: 1.25rem;
+  padding: 2.5rem;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0, 163, 163, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.neuroedit-showcase::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(0, 163, 163, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(255, 177, 0, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.neuroedit-showcase * {
+  position: relative;
+  z-index: 1;
+}
+
+.neuroedit-showcase .text-gray-600 {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.neuroedit-showcase strong {
+  color: var(--color-selective-yellow);
+}
+
+.neuroedit-header {
+  margin-bottom: 2rem;
+}
+
+.neuroedit-badge {
+  display: inline-block;
+  background: rgba(0, 163, 163, 0.2);
+  border: 1px solid rgba(0, 163, 163, 0.4);
+  color: #5ee7e7;
+  padding: 0.3rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+
+/* ── Pipeline Visualization ───────────────────────────────────── */
+.neuroedit-pipeline {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.neuroedit-pipeline-title {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 1.25rem 0;
+}
+
+.pipeline-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pipeline-step {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  min-width: 100px;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pipeline-step:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 163, 163, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 163, 163, 0.15);
+}
+
+.pipeline-step.active {
+  background: rgba(0, 163, 163, 0.15);
+  border-color: rgba(0, 163, 163, 0.5);
+  box-shadow: 0 0 20px rgba(0, 163, 163, 0.2);
+}
+
+.pipeline-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.pipeline-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.pipeline-sub {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.15rem;
+}
+
+.pipeline-arrow {
+  color: var(--color-selective-yellow);
+  font-size: 1.25rem;
+  font-weight: 700;
+  opacity: 0.6;
+}
+
+/* ── Tech Stack Cards ─────────────────────────────────────────── */
+.neuroedit-stack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.neuroedit-stack-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.neuroedit-stack-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 163, 163, 0.4);
+}
+
+.stack-card-icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.neuroedit-stack-card h5 {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.5rem 0;
+}
+
+.neuroedit-stack-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.neuroedit-stack-card li {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.15rem 0;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.neuroedit-stack-card li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--color-light-sea-green);
+  font-weight: 700;
+}
+
+/* ── Hero Image ───────────────────────────────────────────────── */
+.neuroedit-hero-image {
+  margin-top: 2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.neuroedit-hero-image img {
+  width: 100%;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.neuroedit-hero-image:hover img {
+  transform: scale(1.02);
+}
+
+/* ── CTA Buttons ──────────────────────────────────────────────── */
+.neuroedit-cta {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.neuroedit-showcase .btn-secondary {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.neuroedit-showcase .btn-secondary:hover {
+  border-color: var(--color-selective-yellow);
+  color: var(--color-selective-yellow);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Standalone NeuroEdit Page Styles
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Page Hero ────────────────────────────────────────────────── */
+.neuroedit-page-hero {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.neuroedit-page-hero-content {
+  flex: 1;
+}
+
+.neuroedit-tagline {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-light-sea-green);
+  margin-bottom: 1rem;
+}
+
+.neuroedit-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.ne-tech-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(0, 163, 163, 0.12), rgba(0, 163, 163, 0.05));
+  border: 1px solid rgba(0, 163, 163, 0.25);
+  color: var(--color-light-sea-green);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.ne-tech-badge:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 163, 163, 0.15);
+}
+
+.neuroedit-page-hero-visual {
+  flex: 1;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(10, 37, 64, 0.25);
+  border: 1px solid rgba(10, 37, 64, 0.1);
+}
+
+.neuroedit-page-hero-visual img {
+  width: 100%;
+  display: block;
+}
+
+/* ── Interactive Demo ─────────────────────────────────────────── */
+.ne-demo-container {
+  background: #0d1b2a;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 163, 163, 0.15);
+  box-shadow: 0 12px 40px rgba(10, 37, 64, 0.25);
+}
+
+#neuroEditCanvas {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  display: block;
+  margin-bottom: 1rem;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ne-demo-controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ne-demo-btn {
+  font-size: 0.9rem;
+  padding: 0.5rem 1.25rem;
+  white-space: nowrap;
+}
+
+.ne-demo-container .ne-demo-btn.btn-secondary {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ne-demo-container .ne-demo-btn.btn-secondary:hover {
+  color: #5ee7e7;
+  border-color: #5ee7e7;
+  background: rgba(94, 231, 231, 0.08);
+}
+
+.ne-demo-status {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.ne-demo-status.active {
+  color: var(--color-selective-yellow);
+}
+
+.ne-demo-status.done {
+  color: #5ee7e7;
+}
+
+/* ── Architecture Cards ───────────────────────────────────────── */
+.ne-arch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.ne-arch-card {
+  background: #f8fbff;
+  border: 1px solid rgba(10, 37, 64, 0.08);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 28px rgba(10, 37, 64, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ne-arch-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-light-sea-green), var(--color-selective-yellow));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ne-arch-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(10, 37, 64, 0.18);
+}
+
+.ne-arch-card:hover::before {
+  opacity: 1;
+}
+
+.ne-arch-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ne-arch-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--color-light-sea-green), var(--color-deep-teal));
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ne-arch-card h4 {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-oxford-blue);
+  margin: 0;
+}
+
+.ne-arch-card p {
+  font-size: 0.92rem;
+  color: var(--color-slate-gray);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.6;
+}
+
+.ne-arch-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ne-arch-tech span {
+  font-size: 0.75rem;
+  background: rgba(0, 163, 163, 0.1);
+  color: var(--color-deep-teal);
+  border: 1px solid rgba(0, 163, 163, 0.2);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-weight: 600;
+}
+
+/* ── Pipeline Flow (Full Page) ────────────────────────────────── */
+.ne-pipeline-full {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ne-pipeline-stage {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: #f8fbff;
+  border: 1px solid rgba(10, 37, 64, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.ne-pipeline-stage:hover {
+  transform: translateX(6px);
+}
+
+.ne-pipeline-stage.highlight {
+  background: linear-gradient(135deg, rgba(0, 163, 163, 0.08), rgba(0, 163, 163, 0.03));
+  border-color: rgba(0, 163, 163, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 163, 163, 0.08);
+}
+
+.ne-pipeline-stage-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  background: linear-gradient(135deg, var(--color-light-sea-green), var(--color-deep-teal));
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.ne-pipeline-stage.highlight .ne-pipeline-stage-num {
+  background: linear-gradient(135deg, var(--color-selective-yellow), #e6a000);
+  box-shadow: 0 4px 12px rgba(255, 177, 0, 0.3);
+}
+
+.ne-pipeline-stage-content h4 {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-oxford-blue);
+  margin: 0 0 0.25rem 0;
+}
+
+.ne-pipeline-stage-content p {
+  font-size: 0.88rem;
+  color: var(--color-slate-gray);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ne-pipeline-connector {
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(180deg, var(--color-light-sea-green), rgba(0, 163, 163, 0.2));
+  margin-left: 42px;
+}
+
+/* ── Metrics Grid ─────────────────────────────────────────────── */
+.ne-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.ne-metric {
+  background: #f8fbff;
+  border: 1px solid rgba(10, 37, 64, 0.08);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(10, 37, 64, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.ne-metric:hover {
+  transform: translateY(-4px);
+}
+
+.ne-metric-value {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-light-sea-green);
+  line-height: 1.2;
+}
+
+.ne-metric-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-oxford-blue);
+  margin-top: 0.25rem;
+}
+
+.ne-metric-detail {
+  font-size: 0.8rem;
+  color: var(--color-slate-gray);
+  margin-top: 0.2rem;
+}
+
+/* ── Relevance Grid ───────────────────────────────────────────── */
+.ne-relevance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.ne-relevance-card {
+  background: linear-gradient(135deg, #f0fffe, #f8fbff);
+  border: 1px solid rgba(0, 163, 163, 0.15);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 6px 20px rgba(10, 37, 64, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.ne-relevance-card:hover {
+  transform: translateY(-4px);
+}
+
+.ne-relevance-card h4 {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-oxford-blue);
+  margin: 0 0 0.5rem 0;
+}
+
+.ne-relevance-card p {
+  font-size: 0.92rem;
+  color: var(--color-slate-gray);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Back Link ────────────────────────────────────────────────── */
+.ne-back-link {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(10, 37, 64, 0.08);
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .neuroedit-showcase {
+    padding: 1.5rem;
+  }
+
+  .pipeline-steps {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pipeline-arrow {
+    transform: rotate(90deg);
+  }
+
+  .neuroedit-page-hero {
+    flex-direction: column;
+  }
+
+  .ne-arch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ne-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ne-pipeline-connector {
+    margin-left: 34px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ne-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ne-relevance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Animations ───────────────────────────────────────────────── */
+@keyframes neuroPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 163, 163, 0.3); }
+  50% { box-shadow: 0 0 20px 4px rgba(0, 163, 163, 0.15); }
+}
+
+.pipeline-step.active {
+  animation: neuroPulse 3s ease-in-out infinite;
+}

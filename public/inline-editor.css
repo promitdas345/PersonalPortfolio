@@ -1,23 +1,20 @@
 .inline-edit-toggle {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 10000;
+  display: inline-block;
+  margin-top: 1rem;
+  background: transparent;
+  color: #6b7280;
   border: none;
-  border-radius: 999px;
-  padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #0b7c7c, #00a3a3);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: underline;
+  box-shadow: none;
+  padding: 0;
 }
 
 .inline-edit-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.28);
+  color: #00a3a3;
+  transform: none;
+  box-shadow: none;
 }
 
 body.inline-edit-active {

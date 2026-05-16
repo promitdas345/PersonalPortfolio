@@ -177,6 +177,10 @@ function createPageRoutes(deps) {
       const analytics = await getAnalyticsHtml();
       return sendHtml(res, await renderTemplate('snake.html', { analytics }));
     }
+    if (normalizedPathname === '/neuroedit') {
+      const analytics = await getAnalyticsHtml();
+      return sendHtml(res, await renderTemplate('neuroedit.html', { analytics }));
+    }
 
 
     if (normalizedPathname === '/resume-tutorial') {

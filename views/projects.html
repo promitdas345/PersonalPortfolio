@@ -8,6 +8,7 @@
     content="Case studies covering data visualization, realtime collaboration, and statistical tooling with AWS-ready architecture details." />
   <title>Projects | Promit's Portfolio</title>
   <link rel="stylesheet" href="/public/styles.css" />
+  <link rel="stylesheet" href="/public/neuroedit.css" />
   <link rel="stylesheet" href="/public/inline-editor.css" />
 </head>
 
@@ -32,6 +33,102 @@
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-inline-dynamic="projects">
       {{ projectsList }}
     </div>
+    <section class="mt-8 section neuroedit-showcase" id="neuroedit-showcase">
+      <div class="neuroedit-header">
+        <div class="neuroedit-badge">🧠 AI / Computer Vision</div>
+        <h3 class="text-2xl font-semibold mb-2">NeuroEdit — AI-Powered Image Editor</h3>
+        <p class="text-gray-600 mb-4">
+          A premium-for-free AI image editing application built with <strong>PyTorch</strong>, <strong>U²-Net</strong>,
+          and <strong>FastAPI</strong>. Uses salient object detection to generate pixel-precise alpha mattes for
+          background removal, with neural sharpening and denoising — the same U-Net family of architectures
+          used in medical imaging research.
+          <a href="/neuroedit" class="text-blue-600 hover:underline">Explore the full breakdown →</a>
+        </p>
+      </div>
+
+      <div class="neuroedit-demo-grid">
+        <!-- Architecture Pipeline -->
+        <div class="neuroedit-pipeline">
+          <h4 class="neuroedit-pipeline-title">🔬 ML Pipeline Architecture</h4>
+          <div class="pipeline-steps">
+            <div class="pipeline-step">
+              <div class="pipeline-icon">📤</div>
+              <div class="pipeline-label">Upload</div>
+              <div class="pipeline-sub">Next.js Client</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+              <div class="pipeline-icon">⚙️</div>
+              <div class="pipeline-label">Preprocess</div>
+              <div class="pipeline-sub">Resize &amp; Normalize</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step active">
+              <div class="pipeline-icon">🧠</div>
+              <div class="pipeline-label">U²-Net</div>
+              <div class="pipeline-sub">Salient Object Detection</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+              <div class="pipeline-icon">✨</div>
+              <div class="pipeline-label">Enhance</div>
+              <div class="pipeline-sub">Sharpen &amp; Denoise</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+              <div class="pipeline-icon">🖼️</div>
+              <div class="pipeline-label">Output</div>
+              <div class="pipeline-sub">HD Result</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tech Stack Cards -->
+        <div class="neuroedit-stack">
+          <div class="neuroedit-stack-card">
+            <div class="stack-card-icon">🐍</div>
+            <h5>Backend</h5>
+            <ul>
+              <li>FastAPI + Flask</li>
+              <li>PyTorch</li>
+              <li>U²-Net</li>
+              <li>OpenCV</li>
+            </ul>
+          </div>
+          <div class="neuroedit-stack-card">
+            <div class="stack-card-icon">⚛️</div>
+            <h5>Frontend</h5>
+            <ul>
+              <li>Next.js</li>
+              <li>React</li>
+              <li>Canvas API</li>
+              <li>Real-time Preview</li>
+            </ul>
+          </div>
+          <div class="neuroedit-stack-card">
+            <div class="stack-card-icon">🎯</div>
+            <h5>CV Features</h5>
+            <ul>
+              <li>Background Removal</li>
+              <li>Image Sharpening</li>
+              <li>Noise Reduction</li>
+              <li>Batch Processing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="neuroedit-hero-image">
+        <img src="/public/images/neuroedit_hero.png" alt="NeuroEdit AI Image Editor — showing before and after background removal with U²-Net salient object detection" />
+      </div>
+
+      <div class="neuroedit-cta">
+        <a href="/projects/neuroedit" class="btn btn-primary">View Full Project Details</a>
+        <a href="/neuroedit" class="btn btn-secondary">Interactive Demo →</a>
+      </div>
+    </section>
+
     <section class="mt-8 section">
       <h3 class="text-2xl font-semibold mb-2">Arcade Throwback: Pac-Man</h3>
       <p class="text-gray-600 mb-4">
@@ -60,7 +157,7 @@
 
   </main>
   <footer class="site-footer py-4 text-center text-sm text-gray-600">
-    © 2025 Promit. All rights reserved.
+    © 2026 Promit. All rights reserved.
   </footer>
   <script src="/public/pacman.js" defer></script>
   <script src="/public/inline-editor.js?v=2"></script>
