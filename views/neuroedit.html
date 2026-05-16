@@ -64,16 +64,56 @@
         swap in a generated scene with <strong>Generative Fill</strong>, and apply premium color matrices.
       </p>
       <div class="ne-demo-container">
-        <canvas id="neuroEditCanvas" width="800" height="500"></canvas>
-        <div class="ne-demo-controls">
-          <button class="btn btn-primary ne-demo-btn" id="neLoadSample">Load Sample Image</button>
-          <button class="btn btn-secondary ne-demo-btn" id="neRemoveBg">🧠 Remove Background</button>
-          <button class="btn btn-secondary ne-demo-btn" id="neGenFill">🌌 Generative Fill</button>
-          <button class="btn btn-secondary ne-demo-btn" id="nePortrait">📸 Portrait Mode</button>
-          <button class="btn btn-secondary ne-demo-btn" id="neProFilter">🎬 Pro Color Grade</button>
-          <button class="btn btn-secondary ne-demo-btn" id="neReset">↩ Reset</button>
+        <div class="ne-editor-layout">
+          <div class="ne-editor-canvas-wrapper">
+            <canvas id="neuroEditCanvas" width="800" height="500"></canvas>
+            <div class="ne-demo-status" id="neDemoStatus">Please upload an image to begin editing</div>
+          </div>
+          <div class="ne-editor-sidebar">
+            <div class="ne-editor-section">
+              <h4>Image Source</h4>
+              <label class="btn btn-primary ne-demo-btn w-full text-center cursor-pointer" style="display:block;">
+                <input type="file" id="neUploadImage" accept="image/*" style="display:none;" />
+                📁 Upload Photo
+              </label>
+            </div>
+            
+            <div class="ne-editor-section">
+              <h4>Adjustments</h4>
+              <div class="ne-slider-group">
+                <label>Brightness</label>
+                <input type="range" id="neBrightness" min="-100" max="100" value="0">
+              </div>
+              <div class="ne-slider-group">
+                <label>Contrast</label>
+                <input type="range" id="neContrast" min="-100" max="100" value="0">
+              </div>
+              <div class="ne-slider-group">
+                <label>Saturation</label>
+                <input type="range" id="neSaturation" min="-100" max="100" value="0">
+              </div>
+              <div class="ne-slider-group">
+                <label>Blur</label>
+                <input type="range" id="neBlur" min="0" max="20" value="0">
+              </div>
+            </div>
+
+            <div class="ne-editor-section">
+              <h4>Quick Filters</h4>
+              <div class="ne-filter-grid">
+                <button class="btn btn-secondary ne-filter-btn" data-filter="cinematic">🎬 Cinematic</button>
+                <button class="btn btn-secondary ne-filter-btn" data-filter="vintage">📻 Vintage</button>
+                <button class="btn btn-secondary ne-filter-btn" data-filter="bw">⚫ B&W</button>
+                <button class="btn btn-secondary ne-filter-btn active" data-filter="none">🚫 None</button>
+              </div>
+            </div>
+
+            <div class="ne-editor-section ne-editor-actions">
+              <button class="btn btn-secondary ne-demo-btn w-full" id="neReset" style="margin-bottom:0.5rem; display:block;">↩ Reset Edits</button>
+              <button class="btn btn-primary ne-demo-btn w-full" id="neDownload" style="background:#00A3A3; border-color:#00A3A3; display:block;">⬇️ Download Image</button>
+            </div>
+          </div>
         </div>
-        <div class="ne-demo-status" id="neDemoStatus">Click "Load Sample Image" to begin the demo</div>
       </div>
     </section>
 
