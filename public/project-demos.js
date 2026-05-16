@@ -374,7 +374,7 @@ function hydrateProjectDemo() {
   if (renderer) {
     renderer(mount);
   } else {
-    mount.textContent = 'Demo coming soon.';
+    mount.textContent = 'Application coming soon.';
   }
 }
 
