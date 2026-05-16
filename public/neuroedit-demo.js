@@ -193,13 +193,7 @@
         const formData = new FormData();
         formData.append('image', blob, 'upload.png');
         
-        // REPLACE THIS URL WITH YOUR HUGGING FACE SPACE URL
-        const apiUrl = 'https://YOUR-HUGGINGFACE-SPACE-URL.hf.space/api/remove-bg';
-        
-        // Check if the user has replaced the placeholder
-        if (apiUrl.includes('YOUR-HUGGINGFACE-SPACE-URL')) {
-            throw new Error('Please update the apiUrl in neuroedit-demo.js with your real Hugging Face Space URL!');
-        }
+        const apiUrl = 'https://promitdas-neuroedit-backend.hf.space/api/remove-bg';
 
         const response = await fetch(apiUrl, {
           method: 'POST',
