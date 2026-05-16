@@ -115,7 +115,12 @@
     button.type = 'button';
     button.className = 'inline-edit-toggle';
     button.addEventListener('click', handleLauncherClick);
-    document.body.appendChild(button);
+    const footer = document.querySelector('.site-footer');
+    if (footer) {
+      footer.appendChild(button);
+    } else {
+      document.body.appendChild(button);
+    }
   }
 
   function renderLauncher() {
@@ -976,6 +981,14 @@
     createLauncher();
     createAuthModal();
     renderLauncher();
+
+    const currentPath = normalizePathname(window.location.pathname);
+    document.querySelectorAll('.nav-link').forEach(link => {
+      const href = normalizePathname(link.getAttribute('href'));
+      if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
+        link.classList.add('active');
+      }
+    });
   }
 
   if (document.readyState === 'loading') {

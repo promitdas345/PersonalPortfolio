@@ -103,9 +103,11 @@ async function router(req, res) {
   if (pathname.startsWith('/public/')) {
     const staticFile = await getStaticFile(pathname.slice('/public/'.length));
     if (staticFile) {
+      const isImage = /\.(png|jpe?g|gif|webp|svg|ico)$/i.test(pathname);
+      const cacheControl = isImage ? 'public, max-age=86400' : 'public, max-age=3600';
       send(res, 200, staticFile.content, {
         'Content-Type': staticFile.contentType,
-        'Cache-Control': 'no-cache',
+        'Cache-Control': cacheControl,
       });
       return;
     }

@@ -1143,3 +1143,74 @@ details summary {
     gap: 0.75rem;
   }
 }
+
+/* === Nav Active State === */
+.nav-link.active {
+  color: #5ee7e7;
+  font-weight: 600;
+  position: relative;
+}
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #5ee7e7;
+  border-radius: 2px;
+}
+
+/* === Contact Form Inputs UX === */
+.contact-form input,
+.contact-form textarea,
+input[type="text"], input[type="email"], textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+  outline: none;
+  border-color: #5ee7e7;
+  box-shadow: 0 0 0 3px rgba(94, 231, 231, 0.2);
+}
+
+/* === Project Tech Tags Contrast (WCAG fix) === */
+.tag {
+  background-color: rgba(94, 231, 231, 0.15) !important;
+  color: #5ee7e7 !important;
+  border: 1px solid rgba(94, 231, 231, 0.3) !important;
+}
+
+/* === Blog Post Hover === */
+.blog-post, [data-post-id] {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: -1rem;
+  display: block;
+}
+.blog-post:hover, [data-post-id]:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  transform: translateX(4px);
+}
+
+/* === Photography Grid Hover === */
+.masonry-item img {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.masonry-item:hover img {
+  transform: scale(1.02);
+  filter: brightness(1.05);
+}
+
+/* === About Page Pills Contrast === */
+.pill-list li {
+  background-color: rgba(94, 231, 231, 0.15);
+  border: 1px solid rgba(94, 231, 231, 0.3);
+  color: #0d1b2a;
+}
