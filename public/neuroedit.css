@@ -358,6 +358,7 @@
   padding: 0.4rem;
   text-align: center;
   transition: all 0.2s ease;
+  color: #fff;
 }
 
 .ne-filter-btn.active {
