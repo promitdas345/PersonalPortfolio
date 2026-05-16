@@ -167,6 +167,69 @@
     });
   }
 
+  // Handle AI Remove Background
+  const removeBgBtn = document.getElementById('neRemoveBgBtn');
+  if (removeBgBtn) {
+    removeBgBtn.addEventListener('click', async () => {
+      if (!originalImage) {
+        updateStatus('Please upload an image first', 'error');
+        return;
+      }
+      
+      updateStatus('AI Processing... this may take 10-20 seconds on free tier', 'active');
+      removeBgBtn.disabled = true;
+      removeBgBtn.textContent = '⏳ Processing...';
+      document.body.style.cursor = 'wait';
+      
+      try {
+        // Convert originalImage to blob
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = originalImage.width;
+        offCanvas.height = originalImage.height;
+        offCanvas.getContext('2d').drawImage(originalImage, 0, 0);
+        
+        const blob = await new Promise(resolve => offCanvas.toBlob(resolve, 'image/png'));
+        
+        const formData = new FormData();
+        formData.append('image', blob, 'upload.png');
+        
+        // REPLACE THIS URL WITH YOUR HUGGING FACE SPACE URL
+        const apiUrl = 'https://YOUR-HUGGINGFACE-SPACE-URL.hf.space/api/remove-bg';
+        
+        // Check if the user has replaced the placeholder
+        if (apiUrl.includes('YOUR-HUGGINGFACE-SPACE-URL')) {
+            throw new Error('Please update the apiUrl in neuroedit-demo.js with your real Hugging Face Space URL!');
+        }
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) throw new Error('API failed to process image');
+        
+        const resultBlob = await response.blob();
+        const objectUrl = URL.createObjectURL(resultBlob);
+        
+        const newImg = new Image();
+        newImg.onload = () => {
+          originalImage = newImg;
+          renderImage();
+          updateStatus('Background successfully removed!', 'done');
+          URL.revokeObjectURL(objectUrl);
+        };
+        newImg.src = objectUrl;
+      } catch (err) {
+        console.error(err);
+        updateStatus(err.message.includes('update the apiUrl') ? err.message : 'Failed to connect to AI backend. Make sure your Hugging Face Space is running!', 'error');
+      } finally {
+        removeBgBtn.disabled = false;
+        removeBgBtn.textContent = '🧠 Remove Background';
+        document.body.style.cursor = 'default';
+      }
+    });
+  }
+
   // Handle Download
   if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
