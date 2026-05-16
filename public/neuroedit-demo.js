@@ -176,7 +176,7 @@
         return;
       }
       
-      updateStatus('AI Processing... this may take 10-20 seconds on free tier', 'active');
+      updateStatus('🧠 AI Processing... Extracting subject...', 'active');
       removeBgBtn.disabled = true;
       removeBgBtn.textContent = '⏳ Processing...';
       document.body.style.cursor = 'wait';
@@ -215,7 +215,7 @@
         newImg.src = objectUrl;
       } catch (err) {
         console.error(err);
-        updateStatus(err.message.includes('update the apiUrl') ? err.message : 'Failed to connect to AI backend. Make sure your Hugging Face Space is running!', 'error');
+        updateStatus(err.message.includes('update the apiUrl') ? err.message : '⚠️ Processing failed. Please check your connection and try again.', 'error');
       } finally {
         removeBgBtn.disabled = false;
         removeBgBtn.textContent = '🧠 Remove Background';
