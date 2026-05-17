@@ -128,14 +128,15 @@
         return (mask + BB_BOT_ROW) & BB_BOARD;
     }
 
-    function bbCanPlay(mask, col) {
-        // Check if the column has any possible move (a bit in bbPossible within the column)
+
+    /** Find the landing bit for a piece dropped in the given column */
+    function bbMoveBit(mask, col) {
         const base = BigInt(col * BB_H);
         for (let r = 0; r < ROWS; r++) {
             const bit = 1n << (base + BigInt(r));
-            if ((mask & bit) === 0n) return true; // found empty cell
+            if ((mask & bit) === 0n) return bit;
         }
-        return false; // all rows filled
+        return 0n;
     }
 
     /** Compute all squares where `pos` player would complete 4-in-a-row */
@@ -187,16 +188,20 @@
     }
 
     /* ─── transposition table ──────────────────────────────── */
-    const TT = new Map();
-    const TT_MAX = 4000000;
+    let TT = new Map();
+    const TT_MAX = 8000000;
     const TT_EXACT = 0, TT_LOWER = 1, TT_UPPER = -1;
 
-    function ttStore(key, score, depth, flag) {
+    function ttStore(key, score, ttDepth, flag) {
+        const existing = TT.get(key);
+        // Only overwrite if new search is deeper or equal depth
+        if (existing && existing.depth > ttDepth) return;
         if (TT.size >= TT_MAX) {
+            // Clear half the table (oldest entries first via insertion order)
             const it = TT.keys();
             for (let i = 0; i < (TT_MAX >> 1); i++) TT.delete(it.next().value);
         }
-        TT.set(key, { score, depth, flag });
+        TT.set(key, { score, depth: ttDepth, flag });
     }
 
     /* ─── negamax with alpha-beta ──────────────────────────── */
@@ -225,16 +230,20 @@
         if (max <= alpha) return max; // can't improve
         if (beta > max) beta = max;
 
-        // TT lookup
+        // TT lookup — use numMoves-based depth for consistency across iterative deepening
         const key = position + mask + BB_BOT_ROW;
+        const ttDepthVal = TOTAL_CELLS - numMoves; // remaining moves (higher = more to search)
         const cached = TT.get(key);
-        if (cached && cached.depth >= depth) {
+        if (cached) {
             if (cached.flag === TT_EXACT) return cached.score;
-            if (cached.flag === TT_LOWER && cached.score >= beta) return cached.score;
-            if (cached.flag === TT_UPPER && cached.score <= alpha) return cached.score;
-            // Tighten bounds
-            if (cached.flag === TT_LOWER && cached.score > alpha) alpha = cached.score;
-            if (cached.flag === TT_UPPER && cached.score < beta) beta = cached.score;
+            if (cached.flag === TT_LOWER) {
+                if (cached.score >= beta) return cached.score;
+                if (cached.score > alpha) alpha = cached.score;
+            }
+            if (cached.flag === TT_UPPER) {
+                if (cached.score <= alpha) return cached.score;
+                if (cached.score < beta) beta = cached.score;
+            }
         }
 
         // Opponent's threats
@@ -246,7 +255,7 @@
             // Must block. 2+ threats = loss
             if ((forcedMoves & (forcedMoves - 1n)) !== 0n) {
                 const lossScore = -((TOTAL_CELLS - numMoves) >> 1);
-                ttStore(key, lossScore, depth, TT_EXACT);
+                ttStore(key, lossScore, ttDepthVal, TT_EXACT);
                 return lossScore;
             }
         }
@@ -254,18 +263,12 @@
         // Don't play moves that let opponent win next turn (cell above is opp's win spot)
         let safeMoves = possible;
         for (let c = 0; c < COLS; c++) {
-            if (!bbCanPlay(mask, c)) continue;
-            const moveBase = BigInt(c * BB_H);
-            // Find the row this piece would land in
-            let moveBit = 0n;
-            for (let r = 0; r < ROWS; r++) {
-                const bit = 1n << (moveBase + BigInt(r));
-                if ((mask & bit) === 0n) { moveBit = bit; break; }
-            }
+            const moveBit = bbMoveBit(mask, c);
             if (moveBit === 0n) continue;
+            if ((moveBit & possible) === 0n) continue;
             // Cell directly above
             const aboveBit = moveBit << 1n;
-            if ((aboveBit & oppWins) !== 0n) {
+            if ((aboveBit & oppWins & BB_BOARD) !== 0n) {
                 safeMoves &= ~moveBit;
             }
         }
@@ -275,33 +278,40 @@
 
         if (safeMoves === 0n) {
             const lossScore = -((TOTAL_CELLS - numMoves) >> 1);
-            ttStore(key, lossScore, depth, TT_EXACT);
+            ttStore(key, lossScore, ttDepthVal, TT_EXACT);
             return lossScore;
         }
 
         if (depth === 0) {
-            // Simple eval: count available winning spots
-            const mySpotCount = bbPopcount(bbWinSpots(position, mask));
-            const oppSpotCount = bbPopcount(bbWinSpots(opponent, mask));
-            return mySpotCount - oppSpotCount;
+            // Heuristic eval: count available winning spots weighted by reachability
+            const mySpotCount = bbPopcount(bbWinSpots(position, mask) & possible);
+            const oppSpotCount = bbPopcount(bbWinSpots(opponent, mask) & possible);
+            const myTotalSpots = bbPopcount(bbWinSpots(position, mask));
+            const oppTotalSpots = bbPopcount(bbWinSpots(opponent, mask));
+            return (mySpotCount * 3 + myTotalSpots) - (oppSpotCount * 3 + oppTotalSpots);
         }
 
         let bestScore = -Infinity;
         const origAlpha = alpha;
 
+        // Score and sort moves for better pruning
+        const moves = [];
         for (const c of MOVE_ORDER) {
-            if (!bbCanPlay(mask, c)) continue;
-            // Check this column is in safeMoves
-            let moveBit = 0n;
-            const moveBase = BigInt(c * BB_H);
-            for (let r = 0; r < ROWS; r++) {
-                const bit = 1n << (moveBase + BigInt(r));
-                if ((mask & bit) === 0n) { moveBit = bit; break; }
-            }
+            const moveBit = bbMoveBit(mask, c);
             if (moveBit === 0n || (moveBit & safeMoves) === 0n) continue;
-
-            // Make move (flip perspective for negamax)
+            // Score: prefer centre columns and moves that create winning threats
+            let moveScore = COL_SCORE[c] * 2;
             const newMask = mask | moveBit;
+            const newPos = position | moveBit;
+            // Count threats this move creates
+            moveScore += bbPopcount(bbWinSpots(newPos, newMask) & bbPossible(newMask)) * 10;
+            moves.push({ col: c, bit: moveBit, score: moveScore });
+        }
+        moves.sort((a, b) => b.score - a.score);
+
+        for (const move of moves) {
+            // Make move (flip perspective for negamax)
+            const newMask = mask | move.bit;
             const newPos = opponent; // opponent becomes current player
             const score = -negamax(newPos, newMask, depth - 1, -beta, -alpha, numMoves + 1);
 
@@ -316,7 +326,7 @@
             let flag = TT_EXACT;
             if (bestScore <= origAlpha) flag = TT_UPPER;
             else if (bestScore >= beta) flag = TT_LOWER;
-            ttStore(key, bestScore, depth, flag);
+            ttStore(key, bestScore, ttDepthVal, flag);
         }
 
         return bestScore;
@@ -327,79 +337,71 @@
         if (moveCount === 0) return 3; // first move: centre
 
         const { aiPos, plPos, mask } = boardToBB();
+        const possible = bbPossible(mask);
 
         // Check for immediate win
-        const possible = bbPossible(mask);
         const aiWins = bbWinSpots(aiPos, mask);
         for (const c of MOVE_ORDER) {
-            if (!bbCanPlay(mask, c)) continue;
-            const base = BigInt(c * BB_H);
-            for (let r = 0; r < ROWS; r++) {
-                const bit = 1n << (base + BigInt(r));
-                if ((mask & bit) === 0n) {
-                    if ((bit & aiWins & possible) !== 0n) return c;
-                    break;
-                }
-            }
+            const moveBit = bbMoveBit(mask, c);
+            if (moveBit === 0n) continue;
+            if ((moveBit & aiWins & possible) !== 0n) return c;
         }
 
         // Check for immediate block
         const plWins = bbWinSpots(plPos, mask);
         for (const c of MOVE_ORDER) {
-            if (!bbCanPlay(mask, c)) continue;
-            const base = BigInt(c * BB_H);
-            for (let r = 0; r < ROWS; r++) {
-                const bit = 1n << (base + BigInt(r));
-                if ((mask & bit) === 0n) {
-                    if ((bit & plWins & possible) !== 0n) return c;
-                    break;
-                }
-            }
+            const moveBit = bbMoveBit(mask, c);
+            if (moveBit === 0n) continue;
+            if ((moveBit & plWins & possible) !== 0n) return c;
         }
 
         // Iterative deepening negamax
-        // In negamax, AI is the "current player" — position = aiPos
         let bestCol = 3;
         const remaining = TOTAL_CELLS - moveCount;
         const maxD = Math.min(MAX_DEPTH, remaining);
 
         // Adaptive time: more time for early critical moves
-        const timeBudget = moveCount <= 6 ? 5000 : TIME_BUDGET_MS;
+        const timeBudget = moveCount <= 8 ? 8000 : TIME_BUDGET_MS;
         searchDeadline = Date.now() + timeBudget;
         searchAborted = false;
-        TT.clear();
+        // Do NOT clear TT between moves — persist knowledge across the game
+        // TT.clear();
 
         for (let d = 1; d <= maxD; d++) {
             nodeCount = 0;
             let iterBest = -1;
-            let iterScore = -Infinity;
+            let iterBestScore = -Infinity;
 
+            // Build and sort root moves
+            const rootMoves = [];
             for (const c of MOVE_ORDER) {
-                if (!bbCanPlay(mask, c)) continue;
-
-                // Find the move bit for this column
-                const base = BigInt(c * BB_H);
-                let moveBit = 0n;
-                for (let r = 0; r < ROWS; r++) {
-                    const bit = 1n << (base + BigInt(r));
-                    if ((mask & bit) === 0n) { moveBit = bit; break; }
-                }
+                const moveBit = bbMoveBit(mask, c);
                 if (moveBit === 0n) continue;
+                // Check move is safe (doesn't give opponent a win above)
+                const aboveBit = moveBit << 1n;
+                const oppWinSpots = bbWinSpots(plPos, mask);
+                // For root, include all playable moves but prefer safe ones
+                rootMoves.push({ col: c, bit: moveBit });
+            }
 
-                const newMask = mask | moveBit;
+            for (const move of rootMoves) {
+                const newMask = mask | move.bit;
                 const newPos = plPos; // opponent (player) becomes current
-                const score = -negamax(newPos, newMask, d - 1, -Infinity, -iterScore, moveCount + 1);
+                // Full alpha-beta window at root for correct results
+                const score = -negamax(newPos, newMask, d - 1, -Infinity, Infinity, moveCount + 1);
 
                 if (searchAborted) break;
 
-                if (score > iterScore) {
-                    iterScore = score;
-                    iterBest = c;
+                if (score > iterBestScore) {
+                    iterBestScore = score;
+                    iterBest = move.col;
                 }
             }
 
             if (!searchAborted && iterBest >= 0) {
                 bestCol = iterBest;
+                // If we found a guaranteed win, no need to search deeper
+                if (iterBestScore >= (remaining >> 1)) break;
             }
             if (searchAborted || Date.now() >= searchDeadline) break;
         }
@@ -690,6 +692,7 @@
 
     function resetGame() {
         initBoard();
+        TT.clear(); // fresh TT for each new game
         if (firstPlayer === AI) {
             currentPlayer = AI;
             draw();
