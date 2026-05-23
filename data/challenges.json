@@ -1,0 +1,199 @@
+[
+  {
+    "id": "http-server",
+    "slug": "http-server",
+    "title": "Build your own HTTP Server",
+    "description": "Learn how HTTP works under the hood by building a fully functional HTTP server from scratch that handles GET requests, serves files, and parses headers.",
+    "difficulty": "medium",
+    "languages": ["python", "javascript", "go"],
+    "icon": "🌐",
+    "totalStages": 6,
+    "estimatedHours": 4,
+    "stages": [
+      {
+        "index": 0,
+        "title": "Bind to a port",
+        "description": "Create a TCP server that listens on port 4221.",
+        "instructions": "<p>In this stage, you'll create a TCP server that listens on port <code>4221</code>.</p>\n<h3>Your Task</h3>\n<p>Create a program that starts a TCP server on port <strong>4221</strong>. Your server should be able to accept a TCP connection from a client. At this point, it doesn't need to respond — just accept the connection.</p>\n<h3>How TCP Servers Work</h3>\n<p>TCP (Transmission Control Protocol) is the backbone of HTTP. Before we can handle HTTP requests, we need to set up a TCP listener. This is the lowest building block of a web server.</p>\n<p>Here's what happens when a client connects to your TCP server:</p>\n<ol>\n<li>Your server calls <code>bind()</code> to associate a socket with port 4221</li>\n<li>Your server calls <code>listen()</code> to start accepting connections</li>\n<li>When a client connects, your server calls <code>accept()</code> to accept the connection</li>\n</ol>",
+        "codeSnippets": {
+          "python": {
+            "filename": "server.py",
+            "code": "import socket\n\ndef main():\n    # Create a TCP socket (AF_INET = IPv4, SOCK_STREAM = TCP)\n    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n    \n    # Allow port reuse (avoids 'Address already in use' error)\n    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n    \n    # Bind to localhost on port 4221\n    server_socket.bind(('localhost', 4221))\n    \n    # Start listening for incoming connections\n    server_socket.listen()\n    print('Server is listening on port 4221...')\n    \n    # Accept a connection — this blocks until a client connects\n    conn, addr = server_socket.accept()\n    print(f'Client connected from {addr}')\n\nif __name__ == '__main__':\n    main()"
+          },
+          "javascript": {
+            "filename": "server.js",
+            "code": "const net = require('net');\n\nconst server = net.createServer((socket) => {\n    console.log(`Client connected from ${socket.remoteAddress}`);\n});\n\nserver.listen(4221, 'localhost', () => {\n    console.log('Server is listening on port 4221...');\n});"
+          }
+        },
+        "terminalOutput": "$ python server.py\nServer is listening on port 4221...\nClient connected from ('127.0.0.1', 52413)",
+        "terminalSuccess": true,
+        "hints": [
+          "Use the socket module in Python or net module in Node.js to create a TCP server.",
+          "Don't forget to set SO_REUSEADDR — this prevents the 'Address already in use' error when you restart your server quickly."
+        ]
+      },
+      {
+        "index": 1,
+        "title": "Respond with 200",
+        "description": "Send a proper HTTP/1.1 200 OK response to any request.",
+        "instructions": "<p>In this stage, you'll respond to an HTTP request with a <code>200 OK</code> response.</p>\n<h3>Your Task</h3>\n<p>Now that your server accepts TCP connections, make it respond with a valid HTTP response. When any client connects and sends data, respond with:</p>\n<pre><code>HTTP/1.1 200 OK\\r\\n\\r\\n</code></pre>\n<h3>Understanding HTTP Responses</h3>\n<p>An HTTP response consists of three parts:</p>\n<ol>\n<li><strong>Status line</strong>: <code>HTTP/1.1 200 OK</code> — the protocol version, status code, and reason phrase</li>\n<li><strong>Headers</strong>: Key-value pairs (we'll add these later)</li>\n<li><strong>Body</strong>: The actual content (also later)</li>\n</ol>\n<p>Each line is terminated by <code>\\r\\n</code> (CRLF). The headers section ends with an empty line (<code>\\r\\n\\r\\n</code>), which separates headers from the body.</p>\n<div class='tip-box'><strong>💡 Key insight:</strong> HTTP is just text sent over TCP. There's nothing magical about it — it's a text protocol with strict formatting rules.</div>",
+        "codeSnippets": {
+          "python": {
+            "filename": "server.py",
+            "code": "import socket\n\ndef main():\n    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n    server_socket.bind(('localhost', 4221))\n    server_socket.listen()\n    print('Server is listening on port 4221...')\n    \n    while True:\n        conn, addr = server_socket.accept()\n        print(f'Client connected from {addr}')\n        \n        # Read the incoming request (we don't need it yet)\n        request = conn.recv(1024)\n        \n        # Send a 200 OK response\n        response = 'HTTP/1.1 200 OK\\r\\n\\r\\n'\n        conn.sendall(response.encode())\n        \n        conn.close()\n\nif __name__ == '__main__':\n    main()"
+          },
+          "javascript": {
+            "filename": "server.js",
+            "code": "const net = require('net');\n\nconst server = net.createServer((socket) => {\n    socket.on('data', () => {\n        // Send a 200 OK response\n        socket.write('HTTP/1.1 200 OK\\r\\n\\r\\n');\n        socket.end();\n    });\n});\n\nserver.listen(4221, 'localhost', () => {\n    console.log('Server is listening on port 4221...');\n});"
+          }
+        },
+        "terminalOutput": "$ curl -v http://localhost:4221\n* Connected to localhost port 4221\n> GET / HTTP/1.1\n> Host: localhost:4221\n>\n< HTTP/1.1 200 OK\n<\n* Connection closed",
+        "terminalSuccess": true,
+        "hints": [
+          "Remember: \\r\\n is CRLF (Carriage Return + Line Feed). HTTP requires this exact line ending.",
+          "The response needs TWO \\r\\n sequences at the end — one to end the status line, and one empty line to signal the end of headers."
+        ]
+      },
+      {
+        "index": 2,
+        "title": "Extract URL paths",
+        "description": "Parse the HTTP request line and respond based on the URL path.",
+        "instructions": "<p>In this stage, you'll parse the URL path from the HTTP request and respond differently based on the path.</p>\n<h3>Your Task</h3>\n<p>Update your server to:</p>\n<ul>\n<li>Return <code>200 OK</code> for the path <code>/</code></li>\n<li>Return <code>404 Not Found</code> for any other path</li>\n</ul>\n<h3>Parsing the Request Line</h3>\n<p>The first line of an HTTP request is the <strong>request line</strong>. It has three parts separated by spaces:</p>\n<pre><code>GET /some/path HTTP/1.1</code></pre>\n<ol>\n<li><strong>Method</strong>: <code>GET</code>, <code>POST</code>, <code>PUT</code>, etc.</li>\n<li><strong>Path</strong>: The URL path (e.g., <code>/</code>, <code>/about</code>, <code>/users/123</code>)</li>\n<li><strong>Version</strong>: Usually <code>HTTP/1.1</code></li>\n</ol>\n<p>To extract the path, split the request line by spaces and grab the second element.</p>",
+        "codeSnippets": {
+          "python": {
+            "filename": "server.py",
+            "code": "import socket\n\ndef main():\n    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n    server_socket.bind(('localhost', 4221))\n    server_socket.listen()\n    print('Server is listening on port 4221...')\n    \n    while True:\n        conn, addr = server_socket.accept()\n        request = conn.recv(1024).decode()\n        \n        # Parse the request line\n        request_line = request.split('\\r\\n')[0]\n        method, path, version = request_line.split(' ')\n        \n        # Route based on path\n        if path == '/':\n            response = 'HTTP/1.1 200 OK\\r\\n\\r\\n'\n        else:\n            response = 'HTTP/1.1 404 Not Found\\r\\n\\r\\n'\n        \n        conn.sendall(response.encode())\n        conn.close()\n\nif __name__ == '__main__':\n    main()"
+          },
+          "javascript": {
+            "filename": "server.js",
+            "code": "const net = require('net');\n\nconst server = net.createServer((socket) => {\n    socket.on('data', (data) => {\n        const request = data.toString();\n        \n        // Parse the request line\n        const requestLine = request.split('\\r\\n')[0];\n        const [method, path, version] = requestLine.split(' ');\n        \n        // Route based on path\n        if (path === '/') {\n            socket.write('HTTP/1.1 200 OK\\r\\n\\r\\n');\n        } else {\n            socket.write('HTTP/1.1 404 Not Found\\r\\n\\r\\n');\n        }\n        \n        socket.end();\n    });\n});\n\nserver.listen(4221, 'localhost', () => {\n    console.log('Server is listening on port 4221...');\n});"
+          }
+        },
+        "terminalOutput": "$ curl -v http://localhost:4221/\n< HTTP/1.1 200 OK\n\n$ curl -v http://localhost:4221/nonexistent\n< HTTP/1.1 404 Not Found",
+        "terminalSuccess": true,
+        "hints": [
+          "Split the first line of the request by spaces. The path is the second element (index 1).",
+          "Make sure you split the request by \\r\\n first to get just the request line."
+        ]
+      },
+      {
+        "index": 3,
+        "title": "Respond with body",
+        "description": "Return a response body with proper Content-Type and Content-Length headers.",
+        "instructions": "<p>In this stage, you'll send a response body along with the appropriate headers.</p>\n<h3>Your Task</h3>\n<p>Implement the <code>/echo/{str}</code> endpoint. It should return the string <code>{str}</code> in the response body. For example, <code>/echo/hello</code> should respond with <code>hello</code>.</p>\n<p>Your response must include these headers:</p>\n<ul>\n<li><code>Content-Type: text/plain</code></li>\n<li><code>Content-Length: {length of body}</code></li>\n</ul>\n<h3>Response Headers</h3>\n<p>HTTP headers provide metadata about the response. Two critical headers for responses with a body are:</p>\n<ul>\n<li><strong>Content-Type</strong>: Tells the client what format the body is in (e.g., <code>text/plain</code>, <code>text/html</code>, <code>application/json</code>)</li>\n<li><strong>Content-Length</strong>: The exact number of bytes in the response body. This helps the client know when the response is complete.</li>\n</ul>\n<p>A full response looks like:</p>\n<pre><code>HTTP/1.1 200 OK\\r\\nContent-Type: text/plain\\r\\nContent-Length: 5\\r\\n\\r\\nhello</code></pre>",
+        "codeSnippets": {
+          "python": {
+            "filename": "server.py",
+            "code": "import socket\n\ndef main():\n    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n    server_socket.bind(('localhost', 4221))\n    server_socket.listen()\n    print('Server is listening on port 4221...')\n    \n    while True:\n        conn, addr = server_socket.accept()\n        request = conn.recv(1024).decode()\n        request_line = request.split('\\r\\n')[0]\n        method, path, version = request_line.split(' ')\n        \n        if path == '/':\n            response = 'HTTP/1.1 200 OK\\r\\n\\r\\n'\n        elif path.startswith('/echo/'):\n            # Extract the string after /echo/\n            body = path[6:]  # everything after '/echo/'\n            response = (\n                f'HTTP/1.1 200 OK\\r\\n'\n                f'Content-Type: text/plain\\r\\n'\n                f'Content-Length: {len(body)}\\r\\n'\n                f'\\r\\n'\n                f'{body}'\n            )\n        else:\n            response = 'HTTP/1.1 404 Not Found\\r\\n\\r\\n'\n        \n        conn.sendall(response.encode())\n        conn.close()\n\nif __name__ == '__main__':\n    main()"
+          },
+          "javascript": {
+            "filename": "server.js",
+            "code": "const net = require('net');\n\nconst server = net.createServer((socket) => {\n    socket.on('data', (data) => {\n        const request = data.toString();\n        const requestLine = request.split('\\r\\n')[0];\n        const [method, path, version] = requestLine.split(' ');\n        \n        if (path === '/') {\n            socket.write('HTTP/1.1 200 OK\\r\\n\\r\\n');\n        } else if (path.startsWith('/echo/')) {\n            const body = path.slice(6);\n            socket.write(\n                `HTTP/1.1 200 OK\\r\\n` +\n                `Content-Type: text/plain\\r\\n` +\n                `Content-Length: ${body.length}\\r\\n` +\n                `\\r\\n` +\n                body\n            );\n        } else {\n            socket.write('HTTP/1.1 404 Not Found\\r\\n\\r\\n');\n        }\n        \n        socket.end();\n    });\n});\n\nserver.listen(4221, 'localhost', () => {\n    console.log('Server is listening on port 4221...');\n});"
+          }
+        },
+        "terminalOutput": "$ curl -v http://localhost:4221/echo/hello-world\n< HTTP/1.1 200 OK\n< Content-Type: text/plain\n< Content-Length: 11\n<\nhello-world",
+        "terminalSuccess": true,
+        "hints": [
+          "Use string slicing to extract everything after '/echo/' in the path.",
+          "Content-Length must be the byte length of the body, not the character length. For ASCII text these are the same, but keep this in mind for Unicode."
+        ]
+      },
+      {
+        "index": 4,
+        "title": "Parse headers",
+        "description": "Read and use incoming request headers like User-Agent.",
+        "instructions": "<p>In this stage, you'll parse HTTP request headers and use them in your response.</p>\n<h3>Your Task</h3>\n<p>Implement the <code>/user-agent</code> endpoint. It should read the <code>User-Agent</code> header from the request and return its value in the response body.</p>\n<h3>Request Headers</h3>\n<p>After the request line, HTTP requests contain headers — one per line, formatted as:</p>\n<pre><code>Header-Name: header-value</code></pre>\n<p>For example, a full request might look like:</p>\n<pre><code>GET /user-agent HTTP/1.1\\r\\nHost: localhost:4221\\r\\nUser-Agent: curl/7.64.1\\r\\nAccept: */*\\r\\n\\r\\n</code></pre>\n<p>To parse headers:</p>\n<ol>\n<li>Split the request by <code>\\r\\n</code></li>\n<li>Skip the first line (that's the request line)</li>\n<li>For each subsequent line (until the empty line), split by <code>: </code> to get the header name and value</li>\n</ol>",
+        "codeSnippets": {
+          "python": {
+            "filename": "server.py",
+            "code": "import socket\n\ndef parse_headers(request):\n    \"\"\"Parse HTTP headers from a request string into a dict.\"\"\"\n    lines = request.split('\\r\\n')\n    headers = {}\n    for line in lines[1:]:  # Skip the request line\n        if line == '':\n            break  # Empty line = end of headers\n        key, value = line.split(': ', 1)\n        headers[key.lower()] = value\n    return headers\n\ndef main():\n    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n    server_socket.bind(('localhost', 4221))\n    server_socket.listen()\n    print('Server is listening on port 4221...')\n    \n    while True:\n        conn, addr = server_socket.accept()\n        request = conn.recv(1024).decode()\n        request_line = request.split('\\r\\n')[0]\n        method, path, version = request_line.split(' ')\n        headers = parse_headers(request)\n        \n        if path == '/':\n            response = 'HTTP/1.1 200 OK\\r\\n\\r\\n'\n        elif path.startswith('/echo/'):\n            body = path[6:]\n            response = (\n                f'HTTP/1.1 200 OK\\r\\n'\n                f'Content-Type: text/plain\\r\\n'\n                f'Content-Length: {len(body)}\\r\\n'\n                f'\\r\\n{body}'\n            )\n        elif path == '/user-agent':\n            body = headers.get('user-agent', '')\n            response = (\n                f'HTTP/1.1 200 OK\\r\\n'\n                f'Content-Type: text/plain\\r\\n'\n                f'Content-Length: {len(body)}\\r\\n'\n                f'\\r\\n{body}'\n            )\n        else:\n            response = 'HTTP/1.1 404 Not Found\\r\\n\\r\\n'\n        \n        conn.sendall(response.encode())\n        conn.close()\n\nif __name__ == '__main__':\n    main()"
+          },
+          "javascript": {
+            "filename": "server.js",
+            "code": "const net = require('net');\n\nfunction parseHeaders(request) {\n    const lines = request.split('\\r\\n');\n    const headers = {};\n    for (let i = 1; i < lines.length; i++) {\n        if (lines[i] === '') break;\n        const [key, ...rest] = lines[i].split(': ');\n        headers[key.toLowerCase()] = rest.join(': ');\n    }\n    return headers;\n}\n\nconst server = net.createServer((socket) => {\n    socket.on('data', (data) => {\n        const request = data.toString();\n        const requestLine = request.split('\\r\\n')[0];\n        const [method, path, version] = requestLine.split(' ');\n        const headers = parseHeaders(request);\n        \n        if (path === '/') {\n            socket.write('HTTP/1.1 200 OK\\r\\n\\r\\n');\n        } else if (path.startsWith('/echo/')) {\n            const body = path.slice(6);\n            socket.write(\n                `HTTP/1.1 200 OK\\r\\nContent-Type: text/plain\\r\\nContent-Length: ${body.length}\\r\\n\\r\\n${body}`\n            );\n        } else if (path === '/user-agent') {\n            const body = headers['user-agent'] || '';\n            socket.write(\n                `HTTP/1.1 200 OK\\r\\nContent-Type: text/plain\\r\\nContent-Length: ${body.length}\\r\\n\\r\\n${body}`\n            );\n        } else {\n            socket.write('HTTP/1.1 404 Not Found\\r\\n\\r\\n');\n        }\n        \n        socket.end();\n    });\n});\n\nserver.listen(4221, 'localhost', () => {\n    console.log('Server is listening on port 4221...');\n});"
+          }
+        },
+        "terminalOutput": "$ curl -v http://localhost:4221/user-agent\n< HTTP/1.1 200 OK\n< Content-Type: text/plain\n< Content-Length: 11\n<\ncurl/7.64.1",
+        "terminalSuccess": true,
+        "hints": [
+          "Remember to normalize header names to lowercase when storing them — HTTP headers are case-insensitive.",
+          "Use split(': ', 1) (with maxsplit=1) because header values might contain colons too."
+        ]
+      },
+      {
+        "index": 5,
+        "title": "Serve a file",
+        "description": "Read a file from disk and return it as the response body.",
+        "instructions": "<p>In this final stage, you'll serve files from a directory on disk.</p>\n<h3>Your Task</h3>\n<p>Implement the <code>/files/{filename}</code> endpoint. Your server should accept a <code>--directory</code> command-line argument specifying where to look for files.</p>\n<ul>\n<li>If the file exists, return it with <code>200 OK</code> and <code>Content-Type: application/octet-stream</code></li>\n<li>If the file doesn't exist, return <code>404 Not Found</code></li>\n</ul>\n<h3>Serving Files</h3>\n<p>Serving static files is a core capability of web servers. The process is:</p>\n<ol>\n<li>Extract the filename from the URL path</li>\n<li>Construct the full file path by joining the directory with the filename</li>\n<li>Check if the file exists</li>\n<li>If it does, read its contents and send them with appropriate headers</li>\n<li>If not, send a 404 response</li>\n</ol>\n<div class='tip-box'><strong>🎉 Congratulations!</strong> After completing this stage, you'll have built a functional HTTP server that can bind to a port, parse requests, route paths, handle headers, and serve files. These are the same fundamental operations that production web servers like Nginx and Apache perform!</div>",
+        "codeSnippets": {
+          "python": {
+            "filename": "server.py",
+            "code": "import socket\nimport sys\nimport os\n\ndef parse_headers(request):\n    lines = request.split('\\r\\n')\n    headers = {}\n    for line in lines[1:]:\n        if line == '':\n            break\n        key, value = line.split(': ', 1)\n        headers[key.lower()] = value\n    return headers\n\ndef main():\n    # Parse command-line arguments\n    directory = '/tmp'  # default\n    if '--directory' in sys.argv:\n        idx = sys.argv.index('--directory')\n        directory = sys.argv[idx + 1]\n    \n    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\n    server_socket.bind(('localhost', 4221))\n    server_socket.listen()\n    print(f'Serving files from {directory} on port 4221...')\n    \n    while True:\n        conn, addr = server_socket.accept()\n        request = conn.recv(1024).decode()\n        request_line = request.split('\\r\\n')[0]\n        method, path, version = request_line.split(' ')\n        headers = parse_headers(request)\n        \n        if path == '/':\n            response = 'HTTP/1.1 200 OK\\r\\n\\r\\n'\n        elif path.startswith('/echo/'):\n            body = path[6:]\n            response = (\n                f'HTTP/1.1 200 OK\\r\\n'\n                f'Content-Type: text/plain\\r\\n'\n                f'Content-Length: {len(body)}\\r\\n'\n                f'\\r\\n{body}'\n            )\n        elif path == '/user-agent':\n            body = headers.get('user-agent', '')\n            response = (\n                f'HTTP/1.1 200 OK\\r\\n'\n                f'Content-Type: text/plain\\r\\n'\n                f'Content-Length: {len(body)}\\r\\n'\n                f'\\r\\n{body}'\n            )\n        elif path.startswith('/files/'):\n            filename = path[7:]  # strip '/files/'\n            filepath = os.path.join(directory, filename)\n            if os.path.isfile(filepath):\n                with open(filepath, 'rb') as f:\n                    body = f.read()\n                response = (\n                    f'HTTP/1.1 200 OK\\r\\n'\n                    f'Content-Type: application/octet-stream\\r\\n'\n                    f'Content-Length: {len(body)}\\r\\n'\n                    f'\\r\\n'\n                ).encode() + body\n                conn.sendall(response)\n                conn.close()\n                continue\n            else:\n                response = 'HTTP/1.1 404 Not Found\\r\\n\\r\\n'\n        else:\n            response = 'HTTP/1.1 404 Not Found\\r\\n\\r\\n'\n        \n        conn.sendall(response.encode())\n        conn.close()\n\nif __name__ == '__main__':\n    main()"
+          },
+          "javascript": {
+            "filename": "server.js",
+            "code": "const net = require('net');\nconst fs = require('fs');\nconst path = require('path');\n\n// Parse --directory argument\nlet directory = '/tmp';\nconst dirIdx = process.argv.indexOf('--directory');\nif (dirIdx !== -1) directory = process.argv[dirIdx + 1];\n\nfunction parseHeaders(request) {\n    const lines = request.split('\\r\\n');\n    const headers = {};\n    for (let i = 1; i < lines.length; i++) {\n        if (lines[i] === '') break;\n        const [key, ...rest] = lines[i].split(': ');\n        headers[key.toLowerCase()] = rest.join(': ');\n    }\n    return headers;\n}\n\nconst server = net.createServer((socket) => {\n    socket.on('data', (data) => {\n        const request = data.toString();\n        const requestLine = request.split('\\r\\n')[0];\n        const [method, urlPath, version] = requestLine.split(' ');\n        const headers = parseHeaders(request);\n        \n        if (urlPath === '/') {\n            socket.write('HTTP/1.1 200 OK\\r\\n\\r\\n');\n        } else if (urlPath.startsWith('/echo/')) {\n            const body = urlPath.slice(6);\n            socket.write(\n                `HTTP/1.1 200 OK\\r\\nContent-Type: text/plain\\r\\nContent-Length: ${body.length}\\r\\n\\r\\n${body}`\n            );\n        } else if (urlPath === '/user-agent') {\n            const body = headers['user-agent'] || '';\n            socket.write(\n                `HTTP/1.1 200 OK\\r\\nContent-Type: text/plain\\r\\nContent-Length: ${body.length}\\r\\n\\r\\n${body}`\n            );\n        } else if (urlPath.startsWith('/files/')) {\n            const filename = urlPath.slice(7);\n            const filepath = path.join(directory, filename);\n            if (fs.existsSync(filepath) && fs.statSync(filepath).isFile()) {\n                const body = fs.readFileSync(filepath);\n                socket.write(\n                    `HTTP/1.1 200 OK\\r\\nContent-Type: application/octet-stream\\r\\nContent-Length: ${body.length}\\r\\n\\r\\n`\n                );\n                socket.write(body);\n            } else {\n                socket.write('HTTP/1.1 404 Not Found\\r\\n\\r\\n');\n            }\n        } else {\n            socket.write('HTTP/1.1 404 Not Found\\r\\n\\r\\n');\n        }\n        \n        socket.end();\n    });\n});\n\nserver.listen(4221, 'localhost', () => {\n    console.log(`Serving files from ${directory} on port 4221...`);\n});"
+          }
+        },
+        "terminalOutput": "$ echo -n 'Hello, World!' > /tmp/greeting.txt\n$ python server.py --directory /tmp\nServing files from /tmp on port 4221...\n\n$ curl -v http://localhost:4221/files/greeting.txt\n< HTTP/1.1 200 OK\n< Content-Type: application/octet-stream\n< Content-Length: 13\n<\nHello, World!",
+        "terminalSuccess": true,
+        "hints": [
+          "Be careful with path traversal attacks. In production, you'd want to verify the resolved path stays within the intended directory.",
+          "Use 'rb' mode (read binary) when opening files to handle both text and binary files correctly."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "redis-server",
+    "slug": "redis-server",
+    "title": "Build your own Redis",
+    "description": "Understand how Redis works by implementing a basic in-memory key-value store with support for PING, ECHO, GET, SET, and expiry.",
+    "difficulty": "hard",
+    "languages": ["python", "go", "rust"],
+    "icon": "🔴",
+    "totalStages": 0,
+    "estimatedHours": 6,
+    "stages": [],
+    "comingSoon": true
+  },
+  {
+    "id": "git-clone",
+    "slug": "git-clone",
+    "title": "Build your own Git",
+    "description": "Explore git internals by implementing blob objects, tree objects, commits, and the clone protocol from scratch.",
+    "difficulty": "hard",
+    "languages": ["python", "go", "rust"],
+    "icon": "📦",
+    "totalStages": 0,
+    "estimatedHours": 8,
+    "stages": [],
+    "comingSoon": true
+  },
+  {
+    "id": "dns-server",
+    "slug": "dns-server",
+    "title": "Build your own DNS Server",
+    "description": "Learn how DNS resolution works by building a DNS server that can parse queries, construct responses, and forward to upstream resolvers.",
+    "difficulty": "medium",
+    "languages": ["python", "javascript", "go"],
+    "icon": "🔍",
+    "totalStages": 0,
+    "estimatedHours": 5,
+    "stages": [],
+    "comingSoon": true
+  },
+  {
+    "id": "shell",
+    "slug": "shell",
+    "title": "Build your own Shell",
+    "description": "Create a POSIX-like shell that handles builtins, program execution, pipes, and redirections.",
+    "difficulty": "medium",
+    "languages": ["python", "go", "rust"],
+    "icon": "💻",
+    "totalStages": 0,
+    "estimatedHours": 5,
+    "stages": [],
+    "comingSoon": true
+  }
+]
