@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" class="challenges-page">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="{{ challengeDescription }}" />
+    <title>{{ challengeTitle }} | Coding Challenges | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+    <link rel="stylesheet" href="/public/challenges.css" />
+</head>
+
+<body class="challenges-page">
+    <header class="site-header">
+        <div class="container flex justify-between items-center py-4">
+            <h1 class="text-2xl font-bold text-blue-700"><a href="/challenges" style="color:var(--color-selective-yellow);text-decoration:none;">Challenges</a></h1>
+            <nav>
+                <ul class="flex space-x-4 text-lg">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/projects" class="nav-link">Projects</a></li>
+                    <li><a href="/blog" class="nav-link">Blog</a></li>
+                    <li><a href="/challenges" class="nav-link" style="color: var(--color-selective-yellow);">Challenges</a></li>
+                    <li><a href="/about" class="nav-link">About</a></li>
+                    <li><a href="/contact" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container py-8">
+        <!-- Challenge Hero -->
+        <section class="challenge-hero" data-animate>
+            <div class="challenge-hero__glow"></div>
+            <a href="/challenges" class="challenge-hero__back">&larr; All Challenges</a>
+            <div class="challenge-hero__content">
+                <div class="challenge-hero__icon">{{ challengeIcon }}</div>
+                <div>
+                    <h2 class="challenge-hero__title">{{ challengeTitle }}</h2>
+                    <p class="challenge-hero__desc">{{ challengeDescription }}</p>
+                    <div class="challenge-hero__meta">
+                        <span class="challenge-card__difficulty challenge-card__difficulty--{{ challengeDifficulty }}">{{ challengeDifficulty }}</span>
+                        <span class="challenge-hero__meta-item">{{ totalStages }} stages</span>
+                        <span class="challenge-hero__meta-item">~{{ estimatedHours }}h</span>
+                        <div class="challenge-hero__langs">{{ languagePills }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="challenge-hero__progress-wrap">
+                <div class="progress-bar">
+                    <div class="progress-bar__fill" id="challenge-progress-bar" style="width: 0%"></div>
+                </div>
+                <span class="challenge-hero__progress-label" id="challenge-progress-label">0 / {{ totalStages }} stages completed</span>
+            </div>
+        </section>
+
+        <!-- Challenge Layout: Sidebar + Content -->
+        <div class="challenge-layout" data-challenge-id="{{ challengeId }}" data-total-stages="{{ totalStages }}">
+            <!-- Stage Sidebar -->
+            <aside class="stage-sidebar" aria-label="Challenge stages">
+                <div class="stage-sidebar__header">
+                    <h3 class="stage-sidebar__title">Stages</h3>
+                </div>
+                <div class="stage-sidebar__list">
+                    {{ stageListItems }}
+                </div>
+            </aside>
+
+            <!-- Stage Content Panels -->
+            <div class="stage-content-area">
+                {{ stageContentPanels }}
+
+                <!-- Stage Navigation -->
+                <div class="stage-nav">
+                    <button class="btn btn-secondary stage-nav__prev" id="prev-stage-btn" disabled>
+                        &larr; Previous
+                    </button>
+                    <button class="btn stage-nav__complete" id="complete-stage-btn">
+                        ✓ Mark Complete
+                    </button>
+                    <button class="btn btn-primary stage-nav__next" id="next-stage-btn">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Celebration -->
+        <div class="challenge-complete-overlay" id="challenge-complete" style="display:none;">
+            <div class="challenge-complete__content">
+                <div class="challenge-complete__icon">🎉</div>
+                <h2 class="challenge-complete__title">Challenge Complete!</h2>
+                <p class="challenge-complete__text">You've built a working {{ challengeTitle }}. Amazing work!</p>
+                <div class="challenge-complete__actions">
+                    <a href="/challenges" class="btn btn-primary">More Challenges</a>
+                    <button class="btn btn-secondary" onclick="document.getElementById('challenge-complete').style.display='none'">Review Stages</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+        &copy; 2026 Promit. All rights reserved.
+    </footer>
+
+    <script src="/public/challenges.js"></script>
+    {{ analytics }}
+</body>
+
+</html>

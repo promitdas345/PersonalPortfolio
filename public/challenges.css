@@ -1,0 +1,2114 @@
+/* ==========================================================================
+   challenges.css
+   Codecrafters-style dark-themed coding challenges platform
+   Design tokens inherited from portfolio; dark immersive override
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. CSS Custom Properties (scoped to challenges)
+   -------------------------------------------------------------------------- */
+:root {
+  --ch-oxford-blue: #0A2540;
+  --ch-slate-gray: #6B7280;
+  --ch-teal: #00A3A3;
+  --ch-deep-teal: #007C7C;
+  --ch-yellow: #FFB100;
+  --ch-white: #FFFFFF;
+  --ch-crimson: #DC2626;
+
+  /* Extended palette */
+  --ch-bg-deep: #0f172a;
+  --ch-bg-card: rgba(15, 23, 42, 0.6);
+  --ch-bg-code: #1e293b;
+  --ch-bg-terminal: #0c0c0c;
+  --ch-text-primary: #e2e8f0;
+  --ch-text-secondary: #94a3b8;
+  --ch-text-muted: #64748b;
+  --ch-border-subtle: rgba(255, 255, 255, 0.08);
+  --ch-border-hover: rgba(0, 163, 163, 0.45);
+  --ch-glow-teal: 0 0 30px rgba(0, 163, 163, 0.15);
+  --ch-glow-teal-strong: 0 0 40px rgba(0, 163, 163, 0.25), 0 8px 32px rgba(0, 0, 0, 0.4);
+  --ch-radius-sm: 6px;
+  --ch-radius-md: 12px;
+  --ch-radius-lg: 16px;
+  --ch-radius-xl: 24px;
+  --ch-transition: 0.3s ease;
+  --ch-transition-fast: 0.18s ease;
+  --ch-font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --ch-font-heading: 'Poppins', 'Inter', system-ui, sans-serif;
+  --ch-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+}
+
+/* --------------------------------------------------------------------------
+   1. Challenges Page – Dark Override
+   -------------------------------------------------------------------------- */
+.challenges-page main {
+  background: transparent;
+  color: var(--ch-text-primary);
+  box-shadow: none;
+  border-radius: 0;
+  max-width: 100%;
+}
+
+.challenges-page {
+  min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   2. Page Header / Section Headers
+   -------------------------------------------------------------------------- */
+.challenges-header {
+  text-align: center;
+  padding: 3.5rem 1.5rem 2rem;
+  position: relative;
+}
+
+.challenges-header__title {
+  font-family: var(--ch-font-heading);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--ch-white);
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.challenges-header__subtitle {
+  font-family: var(--ch-font-body);
+  font-size: 1.125rem;
+  color: var(--ch-text-secondary);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   3. Challenges Grid (Listing Page)
+   -------------------------------------------------------------------------- */
+.challenges-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 0 1.5rem 4rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .challenges-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+    padding: 0 2rem 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .challenges-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 0 2.5rem 5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3a. Challenge Card
+   -------------------------------------------------------------------------- */
+.challenge-card {
+  position: relative;
+  background: var(--ch-bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--ch-border-subtle);
+  border-radius: var(--ch-radius-lg);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition:
+    transform var(--ch-transition),
+    border-color var(--ch-transition),
+    box-shadow var(--ch-transition);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.challenge-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 30% 0%, rgba(0, 163, 163, 0.06) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--ch-transition);
+  pointer-events: none;
+}
+
+.challenge-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--ch-border-hover);
+  box-shadow: var(--ch-glow-teal-strong);
+}
+
+.challenge-card:hover::before {
+  opacity: 1;
+}
+
+.challenge-card:active {
+  transform: translateY(-4px);
+}
+
+/* Card Icon */
+.challenge-card__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--ch-radius-md);
+  background: linear-gradient(135deg, var(--ch-teal), var(--ch-deep-teal));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: var(--ch-white);
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 163, 163, 0.2);
+  transition: box-shadow var(--ch-transition), transform var(--ch-transition);
+}
+
+.challenge-card:hover .challenge-card__icon {
+  box-shadow: 0 6px 24px rgba(0, 163, 163, 0.35);
+  transform: scale(1.05);
+}
+
+/* Difficulty Badge */
+.challenge-card__difficulty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--ch-font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  width: fit-content;
+}
+
+.challenge-card__difficulty--easy {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.challenge-card__difficulty--medium {
+  background: rgba(255, 177, 0, 0.12);
+  color: var(--ch-yellow);
+  border: 1px solid rgba(255, 177, 0, 0.2);
+}
+
+.challenge-card__difficulty--hard {
+  background: rgba(220, 38, 38, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* Card Title */
+.challenge-card__title {
+  font-family: var(--ch-font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ch-white);
+  margin: 0;
+  line-height: 1.3;
+  transition: color var(--ch-transition-fast);
+}
+
+.challenge-card:hover .challenge-card__title {
+  color: var(--ch-teal);
+}
+
+/* Card Description */
+.challenge-card__desc {
+  font-size: 0.9rem;
+  color: var(--ch-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Language Pills */
+.challenge-card__langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.challenge-card__lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--ch-font-mono);
+  font-size: 0.7rem;
+  color: var(--ch-text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--ch-radius-sm);
+  padding: 0.2rem 0.55rem;
+  transition: border-color var(--ch-transition-fast), color var(--ch-transition-fast);
+}
+
+.challenge-card:hover .challenge-card__lang {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--ch-text-secondary);
+}
+
+/* Card Progress Bar */
+.challenge-card__progress {
+  position: relative;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: auto;
+}
+
+.challenge-card__progress-fill {
+  position: absolute;
+  inset: 0;
+  width: var(--progress, 0%);
+  background: linear-gradient(90deg, var(--ch-deep-teal), var(--ch-teal));
+  border-radius: inherit;
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --------------------------------------------------------------------------
+   4. Challenge Hero
+   -------------------------------------------------------------------------- */
+.challenge-hero {
+  position: relative;
+  padding: 3.5rem 2rem 3rem;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0, 163, 163, 0.1) 0%, transparent 100%),
+    linear-gradient(180deg, var(--ch-bg-deep) 0%, transparent 100%);
+  overflow: hidden;
+}
+
+.challenge-hero::after {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 163, 163, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.challenge-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.challenge-hero__breadcrumb {
+  font-size: 0.85rem;
+  color: var(--ch-text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.challenge-hero__breadcrumb a {
+  color: var(--ch-teal);
+  text-decoration: none;
+  transition: color var(--ch-transition-fast);
+}
+
+.challenge-hero__breadcrumb a:hover {
+  color: #5eead4;
+}
+
+.challenge-hero__title {
+  font-family: var(--ch-font-heading);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--ch-white);
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.challenge-hero__desc {
+  font-size: 1.05rem;
+  color: var(--ch-text-secondary);
+  max-width: 640px;
+  line-height: 1.65;
+  margin: 0 0 1.5rem;
+}
+
+.challenge-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.challenge-hero__stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+}
+
+.challenge-hero__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.challenge-hero__stat-value {
+  font-family: var(--ch-font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ch-white);
+}
+
+.challenge-hero__stat-label {
+  font-size: 0.8rem;
+  color: var(--ch-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --------------------------------------------------------------------------
+   5. Challenge Layout (sidebar + content)
+   -------------------------------------------------------------------------- */
+.challenge-layout {
+  display: flex;
+  flex-direction: column;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .challenge-layout {
+    flex-direction: row;
+    padding: 0 2.5rem 5rem;
+    gap: 2.5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. Stage Sidebar
+   -------------------------------------------------------------------------- */
+.stage-sidebar {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .stage-sidebar {
+    width: 300px;
+    position: sticky;
+    top: 2rem;
+    align-self: flex-start;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+}
+
+.stage-sidebar__title {
+  font-family: var(--ch-font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ch-text-muted);
+  margin: 0 0 1.25rem;
+  padding: 0 0.5rem;
+}
+
+.stage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Timeline vertical line */
+.stage-list::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+}
+
+.stage-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.85rem 1rem 0.85rem 0.5rem;
+  border-radius: var(--ch-radius-md);
+  cursor: pointer;
+  transition:
+    background var(--ch-transition-fast),
+    border-color var(--ch-transition);
+  border-left: 3px solid transparent;
+  margin-left: 0;
+}
+
+.stage-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Stage number circle */
+.stage-item__number {
+  position: relative;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ch-font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--ch-bg-deep);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: var(--ch-text-muted);
+  flex-shrink: 0;
+  transition:
+    background var(--ch-transition),
+    border-color var(--ch-transition),
+    color var(--ch-transition),
+    box-shadow var(--ch-transition);
+}
+
+.stage-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-top: 0.35rem;
+}
+
+.stage-item__title {
+  font-family: var(--ch-font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ch-text-secondary);
+  transition: color var(--ch-transition-fast);
+}
+
+.stage-item__status {
+  font-size: 0.75rem;
+  color: var(--ch-text-muted);
+}
+
+/* Active stage */
+.stage-item--active {
+  border-left-color: var(--ch-teal);
+  background: rgba(0, 163, 163, 0.06);
+}
+
+.stage-item--active .stage-item__number {
+  background: linear-gradient(135deg, var(--ch-teal), var(--ch-deep-teal));
+  border-color: var(--ch-teal);
+  color: var(--ch-white);
+  box-shadow: 0 0 16px rgba(0, 163, 163, 0.3);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+.stage-item--active .stage-item__title {
+  color: var(--ch-white);
+  font-weight: 600;
+}
+
+/* Completed stage */
+.stage-item--completed .stage-item__number {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.stage-item--completed .stage-item__title {
+  color: var(--ch-text-muted);
+}
+
+/* Locked stage */
+.stage-item--locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.stage-item--locked:hover {
+  background: transparent;
+}
+
+.stage-item--locked .stage-item__number {
+  border-color: rgba(255, 255, 255, 0.05);
+  color: var(--ch-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   7. Stage Content
+   -------------------------------------------------------------------------- */
+.stage-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.stage-content__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ch-border-subtle);
+}
+
+.stage-content__stage-label {
+  font-family: var(--ch-font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ch-teal);
+  margin-bottom: 0.5rem;
+}
+
+.stage-content__title {
+  font-family: var(--ch-font-heading);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--ch-white);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Prose / Instructions */
+.stage-content__instructions {
+  font-family: var(--ch-font-body);
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--ch-text-primary);
+}
+
+.stage-content__instructions h2 {
+  font-family: var(--ch-font-heading);
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--ch-white);
+  margin: 2.5rem 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.stage-content__instructions h3 {
+  font-family: var(--ch-font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ch-white);
+  margin: 2rem 0 0.75rem;
+}
+
+.stage-content__instructions p {
+  margin: 0 0 1.25rem;
+  color: var(--ch-text-secondary);
+}
+
+.stage-content__instructions ul,
+.stage-content__instructions ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.5rem;
+  color: var(--ch-text-secondary);
+}
+
+.stage-content__instructions li {
+  margin-bottom: 0.5rem;
+  line-height: 1.65;
+}
+
+.stage-content__instructions li::marker {
+  color: var(--ch-teal);
+}
+
+.stage-content__instructions a {
+  color: var(--ch-teal);
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 163, 163, 0.3);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--ch-transition-fast);
+}
+
+.stage-content__instructions a:hover {
+  text-decoration-color: var(--ch-teal);
+}
+
+.stage-content__instructions code {
+  font-family: var(--ch-font-mono);
+  font-size: 0.88em;
+  background: rgba(30, 41, 59, 0.8);
+  color: #e879f9;
+  padding: 0.15em 0.45em;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stage-content__instructions blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-left: 3px solid var(--ch-teal);
+  background: rgba(0, 163, 163, 0.05);
+  border-radius: 0 var(--ch-radius-sm) var(--ch-radius-sm) 0;
+  color: var(--ch-text-secondary);
+}
+
+.stage-content__instructions blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.stage-content__instructions strong {
+  color: var(--ch-white);
+  font-weight: 600;
+}
+
+.stage-content__instructions hr {
+  border: none;
+  height: 1px;
+  background: var(--ch-border-subtle);
+  margin: 2rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   8. Code Blocks
+   -------------------------------------------------------------------------- */
+.code-block {
+  position: relative;
+  border-radius: var(--ch-radius-md);
+  overflow: hidden;
+  margin: 1.5rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+.code-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background: var(--ch-bg-deep);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.code-block__filename {
+  font-family: var(--ch-font-mono);
+  font-size: 0.8rem;
+  color: var(--ch-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.code-block__filename::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ch-teal);
+  opacity: 0.6;
+}
+
+.code-block__copy {
+  font-family: var(--ch-font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ch-text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--ch-radius-sm);
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition:
+    color var(--ch-transition-fast),
+    background var(--ch-transition-fast),
+    border-color var(--ch-transition-fast);
+}
+
+.code-block__copy:hover {
+  color: var(--ch-white);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.code-block__copy--copied {
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.code-block__body {
+  background: var(--ch-bg-code);
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.code-block__body pre {
+  margin: 0;
+  font-family: var(--ch-font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--ch-text-primary);
+  white-space: pre;
+  tab-size: 2;
+}
+
+.code-block__body code {
+  font-family: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* Line numbers */
+.code-block__lines {
+  display: flex;
+}
+
+.code-block__line-numbers {
+  user-select: none;
+  text-align: right;
+  padding-right: 1.25rem;
+  margin-right: 1.25rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--ch-text-muted);
+  font-family: var(--ch-font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  opacity: 0.5;
+}
+
+.code-block__code-content {
+  flex: 1;
+  overflow-x: auto;
+}
+
+/* Scrollbar styling for code blocks */
+.code-block__body::-webkit-scrollbar {
+  height: 6px;
+}
+
+.code-block__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-block__body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+.code-block__body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* --------------------------------------------------------------------------
+   9. Terminal Output
+   -------------------------------------------------------------------------- */
+.terminal-output {
+  border-radius: var(--ch-radius-md);
+  overflow: hidden;
+  margin: 1.5rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  transition: border-color var(--ch-transition), box-shadow var(--ch-transition);
+}
+
+.terminal-output__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.terminal-output__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-output__dot--red {
+  background: #ff5f56;
+}
+
+.terminal-output__dot--yellow {
+  background: #ffbd2e;
+}
+
+.terminal-output__dot--green {
+  background: #27c93f;
+}
+
+.terminal-output__header-title {
+  font-family: var(--ch-font-mono);
+  font-size: 0.75rem;
+  color: var(--ch-text-muted);
+  margin-left: 0.5rem;
+}
+
+.terminal-output__body {
+  background: var(--ch-bg-terminal);
+  padding: 1.25rem 1.5rem;
+  font-family: var(--ch-font-mono);
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: #d4d4d4;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.terminal-output__body .terminal-prompt {
+  color: #4ade80;
+}
+
+.terminal-output__body .terminal-command {
+  color: var(--ch-white);
+}
+
+.terminal-output__body .terminal-error {
+  color: #f87171;
+}
+
+.terminal-output__body .terminal-success {
+  color: #4ade80;
+}
+
+.terminal-output__cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  background: #4ade80;
+  vertical-align: text-bottom;
+  animation: terminalBlink 1s step-end infinite;
+}
+
+/* Success state */
+.terminal-output--success {
+  border-color: rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.08), 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Error state */
+.terminal-output--error {
+  border-color: rgba(220, 38, 38, 0.3);
+  box-shadow: 0 0 30px rgba(220, 38, 38, 0.08), 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   10. Stage Navigation (Prev/Next)
+   -------------------------------------------------------------------------- */
+.stage-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2rem 0;
+  margin-top: 3rem;
+  border-top: 1px solid var(--ch-border-subtle);
+}
+
+.stage-nav__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--ch-font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--ch-radius-md);
+  cursor: pointer;
+  transition:
+    background var(--ch-transition),
+    color var(--ch-transition),
+    border-color var(--ch-transition),
+    box-shadow var(--ch-transition),
+    transform var(--ch-transition-fast);
+  text-decoration: none;
+}
+
+.stage-nav__btn:active {
+  transform: scale(0.97);
+}
+
+/* Primary – Next */
+.stage-nav__btn--next {
+  background: linear-gradient(135deg, var(--ch-teal), var(--ch-deep-teal));
+  color: var(--ch-white);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 16px rgba(0, 163, 163, 0.25);
+}
+
+.stage-nav__btn--next:hover {
+  box-shadow: 0 6px 24px rgba(0, 163, 163, 0.35);
+  filter: brightness(1.1);
+}
+
+/* Outline – Previous */
+.stage-nav__btn--prev {
+  background: transparent;
+  color: var(--ch-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.stage-nav__btn--prev:hover {
+  color: var(--ch-white);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Disabled */
+.stage-nav__btn--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   11. Progress Indicators
+   -------------------------------------------------------------------------- */
+
+/* Progress Ring (SVG-based circular) */
+.progress-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring__svg {
+  transform: rotate(-90deg);
+}
+
+.progress-ring__circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.06);
+}
+
+.progress-ring__circle-fill {
+  fill: none;
+  stroke: var(--ch-teal);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-ring__label {
+  position: absolute;
+  font-family: var(--ch-font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ch-white);
+}
+
+/* Progress Bar (horizontal) */
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar--thin {
+  height: 3px;
+}
+
+.progress-bar--thick {
+  height: 10px;
+}
+
+.progress-bar__fill {
+  position: absolute;
+  inset: 0;
+  width: var(--progress, 0%);
+  background: linear-gradient(90deg, var(--ch-deep-teal), var(--ch-teal));
+  border-radius: inherit;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-bar__fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ch-teal);
+  box-shadow: 0 0 10px rgba(0, 163, 163, 0.5);
+  opacity: 0;
+  transition: opacity var(--ch-transition);
+}
+
+.progress-bar:hover .progress-bar__fill::after {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   12. Hint & Tip Boxes
+   -------------------------------------------------------------------------- */
+
+/* Hint Box – Collapsible */
+.hint-box {
+  margin: 1.5rem 0;
+  border-radius: var(--ch-radius-md);
+  border: 1px solid rgba(0, 163, 163, 0.15);
+  background: rgba(0, 163, 163, 0.04);
+  overflow: hidden;
+  transition: border-color var(--ch-transition);
+}
+
+.hint-box:hover {
+  border-color: rgba(0, 163, 163, 0.25);
+}
+
+.hint-box__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ch-font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ch-teal);
+  transition: color var(--ch-transition-fast);
+}
+
+.hint-box__toggle:hover {
+  color: #5eead4;
+}
+
+.hint-box__toggle-icon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  background: rgba(0, 163, 163, 0.12);
+  border-radius: 50%;
+  transition: transform var(--ch-transition), background var(--ch-transition);
+}
+
+.hint-box--open .hint-box__toggle-icon {
+  transform: rotate(90deg);
+  background: rgba(0, 163, 163, 0.2);
+}
+
+.hint-box__content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1), padding 0.3s ease;
+  padding: 0 1.25rem;
+}
+
+.hint-box--open .hint-box__content {
+  max-height: 600px;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.hint-box__content p {
+  font-size: 0.9rem;
+  color: var(--ch-text-secondary);
+  line-height: 1.65;
+  margin: 0 0 0.75rem;
+}
+
+.hint-box__content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Tip Box – Always visible */
+.tip-box {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--ch-radius-md);
+  border-left: 3px solid var(--ch-yellow);
+  background: rgba(255, 177, 0, 0.05);
+  border-top: 1px solid rgba(255, 177, 0, 0.08);
+  border-right: 1px solid rgba(255, 177, 0, 0.08);
+  border-bottom: 1px solid rgba(255, 177, 0, 0.08);
+}
+
+.tip-box__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--ch-font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ch-yellow);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tip-box__icon {
+  font-size: 1rem;
+}
+
+.tip-box__content {
+  font-size: 0.9rem;
+  color: var(--ch-text-secondary);
+  line-height: 1.65;
+}
+
+.tip-box__content p {
+  margin: 0 0 0.5rem;
+}
+
+.tip-box__content p:last-child {
+  margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   13. Animations & Keyframes
+   -------------------------------------------------------------------------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 16px rgba(0, 163, 163, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(0, 163, 163, 0.5);
+  }
+}
+
+@keyframes terminalBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Utility animation classes */
+.animate-in {
+  animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-in--delay-1 { animation-delay: 0.1s; }
+.animate-in--delay-2 { animation-delay: 0.2s; }
+.animate-in--delay-3 { animation-delay: 0.3s; }
+.animate-in--delay-4 { animation-delay: 0.4s; }
+.animate-in--delay-5 { animation-delay: 0.5s; }
+
+.animate-slide {
+  animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* --------------------------------------------------------------------------
+   14. Filter / Search Bar (optional challenges filter)
+   -------------------------------------------------------------------------- */
+.challenges-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 1280px;
+  margin: 0 auto 2rem;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .challenges-filter {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .challenges-filter {
+    padding: 0 2.5rem;
+  }
+}
+
+.challenges-filter__search {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--ch-radius-md);
+  color: var(--ch-text-primary);
+  font-family: var(--ch-font-body);
+  font-size: 0.9rem;
+  transition: border-color var(--ch-transition), background var(--ch-transition);
+  outline: none;
+}
+
+.challenges-filter__search::placeholder {
+  color: var(--ch-text-muted);
+}
+
+.challenges-filter__search:focus {
+  border-color: var(--ch-teal);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(0, 163, 163, 0.1);
+}
+
+.challenges-filter__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 0.85rem;
+  font-family: var(--ch-font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ch-text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition:
+    color var(--ch-transition-fast),
+    background var(--ch-transition-fast),
+    border-color var(--ch-transition-fast);
+}
+
+.challenges-filter__tag:hover {
+  color: var(--ch-white);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.challenges-filter__tag--active {
+  color: var(--ch-teal);
+  background: rgba(0, 163, 163, 0.1);
+  border-color: rgba(0, 163, 163, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   15. Empty / Loading States
+   -------------------------------------------------------------------------- */
+.challenges-empty {
+  text-align: center;
+  padding: 5rem 2rem;
+}
+
+.challenges-empty__icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.3;
+}
+
+.challenges-empty__title {
+  font-family: var(--ch-font-heading);
+  font-size: 1.25rem;
+  color: var(--ch-white);
+  margin-bottom: 0.5rem;
+}
+
+.challenges-empty__desc {
+  font-size: 0.95rem;
+  color: var(--ch-text-muted);
+}
+
+/* Skeleton loading card */
+.challenge-card--skeleton {
+  pointer-events: none;
+}
+
+.challenge-card--skeleton .skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.challenge-card--skeleton .skeleton-line--short {
+  width: 40%;
+}
+
+.challenge-card--skeleton .skeleton-line--medium {
+  width: 70%;
+}
+
+.challenge-card--skeleton .skeleton-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--ch-radius-md);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   16. Responsive Fine-tuning
+   -------------------------------------------------------------------------- */
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .challenges-header {
+    padding: 2.5rem 1rem 1.5rem;
+  }
+
+  .challenges-grid {
+    padding: 0 1rem 3rem;
+    gap: 1rem;
+  }
+
+  .challenge-card {
+    padding: 1.25rem;
+  }
+
+  .challenge-card__icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.35rem;
+    border-radius: var(--ch-radius-sm);
+  }
+
+  .challenge-hero {
+    padding: 2.5rem 1rem 2rem;
+  }
+
+  .challenge-hero__stats {
+    gap: 1.25rem;
+  }
+
+  .challenge-layout {
+    padding: 0 1rem 3rem;
+  }
+
+  .stage-nav {
+    flex-direction: column;
+  }
+
+  .stage-nav__btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tablet: sidebar slides in as overlay */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .stage-sidebar {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+
+  .stage-list {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .stage-list::before {
+    display: none;
+  }
+
+  .stage-item {
+    flex-shrink: 0;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.65rem 1rem;
+    border-radius: var(--ch-radius-sm);
+    min-width: max-content;
+  }
+
+  .stage-item--active {
+    border-left-color: transparent;
+    border-bottom-color: var(--ch-teal);
+  }
+}
+
+/* Desktop refinements */
+@media (min-width: 1280px) {
+  .challenges-grid {
+    gap: 2.25rem;
+  }
+
+  .challenge-layout {
+    gap: 3rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   17. Print Styles
+   -------------------------------------------------------------------------- */
+@media print {
+  .challenges-page main {
+    background: white;
+    color: #1a1a1a;
+  }
+
+  .challenge-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .stage-sidebar {
+    display: none;
+  }
+
+  .terminal-output,
+  .code-block {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   18. Focus & Accessibility
+   -------------------------------------------------------------------------- */
+.challenge-card:focus-visible,
+.stage-item:focus-visible,
+.stage-nav__btn:focus-visible,
+.hint-box__toggle:focus-visible,
+.challenges-filter__tag:focus-visible {
+  outline: 2px solid var(--ch-teal);
+  outline-offset: 2px;
+}
+
+.challenges-filter__search:focus-visible {
+  outline: none; /* Handled via box-shadow */
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   19. Challenges Hero (listing page)
+   -------------------------------------------------------------------------- */
+.challenges-hero {
+  position: relative;
+  text-align: center;
+  padding: 3rem 1.5rem 2.5rem;
+  overflow: hidden;
+}
+
+.challenges-hero__glow {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0,163,163,0.10) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.challenges-hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ch-teal);
+  margin-bottom: 1rem;
+}
+
+.challenges-hero__title {
+  font-family: var(--ch-font-heading);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  color: var(--ch-white);
+  margin: 0 0 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.challenges-hero__accent {
+  background: linear-gradient(135deg, var(--ch-teal), #5eead4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.challenges-hero__subtitle {
+  font-size: 1.1rem;
+  color: var(--ch-text-secondary);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.65;
+}
+
+.challenges-hero__stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.challenges-hero__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.challenges-hero__stat-number {
+  font-family: var(--ch-font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--ch-white);
+}
+
+.challenges-hero__stat-label {
+  font-size: 0.8rem;
+  color: var(--ch-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --------------------------------------------------------------------------
+   20. Challenge Card – Link Reset & Coming Soon
+   -------------------------------------------------------------------------- */
+a.challenge-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+a.challenge-card:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.challenge-card--disabled {
+  opacity: 0.55;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.challenge-card__coming-soon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-family: var(--ch-font-body);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  background: rgba(255,177,0,0.12);
+  color: var(--ch-yellow);
+  border: 1px solid rgba(255,177,0,0.2);
+}
+
+.challenge-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.challenge-card__stages {
+  font-size: 0.8rem;
+  color: var(--ch-text-muted);
+}
+
+.challenges-section {
+  padding: 0 0 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   21. Challenge Hero (detail page) extras
+   -------------------------------------------------------------------------- */
+.challenge-hero__glow {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,163,163,0.08) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.challenge-hero__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--ch-text-muted);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color var(--ch-transition-fast);
+}
+
+.challenge-hero__back:hover {
+  color: var(--ch-teal);
+  text-decoration: none;
+}
+
+.challenge-hero__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.challenge-hero__icon {
+  font-size: 3rem;
+  flex-shrink: 0;
+}
+
+.challenge-hero__desc {
+  font-size: 1rem;
+  color: var(--ch-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.challenge-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.challenge-hero__meta-item {
+  font-size: 0.85rem;
+  color: var(--ch-text-muted);
+}
+
+.challenge-hero__langs {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.challenge-hero__progress-wrap {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.challenge-hero__progress-label {
+  font-size: 0.8rem;
+  color: var(--ch-text-muted);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   22. Stage Content Panel Visibility & Transitions
+   -------------------------------------------------------------------------- */
+.stage-content-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.stage-content {
+  display: none;
+}
+
+.stage-content--active {
+  display: block;
+  animation: fadeInUp 0.35s ease both;
+}
+
+/* Stage number label above title */
+.stage-content__number {
+  font-family: var(--ch-font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ch-teal);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Stage sidebar list wrapper */
+.stage-sidebar__list {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Timeline vertical line for sidebar */
+.stage-sidebar__list::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+}
+
+/* Stage item as button reset */
+button.stage-item {
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+  border-left: 3px solid transparent;
+}
+
+.stage-item__desc {
+  font-size: 0.75rem;
+  color: var(--ch-text-muted);
+  display: block;
+  margin-top: 0.1rem;
+}
+
+/* Stage item check (SVG) */
+.stage-item__check {
+  display: none;
+  width: 18px;
+  height: 18px;
+  color: #4ade80;
+}
+
+.stage-item__num-text {
+  display: block;
+}
+
+.stage-item--completed .stage-item__check {
+  display: block;
+}
+
+.stage-item--completed .stage-item__num-text {
+  display: none;
+}
+
+/* Stage nav buttons matching HTML IDs */
+.stage-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2rem 0;
+  margin-top: 3rem;
+  border-top: 1px solid var(--ch-border-subtle);
+}
+
+.stage-nav__prev,
+.stage-nav__next,
+.stage-nav__complete {
+  font-family: var(--ch-font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--ch-radius-md);
+  cursor: pointer;
+  transition: all var(--ch-transition);
+}
+
+.stage-nav__prev {
+  background: transparent;
+  color: var(--ch-text-secondary);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.stage-nav__prev:hover:not(:disabled) {
+  color: var(--ch-white);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.stage-nav__prev:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stage-nav__complete {
+  background: rgba(34,197,94,0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34,197,94,0.25);
+}
+
+.stage-nav__complete:hover {
+  background: rgba(34,197,94,0.2);
+  box-shadow: 0 0 20px rgba(34,197,94,0.15);
+}
+
+.stage-nav__next {
+  background: linear-gradient(135deg, var(--ch-teal), var(--ch-deep-teal));
+  color: var(--ch-white);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 16px rgba(0,163,163,0.25);
+}
+
+.stage-nav__next:hover:not(:disabled) {
+  box-shadow: 0 6px 24px rgba(0,163,163,0.35);
+  filter: brightness(1.1);
+}
+
+.stage-nav__next:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   23. Terminal Dot Colors (matching HTML class names)
+   -------------------------------------------------------------------------- */
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.terminal-dot--red { background: #ff5f56; }
+.terminal-dot--yellow { background: #ffbd2e; }
+.terminal-dot--green { background: #27c93f; }
+
+.terminal-output__title {
+  font-family: var(--ch-font-mono);
+  font-size: 0.75rem;
+  color: var(--ch-text-muted);
+  margin-left: 0.5rem;
+}
+
+/* Pre inside code-block body */
+pre.code-block__body {
+  background: var(--ch-bg-code);
+  padding: 1.25rem 1.5rem;
+  margin: 0;
+  overflow-x: auto;
+  font-family: var(--ch-font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--ch-text-primary);
+  white-space: pre;
+  tab-size: 2;
+}
+
+pre.code-block__body code {
+  font-family: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   24. Hint Box Header/Chevron (matching HTML)
+   -------------------------------------------------------------------------- */
+.hint-box__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ch-font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ch-teal);
+  transition: color var(--ch-transition-fast);
+}
+
+.hint-box__header:hover {
+  color: #5eead4;
+}
+
+.hint-box__chevron {
+  transition: transform var(--ch-transition);
+  font-size: 0.85rem;
+}
+
+.hint-box--expanded .hint-box__chevron,
+.hint-chevron--open {
+  transform: rotate(90deg);
+}
+
+/* --------------------------------------------------------------------------
+   25. Completion Celebration Overlay
+   -------------------------------------------------------------------------- */
+.challenge-complete-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInUp 0.4s ease;
+}
+
+.challenge-complete__content {
+  text-align: center;
+  padding: 3rem;
+  max-width: 480px;
+}
+
+.challenge-complete__icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.challenge-complete__title {
+  font-family: var(--ch-font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ch-white);
+  margin: 0 0 0.75rem;
+}
+
+.challenge-complete__text {
+  font-size: 1.05rem;
+  color: var(--ch-text-secondary);
+  margin: 0 0 2rem;
+}
+
+.challenge-complete__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Confetti animation for celebration */
+.confetti-piece {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  top: -20px;
+  animation: confettiFall 3s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+  z-index: 1001;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(var(--rotation, 720deg));
+    opacity: 0;
+  }
+}
+
+.celebration-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.celebration-overlay--fade-out {
+  opacity: 0;
+}
+
+.celebration-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 1002;
+  pointer-events: all;
+}
+
+.celebration-message h2 {
+  font-family: var(--ch-font-heading);
+  font-size: 2.5rem;
+  color: var(--ch-white);
+  margin: 0 0 0.5rem;
+}
+
+.celebration-message p {
+  font-size: 1.1rem;
+  color: var(--ch-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   26. Accessibility Utilities
+   -------------------------------------------------------------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Challenges page footer link override */
+.challenges-page .site-footer {
+  background: rgba(8,24,44,0.8);
+}

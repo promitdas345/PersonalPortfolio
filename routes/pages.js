@@ -1,8 +1,21 @@
 const { sendHtml, sendText } = require('../lib/http');
+const fs = require('fs/promises');
+const path = require('path');
 
 function createPageRoutes(deps) {
   const { auth, loaders, renderTemplate, htmlBuilders } = deps;
   const { loadPosts, loadProjects, loadPacmanSection, loadAnalytics, escapeHtml } = loaders;
+
+  // Challenges data loader
+  const CHALLENGES_FILE = path.join(__dirname, '..', 'data', 'challenges.json');
+  let challengesCache = null;
+  async function loadChallenges() {
+    if (!challengesCache) {
+      const data = await fs.readFile(CHALLENGES_FILE, 'utf8');
+      challengesCache = JSON.parse(data);
+    }
+    return challengesCache;
+  }
 
   // Helper to get analytics HTML with GA measurement ID from environment
   async function getAnalyticsHtml() {
@@ -191,6 +204,144 @@ function createPageRoutes(deps) {
     if (normalizedPathname === '/photography') {
       const analytics = await getAnalyticsHtml();
       return sendHtml(res, await renderTemplate('photography.html', { analytics }));
+    }
+
+    // ── Challenges listing ──
+    if (normalizedPathname === '/challenges') {
+      const challenges = await loadChallenges();
+      const analytics = await getAnalyticsHtml();
+
+      const allLangs = new Set();
+      let totalStagesCount = 0;
+      for (const c of challenges) {
+        totalStagesCount += c.totalStages || 0;
+        (c.languages || []).forEach(l => allLangs.add(l));
+      }
+
+      const difficultyColors = { easy: '#22c55e', medium: '#eab308', hard: '#ef4444' };
+      const challengeCards = challenges.map((c, i) => {
+        const langPills = (c.languages || []).map(l =>
+          `<span class="challenge-card__lang">${escapeHtml(l)}</span>`
+        ).join('');
+        const diffClass = c.difficulty || 'medium';
+        const comingSoonBadge = c.comingSoon
+          ? '<span class="challenge-card__coming-soon">Coming Soon</span>'
+          : '';
+        return `<a href="${c.comingSoon ? '#' : '/challenges/' + encodeURIComponent(c.slug)}" class="challenge-card${c.comingSoon ? ' challenge-card--disabled' : ''}" data-animate style="--stagger-delay:${i * 80}ms">
+          ${comingSoonBadge}
+          <div class="challenge-card__icon">${c.icon || '📦'}</div>
+          <h3 class="challenge-card__title">${escapeHtml(c.title)}</h3>
+          <p class="challenge-card__desc">${escapeHtml(c.description)}</p>
+          <div class="challenge-card__footer">
+            <span class="challenge-card__difficulty challenge-card__difficulty--${diffClass}">${escapeHtml(diffClass)}</span>
+            <span class="challenge-card__stages">${c.totalStages || 0} stages</span>
+          </div>
+          <div class="challenge-card__langs">${langPills}</div>
+          <div class="challenge-card__progress">
+            <div class="progress-bar"><div class="progress-bar__fill" style="width:0%"></div></div>
+          </div>
+        </a>`;
+      }).join('');
+
+      const html = await renderTemplate('challenges.html', {
+        totalChallenges: challenges.length,
+        totalStages: totalStagesCount,
+        totalLanguages: allLangs.size,
+        challengeCards,
+        analytics,
+      });
+      return sendHtml(res, html);
+    }
+
+    // ── Challenge detail page ──
+    if (normalizedPathname.startsWith('/challenges/')) {
+      const slug = decodeURIComponent(normalizedPathname.slice('/challenges/'.length));
+      const challenges = await loadChallenges();
+      const challenge = challenges.find(c => c.slug === slug);
+      if (!challenge || challenge.comingSoon) return sendText(res, 404, 'Challenge not found');
+
+      const analytics = await getAnalyticsHtml();
+
+      const languagePills = (challenge.languages || []).map(l =>
+        `<span class="challenge-card__lang">${escapeHtml(l)}</span>`
+      ).join('');
+
+      // Build stage sidebar items
+      const stageListItems = (challenge.stages || []).map((stage, i) => {
+        return `<button class="stage-item${i === 0 ? ' stage-item--active' : ''}" data-stage-index="${i}" aria-label="Stage ${i + 1}: ${escapeHtml(stage.title)}">
+          <div class="stage-item__number">
+            <span class="stage-item__num-text">${i + 1}</span>
+            <svg class="stage-item__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="stage-item__info">
+            <span class="stage-item__title">${escapeHtml(stage.title)}</span>
+            <span class="stage-item__desc">${escapeHtml(stage.description)}</span>
+          </div>
+        </button>`;
+      }).join('');
+
+      // Build stage content panels
+      const defaultLang = (challenge.languages || ['python'])[0];
+      const stageContentPanels = (challenge.stages || []).map((stage, i) => {
+        const snippet = stage.codeSnippets ? stage.codeSnippets[defaultLang] : null;
+        const codeBlock = snippet
+          ? `<div class="code-block">
+              <div class="code-block__header">
+                <span class="code-block__filename">${escapeHtml(snippet.filename)}</span>
+                <button class="code-block__copy" aria-label="Copy code">Copy</button>
+              </div>
+              <pre class="code-block__body"><code>${escapeHtml(snippet.code)}</code></pre>
+            </div>`
+          : '';
+
+        const terminal = stage.terminalOutput
+          ? `<div class="terminal-output ${stage.terminalSuccess ? 'terminal-output--success' : 'terminal-output--error'}" data-animate-terminal="true">
+              <div class="terminal-output__header">
+                <span class="terminal-dot terminal-dot--red"></span>
+                <span class="terminal-dot terminal-dot--yellow"></span>
+                <span class="terminal-dot terminal-dot--green"></span>
+                <span class="terminal-output__title">Terminal</span>
+              </div>
+              <pre class="terminal-output__body">${escapeHtml(stage.terminalOutput)}</pre>
+            </div>`
+          : '';
+
+        const hints = (stage.hints || []).map((hint, hi) =>
+          `<div class="hint-box" data-hint-index="${hi}">
+            <button class="hint-box__header" aria-expanded="false">
+              <span>💡 Hint ${hi + 1}</span>
+              <span class="hint-box__chevron">▸</span>
+            </button>
+            <div class="hint-box__content"><p>${escapeHtml(hint)}</p></div>
+          </div>`
+        ).join('');
+
+        return `<div class="stage-content${i === 0 ? ' stage-content--active' : ''}" data-stage-panel="${i}">
+          <div class="stage-content__header">
+            <span class="stage-content__number">Stage ${i + 1}</span>
+            <h3 class="stage-content__title">${escapeHtml(stage.title)}</h3>
+          </div>
+          <div class="stage-content__instructions">${stage.instructions || ''}</div>
+          ${codeBlock}
+          ${terminal}
+          ${hints}
+        </div>`;
+      }).join('');
+
+      const html = await renderTemplate('challenge.html', {
+        challengeId: escapeHtml(challenge.id),
+        challengeTitle: escapeHtml(challenge.title),
+        challengeDescription: escapeHtml(challenge.description),
+        challengeDifficulty: escapeHtml(challenge.difficulty || 'medium'),
+        challengeIcon: challenge.icon || '📦',
+        totalStages: challenge.totalStages || 0,
+        estimatedHours: challenge.estimatedHours || 0,
+        languagePills,
+        stageListItems,
+        stageContentPanels,
+        analytics,
+      });
+      return sendHtml(res, html);
     }
 
     return false; // not handled

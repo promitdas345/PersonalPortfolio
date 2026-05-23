@@ -204,9 +204,9 @@
   {
     "id": 6,
     "slug": "connect-4-ai",
-    "title": "Connect 4 vs Unbeatable AI",
+    "title": "Connect 4 vs AI",
     "description": "A solved-game AI that uses minimax, alpha-beta pruning, and transpositon tables to play perfectly.",
-    "summary": "Challenge an AI powered by minimax with alpha‑beta pruning — it searches millions of positions per move and has never been beaten.",
+    "summary": "Challenge a strong AI powered by minimax with alpha‑beta pruning — it searches millions of positions per move and plays at a very high level.",
     "technologies": [
       "JavaScript",
       "Canvas API",
@@ -215,7 +215,7 @@
     ],
     "link": "/connect4",
     "image": "/public/images/connect4_modern_thumbnail.png",
-    "impactHeadline": "An unbeatble AI that searches 14 moves deep in under 200ms using bitboard optimizations.",
+    "impactHeadline": "A strong AI that searches 14+ moves deep in under 200ms using bitboard optimizations.",
     "highlights": [
       "Implemented Minimax with Alpha-Beta pruning to prune the search tree efficiently.",
       "Used Zobrist hashing and a transposition table to cache millions of board states.",

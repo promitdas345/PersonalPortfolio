@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" class="challenges-page">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Practice coding by building real-world projects from scratch. Step-by-step challenges to master HTTP servers, Redis, Git, and more." />
+    <title>Coding Challenges | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+    <link rel="stylesheet" href="/public/challenges.css" />
+</head>
+
+<body class="challenges-page">
+    <header class="site-header">
+        <div class="container flex justify-between items-center py-4">
+            <h1 class="text-2xl font-bold text-blue-700">Coding Challenges</h1>
+            <nav>
+                <ul class="flex space-x-4 text-lg">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/projects" class="nav-link">Projects</a></li>
+                    <li><a href="/blog" class="nav-link">Blog</a></li>
+                    <li><a href="/challenges" class="nav-link" style="color: var(--color-selective-yellow);">Challenges</a></li>
+                    <li><a href="/about" class="nav-link">About</a></li>
+                    <li><a href="/contact" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container py-8">
+        <!-- Hero Section -->
+        <section class="challenges-hero" aria-labelledby="challenges-heading">
+            <div class="challenges-hero__glow"></div>
+            <p class="challenges-hero__eyebrow">Build Real Systems</p>
+            <h2 class="challenges-hero__title" id="challenges-heading">Master programming by<br><span class="challenges-hero__accent">building from scratch</span></h2>
+            <p class="challenges-hero__subtitle">Step-by-step coding challenges that take you from zero to a working
+                implementation. Each challenge teaches you how real-world software works under the hood.</p>
+            <div class="challenges-hero__stats">
+                <div class="challenges-hero__stat">
+                    <span class="challenges-hero__stat-number">{{ totalChallenges }}</span>
+                    <span class="challenges-hero__stat-label">Challenges</span>
+                </div>
+                <div class="challenges-hero__stat">
+                    <span class="challenges-hero__stat-number">{{ totalStages }}</span>
+                    <span class="challenges-hero__stat-label">Stages</span>
+                </div>
+                <div class="challenges-hero__stat">
+                    <span class="challenges-hero__stat-number">{{ totalLanguages }}</span>
+                    <span class="challenges-hero__stat-label">Languages</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Challenge Cards Grid -->
+        <section class="challenges-section" aria-labelledby="all-challenges-heading">
+            <h2 class="sr-only" id="all-challenges-heading">All Challenges</h2>
+            <div class="challenges-grid">
+                {{ challengeCards }}
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer py-4 text-center text-sm text-gray-600">
+        &copy; 2026 Promit. All rights reserved.
+    </footer>
+
+    <script src="/public/challenges.js"></script>
+    {{ analytics }}
+</body>
+
+</html>

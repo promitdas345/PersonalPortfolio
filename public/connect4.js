@@ -1,5 +1,5 @@
 /**
- * Connect 4 — Unbeatable AI (Bitboard Engine)
+ * Connect 4 — AI Engine (Bitboard + Negamax)
  *
  * AI uses negamax with alpha-beta pruning, iterative deepening,
  * bitboard representation, transposition table, and threat analysis.
@@ -24,7 +24,7 @@
 
     const COL_SCORE = [0, 1, 2, 3, 2, 1, 0];
     const MAX_DEPTH = 30;
-    const TIME_BUDGET_MS = 3000;
+    const TIME_BUDGET_MS = 5000;
 
     /* ─── bitboard constants ───────────────────────────────── */
     const BB_H = ROWS + 1;           // 7 bits per column
@@ -230,11 +230,11 @@
         if (max <= alpha) return max; // can't improve
         if (beta > max) beta = max;
 
-        // TT lookup — use numMoves-based depth for consistency across iterative deepening
+        // TT lookup — only use entries from equal or deeper searches
         const key = position + mask + BB_BOT_ROW;
-        const ttDepthVal = TOTAL_CELLS - numMoves; // remaining moves (higher = more to search)
+        const ttDepthVal = depth;
         const cached = TT.get(key);
-        if (cached) {
+        if (cached && cached.depth >= depth) {
             if (cached.flag === TT_EXACT) return cached.score;
             if (cached.flag === TT_LOWER) {
                 if (cached.score >= beta) return cached.score;
@@ -361,34 +361,38 @@
         const maxD = Math.min(MAX_DEPTH, remaining);
 
         // Adaptive time: more time for early critical moves
-        const timeBudget = moveCount <= 8 ? 8000 : TIME_BUDGET_MS;
+        const timeBudget = moveCount <= 10 ? 10000 : TIME_BUDGET_MS;
         searchDeadline = Date.now() + timeBudget;
         searchAborted = false;
         // Do NOT clear TT between moves — persist knowledge across the game
         // TT.clear();
+
+        let prevBestScore = 0;
 
         for (let d = 1; d <= maxD; d++) {
             nodeCount = 0;
             let iterBest = -1;
             let iterBestScore = -Infinity;
 
-            // Build and sort root moves
+            // Build root moves (centre-out ordering)
             const rootMoves = [];
             for (const c of MOVE_ORDER) {
                 const moveBit = bbMoveBit(mask, c);
                 if (moveBit === 0n) continue;
-                // Check move is safe (doesn't give opponent a win above)
-                const aboveBit = moveBit << 1n;
-                const oppWinSpots = bbWinSpots(plPos, mask);
-                // For root, include all playable moves but prefer safe ones
                 rootMoves.push({ col: c, bit: moveBit });
+            }
+
+            // Use aspiration window after depth 4 for faster search
+            let alpha = -Infinity, beta = Infinity;
+            if (d >= 5 && prevBestScore !== 0) {
+                alpha = prevBestScore - 3;
+                beta = prevBestScore + 3;
             }
 
             for (const move of rootMoves) {
                 const newMask = mask | move.bit;
                 const newPos = plPos; // opponent (player) becomes current
-                // Full alpha-beta window at root for correct results
-                const score = -negamax(newPos, newMask, d - 1, -Infinity, Infinity, moveCount + 1);
+                const score = -negamax(newPos, newMask, d - 1, -beta, -alpha, moveCount + 1);
 
                 if (searchAborted) break;
 
@@ -396,10 +400,30 @@
                     iterBestScore = score;
                     iterBest = move.col;
                 }
+                if (score > alpha) alpha = score;
+            }
+
+            // If aspiration window failed, re-search with full window
+            if (!searchAborted && d >= 5 && (iterBestScore <= prevBestScore - 3 || iterBestScore >= prevBestScore + 3)) {
+                iterBest = -1;
+                iterBestScore = -Infinity;
+                for (const move of rootMoves) {
+                    const newMask = mask | move.bit;
+                    const newPos = plPos;
+                    const score = -negamax(newPos, newMask, d - 1, -Infinity, Infinity, moveCount + 1);
+
+                    if (searchAborted) break;
+
+                    if (score > iterBestScore) {
+                        iterBestScore = score;
+                        iterBest = move.col;
+                    }
+                }
             }
 
             if (!searchAborted && iterBest >= 0) {
                 bestCol = iterBest;
+                prevBestScore = iterBestScore;
                 // If we found a guaranteed win, no need to search deeper
                 if (iterBestScore >= (remaining >> 1)) break;
             }

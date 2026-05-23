@@ -387,16 +387,16 @@
   transition: all 0.2s ease;
 }
 
-.ne-demo-container .ne-demo-btn.btn-secondary {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.06);
+.ne-demo-container .btn-secondary {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
-.ne-demo-container .ne-demo-btn.btn-secondary:hover:not(:disabled) {
-  color: #5ee7e7;
-  border-color: #5ee7e7;
-  background: rgba(94, 231, 231, 0.08);
+.ne-demo-container .btn-secondary:hover:not(:disabled) {
+  color: #5ee7e7 !important;
+  border-color: #5ee7e7 !important;
+  background: rgba(94, 231, 231, 0.08) !important;
 }
 
 .ne-demo-btn:disabled {
