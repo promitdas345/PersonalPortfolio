@@ -4,7 +4,7 @@ const path = require('path');
 
 function createPageRoutes(deps) {
   const { auth, loaders, renderTemplate, htmlBuilders } = deps;
-  const { loadPosts, loadProjects, loadPacmanSection, loadAnalytics, escapeHtml } = loaders;
+  const { loadPosts, loadProjects, loadPacmanSection, loadAnalytics, escapeHtml, sanitizeRichHtml } = loaders;
 
   // Challenges data loader
   const CHALLENGES_FILE = path.join(__dirname, '..', 'data', 'challenges.json');
@@ -321,7 +321,7 @@ function createPageRoutes(deps) {
             <span class="stage-content__number">Stage ${i + 1}</span>
             <h3 class="stage-content__title">${escapeHtml(stage.title)}</h3>
           </div>
-          <div class="stage-content__instructions">${stage.instructions || ''}</div>
+          <div class="stage-content__instructions">${sanitizeRichHtml(stage.instructions || '')}</div>
           ${codeBlock}
           ${terminal}
           ${hints}
