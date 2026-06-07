@@ -82,6 +82,7 @@ function createApiRoutes(deps) {
           }
           return sendJson(res, 401, { success: false, error: 'Invalid username/email or password.' });
         }
+        auth.upgradePasswordHashIfLegacy(user.id, password).catch(() => {});
         const { token, session } = await auth.createSession(user, req);
         const cookie = serializeCookie(auth.ADMIN_SESSION_COOKIE, token, {
           path: '/',
@@ -561,21 +562,21 @@ function createApiRoutes(deps) {
       if (!enforceMutationGuards(req, res, null, false)) return;
       try {
         const formData = await parseJsonBody(req);
-        const name = trim(formData.name, 100).replace(/[\r\n]/g, '');
-        const email = trim(formData.email, 254).replace(/[\r\n]/g, '');
+        const name = trim(formData.name, 100).replace(/[^\x20-\x7E]/g, '').replace(/"/g, "'");
+        const email = trim(formData.email, 254).replace(/[^\x20-\x7E]/g, '');
         const message = trim(formData.message, 5000);
         if (!name || !email || !message) {
           return sendJson(res, 400, { success: false, error: 'Name, email, and message are required.' });
         }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
           return sendJson(res, 400, { success: false, error: 'Please provide a valid email address.' });
         }
         console.log(`[email] Attempting to send email from ${email} (${name})`);
         await transporter.sendMail({
           from: process.env.EMAIL_USER || 'noreply@example.com',
-          replyTo: `"${name}" <${email}>`,
+          replyTo: { name, address: email },
           to: process.env.EMAIL_TO || 'your-email@example.com',
-          subject: `New contact from ${name}`,
+          subject: `New contact from ${name}`.slice(0, 200),
           text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
           html: `<p>You have a new contact form submission from:</p>
                <ul>
