@@ -88,7 +88,7 @@
       const data = this._read();
       const completedStages = data[challengeId]?.completed ?? [];
       // If total is not supplied, try to detect from the DOM
-      const stageCount = total ?? document.querySelectorAll('.stage-item').length || 0;
+      const stageCount = total ?? (document.querySelectorAll('.stage-item').length || 0);
       return { completed: completedStages.length, total: stageCount };
     },
 

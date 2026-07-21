@@ -28,6 +28,30 @@ const ADMIN_DEFAULT_USERNAME = String(process.env.ADMIN_USERNAME || 'admin').tri
 const ADMIN_DEFAULT_EMAIL = String(process.env.ADMIN_EMAIL || `${ADMIN_DEFAULT_USERNAME}@local`).toLowerCase();
 const ADMIN_DEFAULT_PASSWORD = process.env.ADMIN_PASSWORD || `CHANGE_ME_${crypto.randomBytes(8).toString('hex')}`;
 
+function validateEnvironment() {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const problems = [];
+
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    problems.push('EMAIL_USER/EMAIL_PASS not set — contact form emails will fail to send.');
+  }
+  if (process.env.MONGODB_URI && !/^mongodb(\+srv)?:\/\//.test(process.env.MONGODB_URI)) {
+    problems.push('MONGODB_URI is set but does not look like a valid MongoDB connection string.');
+  }
+  if (isProduction && !process.env.ADMIN_PASSWORD) {
+    problems.push('ADMIN_PASSWORD not set in production — a random password will be generated on every restart.');
+  }
+
+  if (problems.length === 0) return;
+
+  for (const problem of problems) {
+    console.warn(`⚠️  Config warning: ${problem}`);
+  }
+  if (isProduction && problems.some(p => p.includes('ADMIN_PASSWORD'))) {
+    throw new Error('Refusing to start in production with unset ADMIN_PASSWORD.');
+  }
+}
+
 const renderTemplate = createRenderer(VIEWS_DIR);
 const loaders = createLoaders({
   postsFile: POSTS_FILE,
@@ -94,11 +118,27 @@ function logRequest(req, res, startedAtNs) {
   );
 }
 
+function healthStatus() {
+  const useMongoDb = Boolean(process.env.MONGODB_URI);
+  let mongo = 'disabled';
+  if (useMongoDb) {
+    const { mongoose } = require('./lib/database');
+    mongo = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  }
+  return { status: 'ok', uptimeSeconds: Math.round(process.uptime()), mongo };
+}
+
 async function router(req, res) {
   const { method, url: reqUrl } = req;
   const url = new URL(reqUrl, `http://${req.headers.host}`);
   const pathname = url.pathname;
   const normalizedPathname = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+  if (normalizedPathname === '/health') {
+    const body = JSON.stringify(healthStatus());
+    send(res, 200, body, { 'Content-Type': 'application/json' });
+    return;
+  }
 
   if (pathname.startsWith('/public/')) {
     const staticFile = await getStaticFile(pathname.slice('/public/'.length));
@@ -139,6 +179,12 @@ function createAppServer() {
 }
 
 if (require.main === module) {
+  try {
+    validateEnvironment();
+  } catch (err) {
+    console.error('Failed to initialize:', err.message);
+    process.exit(1);
+  }
   auth.loadAdminAuthRecord()
     .then(record => {
       if (record.isNew) {
@@ -157,6 +203,29 @@ if (require.main === module) {
       server.listen(PORT, () => {
         console.log(`Portfolio/blog site running at http://localhost:${PORT}`);
       });
+
+      let shuttingDown = false;
+      function shutdown(signal) {
+        if (shuttingDown) return;
+        shuttingDown = true;
+        console.log(`${signal} received, shutting down gracefully...`);
+        auth.stopScheduler();
+        const forceExitTimer = setTimeout(() => {
+          console.error('Graceful shutdown timed out, forcing exit.');
+          process.exit(1);
+        }, 10_000);
+        forceExitTimer.unref();
+        server.close(err => {
+          if (err) {
+            console.error('Error during server close:', err);
+            process.exit(1);
+          }
+          console.log('Server closed. Bye.');
+          process.exit(0);
+        });
+      }
+      process.on('SIGTERM', () => shutdown('SIGTERM'));
+      process.on('SIGINT', () => shutdown('SIGINT'));
     })
     .catch(err => {
       console.error('Failed to initialize:', err);

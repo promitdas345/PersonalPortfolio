@@ -354,6 +354,32 @@ Send a contact form message via email. No authentication required.
 
 ---
 
+### Operations
+
+#### `GET /health`
+
+Liveness/readiness probe. No authentication required. Not rate-limited, not logged as a regular page request.
+
+**Response (200):**
+```json
+{
+  "status": "ok",
+  "uptimeSeconds": 1234,
+  "mongo": "connected"
+}
+```
+
+`mongo` is one of:
+| Value | Meaning |
+|-------|---------|
+| `disabled` | `MONGODB_URI` is not set — the app is running on JSON-file storage |
+| `connected` | Mongoose reports `readyState === 1` |
+| `disconnected` | `MONGODB_URI` is set but the driver is not currently connected (the app has already fallen back to JSON-file storage for reads — see [ARCHITECTURE.md](ARCHITECTURE.md#mongodb-fallback)) |
+
+This endpoint always returns `200` as long as the Node process is alive and able to route a request — it reports Mongo's state rather than failing on it, since the app is designed to keep serving from the JSON fallback when Mongo is unreachable. Point your hosting platform's health check (Render/Railway/Heroku/Kubernetes) at this path.
+
+---
+
 ## Error Response Format
 
 All errors follow this shape:

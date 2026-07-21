@@ -2,13 +2,13 @@
 
 :root {
   --color-oxford-blue: #0A2540;
-  --color-slate-gray: #6B7280;
-  --color-light-sea-green: #00A3A3;
-  --color-deep-teal: #007C7C;
+  --color-slate-gray: #475569;
+  --color-light-sea-green: #007C7C;
   --color-selective-yellow: #FFB100;
   --color-white: #FFFFFF;
   --color-navy-shadow: rgba(10, 37, 64, 0.15);
   --color-crimson: #DC2626;
+  --color-footer-text: #94A3B8;
 }
 
 * {
@@ -109,7 +109,7 @@ main > section:first-of-type {
 
 .site-footer {
   background: #08182c;
-  color: var(--color-slate-gray);
+  color: var(--color-footer-text);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -503,6 +503,8 @@ textarea:focus {
 
 .text-blue-600 {
   color: var(--color-light-sea-green);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .text-gray-600 {
@@ -510,7 +512,7 @@ textarea:focus {
 }
 
 .text-gray-500 {
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .text-sm {
@@ -1181,9 +1183,9 @@ input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
 
 /* === Project Tech Tags Contrast (WCAG fix) === */
 .tag {
-  background-color: rgba(94, 231, 231, 0.15) !important;
-  color: #5ee7e7 !important;
-  border: 1px solid rgba(94, 231, 231, 0.3) !important;
+  background-color: var(--color-light-sea-green) !important;
+  color: var(--color-white) !important;
+  border: 1px solid transparent !important;
 }
 
 /* === Blog Post Hover === */

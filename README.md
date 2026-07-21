@@ -1,5 +1,7 @@
 # Personal Portfolio — Promit Das
 
+[![CI](https://github.com/promitdas345/PersonalPortfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/promitdas345/PersonalPortfolio/actions/workflows/ci.yml)
+
 A full-stack portfolio website with a blog, project showcase, inline content editing, and static-site generation — all built from scratch using Node.js with **zero frameworks**.
 
 ---
@@ -40,9 +42,15 @@ npm start               # → http://localhost:3000
 
 ```
 PersonalPortfolio/
-├── server.js                  # HTTP server, router, startup logic
+├── server.js                  # HTTP server, router, startup, health check, graceful shutdown
 ├── build.js                   # Static site generator (creates dist/)
 ├── package.json               # Dependencies & scripts
+├── eslint.config.js           # ESLint flat config (Node + browser rule sets)
+├── CHANGELOG.md                # Detailed record of fixes and infra additions
+│
+├── .github/
+│   ├── workflows/ci.yml       # CI: lint → test → npm audit, on every push/PR
+│   └── dependabot.yml         # Weekly dependency update PRs
 │
 ├── lib/                       # ← ALL backend logic lives here
 │   ├── auth.js                # Authentication, sessions, rate limiting
@@ -98,7 +106,8 @@ PersonalPortfolio/
 │
 ├── tests/                     # Test suite
 │   ├── server.integration.test.js  # Integration tests (runs actual HTTP server)
-│   └── data.unit.test.js           # Unit tests for data utilities
+│   ├── data.unit.test.js           # Unit tests for data utilities
+│   └── public-scripts.unit.test.js # Syntax-checks every public/*.js file
 │
 ├── scripts/
 │   └── migrate-posts-to-db.js # One-time migration: JSON → MongoDB
@@ -170,9 +179,30 @@ Blog posts and projects can also be created via **New Post** / **New Project** b
 npm test
 ```
 
-This runs the Node.js built-in test runner with `--test-concurrency=1` (sequential). Tests include:
-- **Integration tests** — spins up a real HTTP server, makes requests, validates responses
-- **Unit tests** — tests for HTML sanitization and URL validation
+This runs the Node.js built-in test runner with `--test-concurrency=1` (sequential), scoped to `tests/**/*.test.js`. Tests include:
+- **Integration tests** (`server.integration.test.js`) — spins up a real HTTP server, makes requests, validates responses. Forces `MONGODB_URI=''` before requiring the server so it never depends on your real database being reachable.
+- **Unit tests** (`data.unit.test.js`) — HTML sanitization and URL validation
+- **Static-analysis regression test** (`public-scripts.unit.test.js`) — syntax-checks every file in `public/*.js`. Catches the class of bug where a browser script has a JS syntax error that silently kills all interactivity on a page (this happened once — see [CHANGELOG.md](CHANGELOG.md)).
+
+## Linting
+
+```bash
+npm run lint
+```
+
+ESLint (flat config, `eslint.config.js`). Node-side code (`lib/`, `routes/`, `server.js`) and browser-side code (`public/`) use separate rule sets with the appropriate globals for each environment.
+
+## CI
+
+Every push/PR to `main` runs, in order: `npm ci` → `npm run lint` → `npm test` → `npm audit --audit-level=high`. See `.github/workflows/ci.yml`. Dependabot (`.github/dependabot.yml`) opens a weekly PR for outdated dependencies.
+
+## Health Check
+
+```
+GET /health
+```
+
+Returns `{ status, uptimeSeconds, mongo }` without touching auth or the data layer — point your hosting platform's liveness/readiness probe here. See [API Reference](docs/API.md#get-health) for the full response shape.
 
 ---
 
@@ -212,18 +242,24 @@ This generates a `dist/` folder with pure HTML files (no server needed). Deploy 
 | [API Reference](docs/API.md) | Every API endpoint with request/response examples |
 | [Contributing Guide](docs/CONTRIBUTING.md) | How to add features, code conventions, testing |
 | [Analytics Setup](ANALYTICS_SETUP.md) | Google Analytics 4 integration guide |
+| [Changelog](CHANGELOG.md) | Detailed record of security fixes, reliability fixes, and infrastructure additions |
 
 ---
 
 ## Security
 
 - **Password Hashing:** `scrypt` (v2) with automatic legacy PBKDF2 fallback
-- **HTML Sanitization:** `sanitize-html` library (replaces regex)
+- **HTML Sanitization:** `sanitize-html` library with an explicit `allowedStyles` allowlist (prevents CSS-based overlay/clickjacking attacks via rich-text posts)
+- **Output Escaping:** Every value interpolated into an HTML template is escaped at the call site (`routes/pages.js`) — the template engine itself does raw substitution and enforces nothing
 - **CSRF Protection:** Token-based, enforced on all mutation endpoints
 - **Rate Limiting:** Login attempts are rate-limited per user and IP
 - **Session Security:** HttpOnly, SameSite=Lax cookies; Secure flag on HTTPS
+- **Security Headers:** CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, HSTS — set on every response (`lib/http.js`)
 - **File Uploads:** Magic byte validation, 5MB limit, allowed types only
 - **Body Size Limit:** 4MB max request body
+- **Dependency Scanning:** `npm audit --audit-level=high` runs in CI on every push; Dependabot opens weekly update PRs
+
+See [CHANGELOG.md](CHANGELOG.md) for the specific vulnerabilities found and fixed in the most recent audit, including two stored-XSS issues and a dependency CVE upgrade.
 
 ---
 
