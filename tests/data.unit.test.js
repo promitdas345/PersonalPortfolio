@@ -16,5 +16,5 @@ test('sanitizeRichHtml removes scripts, inline handlers, and javascript URLs', (
   );
   assert.equal(output.includes('<script'), false);
   assert.equal(/on[a-z]+\s*=/.test(output), false);
-  assert.equal(output.includes('href="#"'), true);
+  assert.equal(output.includes('javascript:'), false);
 });

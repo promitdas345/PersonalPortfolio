@@ -84,7 +84,7 @@ function createPageRoutes(deps) {
         architectureSection: buildArchitectureSection(project.architecture),
         ownershipSection: buildOwnershipSection(project.ownership),
         content: project.content || '',
-        image: project.image,
+        image: escapeHtml(project.image),
         ctaButton,
         projectId: escapeHtml(String(project.id)),
         slug: escapeHtml(project.slug),
@@ -139,7 +139,7 @@ function createPageRoutes(deps) {
       }
       const csrfToken = context.session ? context.session.csrfToken : '';
       const analytics = await getAnalyticsHtml();
-      const html = await renderTemplate('editor.html', { postJson, csrfToken, analytics });
+      const html = await renderTemplate('editor.html', { postJson: escapeHtml(postJson), csrfToken, analytics });
       return sendHtml(res, html);
     }
 

@@ -568,7 +568,7 @@ function createApiRoutes(deps) {
         if (!name || !email || !message) {
           return sendJson(res, 400, { success: false, error: 'Name, email, and message are required.' });
         }
-        if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
           return sendJson(res, 400, { success: false, error: 'Please provide a valid email address.' });
         }
         console.log(`[email] Attempting to send email from ${email} (${name})`);

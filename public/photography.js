@@ -35,8 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLightbox();
     lightbox.classList.add('active');
     lightbox.setAttribute('aria-hidden', 'false');
+    closeBtn.removeAttribute('tabindex');
+    prevBtn.removeAttribute('tabindex');
+    nextBtn.removeAttribute('tabindex');
+    closeBtn.focus();
     document.body.style.overflow = 'hidden'; // Prevent scrolling
-    
+
     // Add keyboard event listener when lightbox is open
     document.addEventListener('keydown', handleKeyDown);
   }
@@ -44,8 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeLightbox() {
     lightbox.classList.remove('active');
     lightbox.setAttribute('aria-hidden', 'true');
+    closeBtn.setAttribute('tabindex', '-1');
+    prevBtn.setAttribute('tabindex', '-1');
+    nextBtn.setAttribute('tabindex', '-1');
     document.body.style.overflow = '';
-    
+
     // Remove keyboard listener
     document.removeEventListener('keydown', handleKeyDown);
   }

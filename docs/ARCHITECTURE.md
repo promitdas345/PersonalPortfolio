@@ -18,6 +18,7 @@ This document explains how every part of the codebase connects, from the moment 
 10. [Frontend JavaScript](#10-frontend-javascript)
 11. [Static Site Build](#11-static-site-build)
 12. [Security Summary](#12-security-summary)
+13. [Operations: Health, Shutdown, Config, CI](#13-operations-health-shutdown-config-ci)
 
 ---
 
@@ -132,6 +133,12 @@ loadPosts()
 ```
 
 **Auto-detection:** If `MONGODB_URI` is set, the module detects it and delegates to `data-mongodb.js` instead.
+
+#### MongoDB fallback
+
+`loadPosts()` (reads) do **not** hard-fail if Mongo is unreachable. If `mongoDbLoaders.loadPosts()` throws — connection timeout, DNS failure, auth error, whatever — `lib/data.js` catches it, logs a `⚠️` warning, and falls through to the JSON-file path below it in the same function, transparently serving `data/posts.json` instead. A page visitor never sees a 500 because of a flaky database connection; they just silently get the file-backed content. Check `GET /health` (see [API Reference](API.md#get-health)) to see whether Mongo is actually connected at any given moment.
+
+This fallback is **read-only**. `updatePosts()` (writes — creating/editing/deleting a post through the admin UI) still calls straight into Mongo with no fallback: if Mongo is down, saving a post fails loudly rather than silently writing to a JSON file that would then disagree with what Mongo has once it reconnects. Silently diverging the two stores would be worse than a failed save.
 
 ### `lib/data-mongodb.js` — MongoDB Backend
 
@@ -406,3 +413,47 @@ npm run build
 | Body size limit | 4 MB max | `lib/http.js` |
 | Path traversal | Resolved path must be within allowed dirs | `lib/http.js` |
 | Audit logging | All admin actions logged with actor, IP, timestamp | `lib/admin-store.js` |
+| Output escaping | Every value interpolated into a template must be passed through `escapeHtml()` — the `{{ }}` renderer in `lib/templates.js` does raw string substitution and does **not** escape anything itself | `routes/pages.js`, `lib/templates.js` |
+| Security response headers | CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS (on HTTPS) — set once in the shared `send()` helper so every response gets them | `lib/http.js` |
+
+> **A note on the template engine:** `lib/templates.js`'s `{{ key }}` substitution is intentionally dumb — it does not know or care whether `key`'s value is safe to drop into HTML. That responsibility sits entirely with the caller in `routes/pages.js`. Every route handler must call `escapeHtml()` on every field before passing it to `renderTemplate()`, with the sole exception of values that are themselves already-sanitized HTML fragments (e.g. a blog post's `contentHtml`, which went through `sanitizeRichHtml()` at write time). When adding a new field to a template, escape it — the engine will not save you if you forget.
+
+---
+
+## 13. Operations: Health, Shutdown, Config, CI
+
+### Health check — `GET /health`
+
+Implemented directly in `server.js` (`healthStatus()` + the `/health` route in `router()`), ahead of every other route so it never touches auth, rate limiting, or the data layer. Returns `{ status, uptimeSeconds, mongo }` — see [API Reference](API.md#get-health) for the response shape. Point your hosting platform's health/liveness probe here.
+
+### Graceful shutdown
+
+`server.js` registers `SIGTERM`/`SIGINT` handlers (only when run as `node server.js` directly, i.e. inside the `require.main === module` block — not when `server.js` is `require()`'d by the test suite). On signal:
+
+1. Stop `auth`'s background scheduler (`auth.stopScheduler()`, in `lib/auth.js`) — this clears the `setInterval` that auto-publishes scheduled posts every 30s; leaving it running would keep the process alive indefinitely and could fire mid-shutdown.
+2. Call `server.close()`, which stops accepting new connections and lets in-flight requests finish, then exits `0`.
+3. A 10-second watchdog timer forces `process.exit(1)` if `close()` never calls back (e.g. a connection that never ends).
+
+**Platform note:** Windows does not deliver POSIX signals the way Linux does — `SIGTERM` sent from a non-console context (e.g. `kill` from a different shell, or a background job) is not guaranteed to reach the Node process's signal handler; only `SIGINT` from the same console (Ctrl+C) is reliable. This is a Windows/Node platform limitation, not a bug in the shutdown logic — production deployments run on Linux (Render/Railway/Heroku), where both signals are delivered normally.
+
+### Startup config validation
+
+`validateEnvironment()` in `server.js` runs once at boot (before the DB/scheduler init chain) and checks:
+- `EMAIL_USER`/`EMAIL_PASS` are set (contact form will otherwise silently fail every send)
+- `MONGODB_URI`, if set, at least looks like a Mongo connection string (`mongodb://` or `mongodb+srv://`)
+- In production (`NODE_ENV=production`), `ADMIN_PASSWORD` is set — the server **refuses to start** without it, since the alternative is a fresh random admin password generated (and only logged to stdout) on every restart
+
+Problems are logged as `⚠️  Config warning: ...`; only the production/`ADMIN_PASSWORD` case is fatal.
+
+### CI — `.github/workflows/ci.yml`
+
+Runs on every push/PR to `main`: `npm ci` → `npm run lint` (ESLint, see `eslint.config.js`) → `npm test` → `npm audit --audit-level=high`. All four must pass. `.github/dependabot.yml` opens a weekly PR for outdated npm packages and GitHub Actions.
+
+### Linting — `eslint.config.js`
+
+Flat-config ESLint (v9). Three rule sets, because this repo mixes runtime environments in one tree:
+- `server.js`, `lib/**`, `routes/**`, `tests/**` — Node globals, `js.configs.recommended`
+- `public/**/*.js` — browser globals (these files run in the client, not under Node)
+- `public/flappy-bird-ai/**/*.js` — a p5.js sketch split across multiple `<script>` tags that share one global scope at runtime (no ES modules); each file's top-level `let`s look like undefined globals — or redeclared globals — to a linter that checks files in isolation. `no-redeclare` and `no-unused-vars` are turned off for this directory specifically, and the shared identifiers (both p5's built-ins and the sketch's own cross-file variables) are declared as `globals` so real bugs (typos, truly undefined names) still get caught.
+
+`public/flappy-bird-ai/libraries/**` (the vendored p5.js library itself) and `claude-code/**` (an unrelated git submodule that happens to live in this repo) are excluded entirely.
