@@ -6,7 +6,6 @@ module.exports = [
     ignores: [
       'node_modules/**',
       'dist/**',
-      'claude-code/**',
       'public/flappy-bird-ai/libraries/**',
     ],
   },

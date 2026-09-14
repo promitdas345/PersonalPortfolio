@@ -456,4 +456,4 @@ Flat-config ESLint (v9). Three rule sets, because this repo mixes runtime enviro
 - `public/**/*.js` — browser globals (these files run in the client, not under Node)
 - `public/flappy-bird-ai/**/*.js` — a p5.js sketch split across multiple `<script>` tags that share one global scope at runtime (no ES modules); each file's top-level `let`s look like undefined globals — or redeclared globals — to a linter that checks files in isolation. `no-redeclare` and `no-unused-vars` are turned off for this directory specifically, and the shared identifiers (both p5's built-ins and the sketch's own cross-file variables) are declared as `globals` so real bugs (typos, truly undefined names) still get caught.
 
-`public/flappy-bird-ai/libraries/**` (the vendored p5.js library itself) and `claude-code/**` (an unrelated git submodule that happens to live in this repo) are excluded entirely.
+`public/flappy-bird-ai/libraries/**` (the vendored p5.js library itself) is excluded entirely.
