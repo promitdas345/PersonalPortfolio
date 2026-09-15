@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promit Das — Computer Science &amp; Statistics</title>
+<meta name="description" content="Third-year Computer Science and Statistics student at Memorial University. Data tooling, web engineering, and machine learning projects.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>◆</text></svg>">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="top">
+  <nav class="nav container" aria-label="Main">
+    <a class="brand" href="#top">Promit&nbsp;Das</a>
+
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+      <span class="bars" aria-hidden="true"></span>
+      <span class="sr-only">Menu</span>
+    </button>
+
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#play">Play</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a class="nav-cta" href="full/">Full site →</a></li>
+      <li>
+        <button class="theme-toggle" id="themeToggle" title="Switch theme">
+          <span class="sr-only">Switch theme</span>
+          <span class="theme-icon" aria-hidden="true"></span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="hero container">
+    <p class="eyebrow">Memorial University of Newfoundland</p>
+    <h1>I build <span class="accent">data tooling</span> and things that run in a browser.</h1>
+    <p class="lede">
+      Third-year B.Sc. student in Computer Science &amp; Statistics. I work where data science,
+      web engineering and human-centered design overlap — dashboards over millions of rows,
+      realtime collaboration tools, and game AI that runs client-side.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#projects">See the projects</a>
+      <a class="btn" href="connect4/">Play Connect 4 vs the AI</a>
+      <a class="btn btn-quiet" href="https://github.com/promitdas345" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <dl class="facts">
+      <div><dt>Graduating</dt><dd>December 2026</dd></div>
+      <div><dt>Looking for</dt><dd>Co-op / internship</dd></div>
+      <div><dt>Start</dt><dd>January or May</dd></div>
+    </dl>
+  </section>
+
+  <section class="container section" id="about">
+    <h2><span class="num">01</span> About</h2>
+    <div class="about-grid">
+      <div class="prose">
+        <p>
+          I design systems that merge data science, web engineering and human-centered design —
+          from large-scale Plotly Dash dashboards to realtime collaboration tools.
+        </p>
+        <p>
+          Recent work includes containerizing Dash apps on AWS Fargate, wiring FastAPI services,
+          building ML pipelines with PyTorch, and experimenting with ROS2 simulations.
+        </p>
+        <p>
+          I'm after a 12-week, 40 hr/week placement with no class conflicts, building production
+          software at a tech company or research lab.
+        </p>
+      </div>
+      <ul class="focus">
+        <li>Cloud-native dashboards on AWS</li>
+        <li>Realtime collaboration systems</li>
+        <li>Data tooling, analytics &amp; visualization</li>
+        <li>Robotics / IoT prototypes and simulations</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="container section" id="projects">
+    <h2><span class="num">02</span> Projects</h2>
+
+    <div class="filters" id="filters" role="group" aria-label="Filter projects by technology">
+      <button class="chip is-active" data-filter="all">All</button>
+      <button class="chip" data-filter="Python">Python</button>
+      <button class="chip" data-filter="JavaScript">JavaScript</button>
+      <button class="chip" data-filter="Node.js">Node.js</button>
+      <button class="chip" data-filter="React">React</button>
+    </div>
+
+    <ul class="cards" id="cards">
+
+      <li class="card" data-tech="JavaScript,Canvas API,Minimax Algorithm,HTML5">
+        <h3>Connect 4 vs AI</h3>
+        <p>A solved-game AI using negamax with alpha-beta pruning, bitboards and a transposition
+           table. Runs entirely in the browser — no server, no dependencies.</p>
+        <ul class="tags"><li>JavaScript</li><li>Canvas API</li><li>Minimax</li><li>HTML5</li></ul>
+        <p class="card-links">
+          <a href="connect4/">Play it →</a>
+          <a href="https://github.com/promitdas345/PersonalPortfolio/blob/main/public/connect4.js" target="_blank" rel="noopener">Read the engine</a>
+        </p>
+      </li>
+
+      <li class="card" data-tech="Python,PyTorch,U-Net,FastAPI,Flask">
+        <h3>NeuroEdit — AI Image Editor</h3>
+        <p>AI image editing with pro features for free: U-Net background removal, and a
+           pipeline that runs the heavy work server-side.</p>
+        <ul class="tags"><li>Python</li><li>PyTorch</li><li>U-Net</li><li>FastAPI</li></ul>
+      </li>
+
+      <li class="card" data-tech="Python,Plotly,Dash,FastAPI,Redis,AWS">
+        <h3>Data Visualization Dashboard</h3>
+        <p>Interactive Plotly Dash experience with sub-200 ms cross-filters over 5M+ rows,
+           server-side paging, and branded PDF export.</p>
+        <ul class="tags"><li>Python</li><li>Plotly</li><li>Dash</li><li>Redis</li><li>AWS</li></ul>
+      </li>
+
+      <li class="card" data-tech="Node.js,Express,MongoDB,Socket.IO,Docker">
+        <h3>Task Management App</h3>
+        <p>Realtime kanban boards with role-based access control and analytics for
+           multi-team planning.</p>
+        <ul class="tags"><li>Node.js</li><li>Express</li><li>MongoDB</li><li>Socket.IO</li></ul>
+      </li>
+
+      <li class="card" data-tech="JavaScript,p5.js,NEAT">
+        <h3>Flappy Bird AI</h3>
+        <p>NEAT-powered Flappy Bird where a population of agents evolves to clear pipes,
+           training live in the browser.</p>
+        <ul class="tags"><li>JavaScript</li><li>p5.js</li><li>NEAT</li></ul>
+      </li>
+
+      <li class="card" data-tech="Python,Pandas,SciPy,statsmodels,Jupyter">
+        <h3>Statistical Analysis Toolkit</h3>
+        <p>Pip-installable CLI plus notebook templates for running hypothesis tests quickly
+           and consistently.</p>
+        <ul class="tags"><li>Python</li><li>Pandas</li><li>SciPy</li><li>statsmodels</li></ul>
+      </li>
+
+      <li class="card" data-tech="TypeScript,React,Node.js,PostgreSQL">
+        <h3>Neurodivergent Support App <span class="badge">In progress</span></h3>
+        <p>Helping neurodivergent students manage routines, sensory load and focus.</p>
+        <ul class="tags"><li>TypeScript</li><li>React</li><li>Node.js</li><li>PostgreSQL</li></ul>
+      </li>
+
+    </ul>
+    <p class="empty" id="empty" hidden>Nothing built with that yet.</p>
+  </section>
+
+  <section class="container section" id="play">
+    <h2><span class="num">03</span> Play</h2>
+    <div class="play-card">
+      <div>
+        <h3>Connect 4 vs the AI</h3>
+        <p>
+          The AI searches with negamax and alpha-beta pruning over a bitboard position, caching
+          what it has already seen in a transposition table. It will not lose a position it has
+          solved — see how long you last.
+        </p>
+        <a class="btn btn-primary" href="connect4/">Open the game</a>
+      </div>
+      <div class="play-art" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section" id="contact">
+    <h2><span class="num">04</span> Contact</h2>
+    <p class="lede">Open to co-op and internship roles starting January or May.</p>
+    <ul class="contact-list">
+      <li><a href="mailto:promitd@mun.ca">promitd@mun.ca</a></li>
+      <li><a href="https://www.linkedin.com/in/promitd" target="_blank" rel="noopener">linkedin.com/in/promitd</a></li>
+      <li><a href="https://github.com/promitdas345" target="_blank" rel="noopener">github.com/promitdas345</a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>© <span id="year"></span> Promit Das</p>
+    <p><a href="full/">Full site</a> · <a href="https://github.com/promitdas345/PersonalPortfolio" target="_blank" rel="noopener">Source</a></p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

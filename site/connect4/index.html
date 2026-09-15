@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connect 4 vs AI — Promit Das</title>
+<meta name="description" content="Play Connect 4 against a bitboard negamax engine with alpha-beta pruning and a transposition table. Runs entirely in your browser.">
+<link rel="stylesheet" href="../style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔴</text></svg>">
+<style>
+  .game { padding: 2.5rem 0 3.5rem; }
+  .game-head { margin-bottom: 1.8rem; }
+  .game-head h1 { font-size: clamp(1.7rem, 4.5vw, 2.4rem); margin-bottom: .6rem; }
+  .back { font-size: .92rem; display: inline-block; margin-bottom: 1.4rem; }
+
+  .c4-game-wrapper {
+    background: var(--bg-raised); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: clamp(1rem, 3vw, 1.8rem);
+    display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
+  }
+
+  .c4-status-bar {
+    font-weight: 600; font-size: 1.02rem; text-align: center;
+    min-height: 1.6em;
+  }
+
+  .c4-first-move { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; justify-content: center; }
+  .c4-first-move-label { color: var(--text-dim); font-size: .88rem; }
+
+  .c4-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 3px; }
+  .c4-toggle-btn {
+    border: 0; background: none; color: var(--text-dim); cursor: pointer;
+    border-radius: 999px; padding: .32rem .95rem; font-size: .88rem; font-family: inherit;
+  }
+  .c4-toggle-btn.active { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+
+  .c4-board-container { width: 100%; display: flex; justify-content: center; }
+  #c4-canvas { max-width: 100%; height: auto; border-radius: 12px; touch-action: manipulation; cursor: pointer; }
+
+  #c4-reset {
+    display: inline-flex; align-items: center; gap: .5rem;
+    border: 1px solid var(--line); background: var(--bg-sunken); color: var(--text);
+    border-radius: 999px; padding: .6rem 1.2rem; cursor: pointer;
+    font-size: .94rem; font-family: inherit; font-weight: 500;
+  }
+  #c4-reset:hover { border-color: var(--accent); }
+  #c4-reset:active { transform: translateY(1px); }
+
+  .how { margin-top: 2.5rem; }
+  .how h2 { font-size: 1.15rem; }
+  .how p { color: var(--text-dim); max-width: 64ch; }
+  .how code { background: var(--bg-sunken); border: 1px solid var(--line); border-radius: 5px; padding: .08rem .35rem; font-size: .88em; }
+</style>
+</head>
+<body>
+
+<main class="container game">
+
+  <a class="back" href="../">← Back to portfolio</a>
+
+  <div class="game-head">
+    <h1>Connect 4 <span class="accent">vs AI</span></h1>
+    <p class="lede">
+      You are red, the engine is yellow. It searches with negamax and alpha-beta pruning over a
+      bitboard position and remembers what it has already worked out. Everything runs in your
+      browser — nothing is sent anywhere.
+    </p>
+  </div>
+
+  <div class="c4-game-wrapper">
+    <div class="c4-status-bar">
+      <span id="c4-status">🔴 Your turn — click a column</span>
+    </div>
+
+    <div class="c4-first-move">
+      <span class="c4-first-move-label">First move:</span>
+      <div class="c4-toggle" id="c4-first-toggle">
+        <button class="c4-toggle-btn active" data-first="player" type="button">You</button>
+        <button class="c4-toggle-btn" data-first="ai" type="button">AI</button>
+      </div>
+    </div>
+
+    <div class="c4-board-container">
+      <canvas id="c4-canvas" width="560" height="560"></canvas>
+    </div>
+
+    <div class="c4-controls">
+      <button id="c4-reset" type="button">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M1 1v5h5" />
+          <path d="M3.5 10a5 5 0 1 0 1-7l-3.5 3" />
+        </svg>
+        New Game
+      </button>
+    </div>
+  </div>
+
+  <section class="how">
+    <h2>How the AI decides</h2>
+    <p>
+      The board is stored as a bitboard — the whole 6×7 grid packs into a pair of integers, so
+      checking for four in a row is a handful of shifts and masks instead of a scan. That makes the
+      search fast enough to look a long way ahead.
+    </p>
+    <p>
+      On top of that sits <strong>negamax with alpha-beta pruning</strong>: the engine explores its
+      move, your best reply, its best answer to that, and so on, abandoning any line that already
+      proves worse than one it has found. Positions it has already evaluated go into a
+      <strong>transposition table</strong>, so the same position reached by a different move order
+      costs nothing the second time. <strong>Iterative deepening</strong> searches one ply at a
+      time until the clock runs out, keeping the best answer it completed.
+    </p>
+    <p>
+      Read the engine:
+      <a href="https://github.com/promitdas345/PersonalPortfolio/blob/main/public/connect4.js" target="_blank" rel="noopener">public/connect4.js</a>
+    </p>
+  </section>
+
+</main>
+
+<script src="connect4.js"></script>
+<script>
+  // Match the portfolio: remembered choice first, then the system preference.
+  (function () {
+    var saved = null;
+    try {
+      saved = localStorage.getItem('pd-theme');
+    } catch (err) { /* storage blocked — fall through to the system preference */ }
+
+    if (saved === 'light' || saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
+</body>
+</html>

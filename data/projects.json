@@ -214,7 +214,7 @@
       "HTML5"
     ],
     "link": "/connect4",
-    "image": "/public/images/connect4_modern_thumbnail.png",
+    "image": "/public/images/placeholder.png",
     "impactHeadline": "A strong AI that searches 14+ moves deep in under 200ms using bitboard optimizations.",
     "highlights": [
       "Implemented Minimax with Alpha-Beta pruning to prune the search tree efficiently.",

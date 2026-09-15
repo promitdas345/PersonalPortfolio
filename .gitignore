@@ -13,3 +13,4 @@ admin.cookies
 *.pdf
 1.html
 transcript*.html
+pages-dist/
