@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeuroEdit — AI Image Editor | Promit's Projects</title>
+    <link rel="stylesheet" href="../../public/styles.css" />
+    <link rel="stylesheet" href="../../public/inline-editor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="../../" class="nav-link">Home</a></li>
+            <li><a href="../../projects/" class="nav-link">Projects</a></li>
+            <li><a href="../../blog/" class="nav-link">Blog</a></li>
+            <li><a href="../../photography/" class="nav-link">Photography</a></li>
+            <li><a href="../../about/" class="nav-link">About</a></li>
+            <li><a href="../../contact/" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="neuroedit" data-project-id="7">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2" data-project-field="title">NeuroEdit — AI Image Editor</h2>
+          <p class="text-gray-600 mb-2" data-project-field="summary">A full-stack AI image editor offering premium features like background removal, portrait mode, and generative fill for free.</p>
+          <p class="text-sm text-gray-500">Tech: <span data-project-field="technologies">Python, PyTorch, U²-Net, FastAPI, Flask, Next.js, Computer Vision</span></p>
+        </header>
+        <figure class="mb-6">
+          <img src="../../public/images/neuroedit_hero.png" alt="NeuroEdit — AI Image Editor hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="highlights">
+            <li>Architected a scalable computer vision pipeline using PyTorch and U²-Net for salient object detection and pixel-precise background removal with alpha matte output.</li><li>Developed a high-performance Python backend with FastAPI serving ML models for background removal, Generative Fill, and noise reduction.</li><li>Built an interactive Next.js frontend with real-time preview, before/after comparison, and batch processing capabilities.</li><li>Designed the system to deliver premium mobile editing capabilities (like Picsart Gold) entirely for free in the browser.</li>
+          </ul>
+        </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Impact & Metrics</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="metrics">
+      <li>Sub-second inference on standard hardware via optimized model serving and image preprocessing.</li><li>Full-stack architecture bridges ML research and production deployment — the exact pipeline used in medical imaging labs.</li><li>Zero-cost deployment model with client-side previews and server-side heavy processing.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">System Architecture</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="architecture">
+      <li>Next.js frontend handles image upload, real-time preview, and before/after comparison with client-side optimizations.</li><li>FastAPI + Flask backend wraps PyTorch U²-Net model; endpoints for salient object detection, sharpening, and denoising.</li><li>Image processing pipeline: upload → preprocessing → model inference (salient object detection) → alpha matte refinement → delivery.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Ownership & Learnings</h3>
+    <p class="text-gray-600" data-project-field="ownership">Solo build: end-to-end architecture, ML model integration, backend API design, frontend UI/UX, and deployment pipeline.</p>
+  </section>
+        <section class="mb-6 prose max-w-none" data-project-field="content">
+          <p>NeuroEdit uses U²-Net — a nested U-structure network designed specifically for salient object detection — to deliver production-quality background removal. Unlike general-purpose segmentation models, U²-Net generates rich alpha mattes that capture fine details like hair, fur, and semi-transparent edges with high fidelity.</p><p>The architecture is designed for extensibility: the FastAPI backend serves as a model gateway, making it straightforward to add new vision capabilities (object detection, style transfer, super-resolution) alongside the existing pipeline. The Next.js frontend provides an intuitive editing experience with real-time previews and a premium dark-mode interface.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Live Application</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        
+        <p class="mt-8"><a href="../../projects/" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      © 2026 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'neuroedit';</script>
+    <script src="../../public/project-demos.js" defer></script>
+    <script src="../../public/inline-editor.js?v=2"></script>
+    
+  </body>
+</html>
+

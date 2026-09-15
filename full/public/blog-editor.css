@@ -1,0 +1,314 @@
+/* ── Editor top bar ── */
+
+#editor-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #0a2540;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.editor-topbar-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0.65rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.editor-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.editor-back-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+
+.editor-back-link:hover {
+  color: #fff;
+}
+
+.editor-status {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.editor-status.saved {
+  color: #7fffd4;
+}
+
+.editor-status.error {
+  color: #ff9ca6;
+}
+
+.editor-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editor-btn {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.editor-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.editor-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.editor-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.editor-btn-primary {
+  background: #0f8f54;
+  color: #fff;
+}
+
+.editor-btn-primary:hover:not(:disabled) {
+  background: #0b7b48;
+}
+
+/* ── Main editor layout ── */
+
+.editor-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px 1.25rem 3rem;
+}
+
+.editor-meta-section {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.editor-title-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 2px solid #e5e7eb;
+  border-radius: 0;
+  padding: 0.6rem 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0a2540;
+  background: transparent;
+  outline: none;
+  letter-spacing: -0.02em;
+  transition: border-color 0.2s;
+}
+
+.editor-title-input::placeholder {
+  color: #c0c5cc;
+  font-weight: 500;
+}
+
+.editor-title-input:focus {
+  border-color: #00a3a3;
+}
+
+.editor-excerpt-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  color: #0a2540;
+  resize: vertical;
+  min-height: 2.5rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.editor-excerpt-input:focus {
+  border-color: #00a3a3;
+}
+
+.editor-excerpt-input::placeholder {
+  color: #9ca3af;
+}
+
+.editor-meta-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.editor-meta-label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  flex: 1;
+}
+
+.editor-meta-label small {
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+.editor-meta-label input,
+.editor-meta-label select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.92rem;
+  color: #0a2540;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.editor-meta-label input:focus,
+.editor-meta-label select:focus {
+  border-color: #00a3a3;
+}
+
+/* ── Quill overrides ── */
+
+.editor-content-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #fff;
+}
+
+#quill-toolbar {
+  border: none !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  background: #fafbfc;
+  padding: 0.5rem 0.75rem !important;
+}
+
+#quill-toolbar .ql-formats {
+  margin-right: 12px;
+}
+
+#quill-editor {
+  min-height: 500px;
+  font-family: 'Poppins', Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #1a1a2e;
+}
+
+#quill-editor .ql-editor {
+  padding: 1.5rem 1.75rem;
+  min-height: 500px;
+}
+
+#quill-editor .ql-editor h1 { font-size: 2rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+#quill-editor .ql-editor h2 { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 0.5rem; }
+#quill-editor .ql-editor h3 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+#quill-editor .ql-editor h4 { font-size: 1.1rem; font-weight: 600; margin: 0.75rem 0 0.5rem; }
+
+#quill-editor .ql-editor p {
+  margin-bottom: 0.75rem;
+}
+
+#quill-editor .ql-editor blockquote {
+  border-left: 4px solid #00a3a3;
+  padding-left: 1rem;
+  color: #4b5563;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+#quill-editor .ql-editor pre.ql-syntax {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+#quill-editor .ql-editor img {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+#quill-editor .ql-editor .ql-video {
+  width: 100%;
+  min-height: 360px;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.ql-snow .ql-tooltip {
+  z-index: 1001;
+}
+
+/* ── Error text ── */
+
+.editor-error {
+  min-height: 1.2rem;
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #b4233b;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 640px) {
+  .editor-main {
+    padding-top: 72px;
+  }
+
+  .editor-topbar-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .editor-topbar-right {
+    justify-content: flex-end;
+  }
+
+  .editor-title-input {
+    font-size: 1.5rem;
+  }
+
+  .editor-meta-row {
+    flex-direction: column;
+  }
+
+  #quill-editor .ql-editor {
+    padding: 1rem;
+  }
+}

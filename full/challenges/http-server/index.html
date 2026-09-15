@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" class="challenges-page">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Learn how HTTP works under the hood by building a fully functional HTTP server from scratch that handles GET requests, serves files, and parses headers." />
+    <title>Build your own HTTP Server | Coding Challenges | Promit's Portfolio</title>
+    <link rel="stylesheet" href="../../public/styles.css" />
+    <link rel="stylesheet" href="../../public/challenges.css" />
+</head>
+
+<body class="challenges-page">
+    <header class="site-header">
+        <div class="container flex justify-between items-center py-4">
+            <h1 class="text-2xl font-bold text-blue-700"><a href="../../challenges/" style="color:var(--color-selective-yellow);text-decoration:none;">Challenges</a></h1>
+            <nav>
+                <ul class="flex space-x-4 text-lg">
+                    <li><a href="../../" class="nav-link">Home</a></li>
+                    <li><a href="../../projects/" class="nav-link">Projects</a></li>
+                    <li><a href="../../blog/" class="nav-link">Blog</a></li>
+                    <li><a href="../../challenges/" class="nav-link" style="color: var(--color-selective-yellow);">Challenges</a></li>
+                    <li><a href="../../about/" class="nav-link">About</a></li>
+                    <li><a href="../../contact/" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container py-8">
+        <!-- Challenge Hero -->
+        <section class="challenge-hero" data-animate>
+            <div class="challenge-hero__glow"></div>
+            <a href="../../challenges/" class="challenge-hero__back">&larr; All Challenges</a>
+            <div class="challenge-hero__content">
+                <div class="challenge-hero__icon">🌐</div>
+                <div>
+                    <h2 class="challenge-hero__title">Build your own HTTP Server</h2>
+                    <p class="challenge-hero__desc">Learn how HTTP works under the hood by building a fully functional HTTP server from scratch that handles GET requests, serves files, and parses headers.</p>
+                    <div class="challenge-hero__meta">
+                        <span class="challenge-card__difficulty challenge-card__difficulty--medium">medium</span>
+                        <span class="challenge-hero__meta-item">6 stages</span>
+                        <span class="challenge-hero__meta-item">~4h</span>
+                        <div class="challenge-hero__langs"><span class="challenge-card__lang">python</span><span class="challenge-card__lang">javascript</span><span class="challenge-card__lang">go</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="challenge-hero__progress-wrap">
+                <div class="progress-bar">
+                    <div class="progress-bar__fill" id="challenge-progress-bar" style="width: 0%"></div>
+                </div>
+                <span class="challenge-hero__progress-label" id="challenge-progress-label">0 / 6 stages completed</span>
+            </div>
+        </section>
+
+        <!-- Challenge Layout: Sidebar + Content -->
+        <div class="challenge-layout" data-challenge-id="http-server" data-total-stages="6">
+            <!-- Stage Sidebar -->
+            <aside class="stage-sidebar" aria-label="Challenge stages">
+                <div class="stage-sidebar__header">
+                    <h3 class="stage-sidebar__title">Stages</h3>
+                </div>
+                <div class="stage-sidebar__list">
+                    <button class="stage-item stage-item--active" data-stage-index="0" aria-label="Stage 1: Bind to a port">
+        <div class="stage-item__number">
+          <span class="stage-item__num-text">1</span>
+          <svg class="stage-item__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="stage-item__info">
+          <span class="stage-item__title">Bind to a port</span>
+          <span class="stage-item__desc">Create a TCP server that listens on port 4221.</span>
+        </div>
+      </button><button class="stage-item" data-stage-index="1" aria-label="Stage 2: Respond with 200">
+        <div class="stage-item__number">
+          <span class="stage-item__num-text">2</span>
+          <svg class="stage-item__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="stage-item__info">
+          <span class="stage-item__title">Respond with 200</span>
+          <span class="stage-item__desc">Send a proper HTTP/1.1 200 OK response to any request.</span>
+        </div>
+      </button><button class="stage-item" data-stage-index="2" aria-label="Stage 3: Extract URL paths">
+        <div class="stage-item__number">
+          <span class="stage-item__num-text">3</span>
+          <svg class="stage-item__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="stage-item__info">
+          <span class="stage-item__title">Extract URL paths</span>
+          <span class="stage-item__desc">Parse the HTTP request line and respond based on the URL path.</span>
+        </div>
+      </button><button class="stage-item" data-stage-index="3" aria-label="Stage 4: Respond with body">
+        <div class="stage-item__number">
+          <span class="stage-item__num-text">4</span>
+          <svg class="stage-item__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="stage-item__info">
+          <span class="stage-item__title">Respond with body</span>
+          <span class="stage-item__desc">Return a response body with proper Content-Type and Content-Length headers.</span>
+        </div>
+      </button><button class="stage-item" data-stage-index="4" aria-label="Stage 5: Parse headers">
+        <div class="stage-item__number">
+          <span class="stage-item__num-text">5</span>
+          <svg class="stage-item__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="stage-item__info">
+          <span class="stage-item__title">Parse headers</span>
+          <span class="stage-item__desc">Read and use incoming request headers like User-Agent.</span>
+        </div>
+      </button><button class="stage-item" data-stage-index="5" aria-label="Stage 6: Serve a file">
+        <div class="stage-item__number">
+          <span class="stage-item__num-text">6</span>
+          <svg class="stage-item__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="stage-item__info">
+          <span class="stage-item__title">Serve a file</span>
+          <span class="stage-item__desc">Read a file from disk and return it as the response body.</span>
+        </div>
+      </button>
+                </div>
+            </aside>
+
+            <!-- Stage Content Panels -->
+            <div class="stage-content-area">
+                <div class="stage-content stage-content--active" data-stage-panel="0">
+        <div class="stage-content__header">
+          <span class="stage-content__number">Stage 1</span>
+          <h3 class="stage-content__title">Bind to a port</h3>
+        </div>
+        <div class="stage-content__instructions"><p>In this stage, you'll create a TCP server that listens on port <code>4221</code>.</p>
+<h3>Your Task</h3>
+<p>Create a program that starts a TCP server on port <strong>4221</strong>. Your server should be able to accept a TCP connection from a client. At this point, it doesn't need to respond — just accept the connection.</p>
+<h3>How TCP Servers Work</h3>
+<p>TCP (Transmission Control Protocol) is the backbone of HTTP. Before we can handle HTTP requests, we need to set up a TCP listener. This is the lowest building block of a web server.</p>
+<p>Here's what happens when a client connects to your TCP server:</p>
+<ol>
+<li>Your server calls <code>bind()</code> to associate a socket with port 4221</li>
+<li>Your server calls <code>listen()</code> to start accepting connections</li>
+<li>When a client connects, your server calls <code>accept()</code> to accept the connection</li>
+</ol></div>
+        <div class="code-block">
+            <div class="code-block__header">
+              <span class="code-block__filename">server.py</span>
+              <button class="code-block__copy" aria-label="Copy code">Copy</button>
+            </div>
+            <pre class="code-block__body"><code>import socket
+
+def main():
+    # Create a TCP socket (AF_INET = IPv4, SOCK_STREAM = TCP)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    # Allow port reuse (avoids &#39;Address already in use&#39; error)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    
+    # Bind to localhost on port 4221
+    server_socket.bind((&#39;localhost&#39;, 4221))
+    
+    # Start listening for incoming connections
+    server_socket.listen()
+    print(&#39;Server is listening on port 4221...&#39;)
+    
+    # Accept a connection — this blocks until a client connects
+    conn, addr = server_socket.accept()
+    print(f&#39;Client connected from {addr}&#39;)
+
+if __name__ == &#39;__main__&#39;:
+    main()</code></pre>
+          </div>
+        <div class="terminal-output terminal-output--success" data-animate-terminal="true">
+            <div class="terminal-output__header">
+              <span class="terminal-dot terminal-dot--red"></span>
+              <span class="terminal-dot terminal-dot--yellow"></span>
+              <span class="terminal-dot terminal-dot--green"></span>
+              <span class="terminal-output__title">Terminal</span>
+            </div>
+            <pre class="terminal-output__body">$ python server.py
+Server is listening on port 4221...
+Client connected from (&#39;127.0.0.1&#39;, 52413)</pre>
+          </div>
+        <div class="hint-box" data-hint-index="0">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 1</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Use the socket module in Python or net module in Node.js to create a TCP server.</p></div>
+        </div><div class="hint-box" data-hint-index="1">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 2</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Don&#39;t forget to set SO_REUSEADDR — this prevents the &#39;Address already in use&#39; error when you restart your server quickly.</p></div>
+        </div>
+      </div><div class="stage-content" data-stage-panel="1">
+        <div class="stage-content__header">
+          <span class="stage-content__number">Stage 2</span>
+          <h3 class="stage-content__title">Respond with 200</h3>
+        </div>
+        <div class="stage-content__instructions"><p>In this stage, you'll respond to an HTTP request with a <code>200 OK</code> response.</p>
+<h3>Your Task</h3>
+<p>Now that your server accepts TCP connections, make it respond with a valid HTTP response. When any client connects and sends data, respond with:</p>
+<pre><code>HTTP/1.1 200 OK\r\n\r\n</code></pre>
+<h3>Understanding HTTP Responses</h3>
+<p>An HTTP response consists of three parts:</p>
+<ol>
+<li><strong>Status line</strong>: <code>HTTP/1.1 200 OK</code> — the protocol version, status code, and reason phrase</li>
+<li><strong>Headers</strong>: Key-value pairs (we'll add these later)</li>
+<li><strong>Body</strong>: The actual content (also later)</li>
+</ol>
+<p>Each line is terminated by <code>\r\n</code> (CRLF). The headers section ends with an empty line (<code>\r\n\r\n</code>), which separates headers from the body.</p>
+<div class='tip-box'><strong>💡 Key insight:</strong> HTTP is just text sent over TCP. There's nothing magical about it — it's a text protocol with strict formatting rules.</div></div>
+        <div class="code-block">
+            <div class="code-block__header">
+              <span class="code-block__filename">server.py</span>
+              <button class="code-block__copy" aria-label="Copy code">Copy</button>
+            </div>
+            <pre class="code-block__body"><code>import socket
+
+def main():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((&#39;localhost&#39;, 4221))
+    server_socket.listen()
+    print(&#39;Server is listening on port 4221...&#39;)
+    
+    while True:
+        conn, addr = server_socket.accept()
+        print(f&#39;Client connected from {addr}&#39;)
+        
+        # Read the incoming request (we don&#39;t need it yet)
+        request = conn.recv(1024)
+        
+        # Send a 200 OK response
+        response = &#39;HTTP/1.1 200 OK\r\n\r\n&#39;
+        conn.sendall(response.encode())
+        
+        conn.close()
+
+if __name__ == &#39;__main__&#39;:
+    main()</code></pre>
+          </div>
+        <div class="terminal-output terminal-output--success" data-animate-terminal="true">
+            <div class="terminal-output__header">
+              <span class="terminal-dot terminal-dot--red"></span>
+              <span class="terminal-dot terminal-dot--yellow"></span>
+              <span class="terminal-dot terminal-dot--green"></span>
+              <span class="terminal-output__title">Terminal</span>
+            </div>
+            <pre class="terminal-output__body">$ curl -v http://localhost:4221
+* Connected to localhost port 4221
+&gt; GET / HTTP/1.1
+&gt; Host: localhost:4221
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt;
+* Connection closed</pre>
+          </div>
+        <div class="hint-box" data-hint-index="0">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 1</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Remember: \r\n is CRLF (Carriage Return + Line Feed). HTTP requires this exact line ending.</p></div>
+        </div><div class="hint-box" data-hint-index="1">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 2</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>The response needs TWO \r\n sequences at the end — one to end the status line, and one empty line to signal the end of headers.</p></div>
+        </div>
+      </div><div class="stage-content" data-stage-panel="2">
+        <div class="stage-content__header">
+          <span class="stage-content__number">Stage 3</span>
+          <h3 class="stage-content__title">Extract URL paths</h3>
+        </div>
+        <div class="stage-content__instructions"><p>In this stage, you'll parse the URL path from the HTTP request and respond differently based on the path.</p>
+<h3>Your Task</h3>
+<p>Update your server to:</p>
+<ul>
+<li>Return <code>200 OK</code> for the path <code>/</code></li>
+<li>Return <code>404 Not Found</code> for any other path</li>
+</ul>
+<h3>Parsing the Request Line</h3>
+<p>The first line of an HTTP request is the <strong>request line</strong>. It has three parts separated by spaces:</p>
+<pre><code>GET /some/path HTTP/1.1</code></pre>
+<ol>
+<li><strong>Method</strong>: <code>GET</code>, <code>POST</code>, <code>PUT</code>, etc.</li>
+<li><strong>Path</strong>: The URL path (e.g., <code>/</code>, <code>/about</code>, <code>/users/123</code>)</li>
+<li><strong>Version</strong>: Usually <code>HTTP/1.1</code></li>
+</ol>
+<p>To extract the path, split the request line by spaces and grab the second element.</p></div>
+        <div class="code-block">
+            <div class="code-block__header">
+              <span class="code-block__filename">server.py</span>
+              <button class="code-block__copy" aria-label="Copy code">Copy</button>
+            </div>
+            <pre class="code-block__body"><code>import socket
+
+def main():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((&#39;localhost&#39;, 4221))
+    server_socket.listen()
+    print(&#39;Server is listening on port 4221...&#39;)
+    
+    while True:
+        conn, addr = server_socket.accept()
+        request = conn.recv(1024).decode()
+        
+        # Parse the request line
+        request_line = request.split(&#39;\r\n&#39;)[0]
+        method, path, version = request_line.split(&#39; &#39;)
+        
+        # Route based on path
+        if path == &#39;/&#39;:
+            response = &#39;HTTP/1.1 200 OK\r\n\r\n&#39;
+        else:
+            response = &#39;HTTP/1.1 404 Not Found\r\n\r\n&#39;
+        
+        conn.sendall(response.encode())
+        conn.close()
+
+if __name__ == &#39;__main__&#39;:
+    main()</code></pre>
+          </div>
+        <div class="terminal-output terminal-output--success" data-animate-terminal="true">
+            <div class="terminal-output__header">
+              <span class="terminal-dot terminal-dot--red"></span>
+              <span class="terminal-dot terminal-dot--yellow"></span>
+              <span class="terminal-dot terminal-dot--green"></span>
+              <span class="terminal-output__title">Terminal</span>
+            </div>
+            <pre class="terminal-output__body">$ curl -v http://localhost:4221/
+&lt; HTTP/1.1 200 OK
+
+$ curl -v http://localhost:4221/nonexistent
+&lt; HTTP/1.1 404 Not Found</pre>
+          </div>
+        <div class="hint-box" data-hint-index="0">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 1</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Split the first line of the request by spaces. The path is the second element (index 1).</p></div>
+        </div><div class="hint-box" data-hint-index="1">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 2</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Make sure you split the request by \r\n first to get just the request line.</p></div>
+        </div>
+      </div><div class="stage-content" data-stage-panel="3">
+        <div class="stage-content__header">
+          <span class="stage-content__number">Stage 4</span>
+          <h3 class="stage-content__title">Respond with body</h3>
+        </div>
+        <div class="stage-content__instructions"><p>In this stage, you'll send a response body along with the appropriate headers.</p>
+<h3>Your Task</h3>
+<p>Implement the <code>/echo/{str}</code> endpoint. It should return the string <code>{str}</code> in the response body. For example, <code>/echo/hello</code> should respond with <code>hello</code>.</p>
+<p>Your response must include these headers:</p>
+<ul>
+<li><code>Content-Type: text/plain</code></li>
+<li><code>Content-Length: {length of body}</code></li>
+</ul>
+<h3>Response Headers</h3>
+<p>HTTP headers provide metadata about the response. Two critical headers for responses with a body are:</p>
+<ul>
+<li><strong>Content-Type</strong>: Tells the client what format the body is in (e.g., <code>text/plain</code>, <code>text/html</code>, <code>application/json</code>)</li>
+<li><strong>Content-Length</strong>: The exact number of bytes in the response body. This helps the client know when the response is complete.</li>
+</ul>
+<p>A full response looks like:</p>
+<pre><code>HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 5\r\n\r\nhello</code></pre></div>
+        <div class="code-block">
+            <div class="code-block__header">
+              <span class="code-block__filename">server.py</span>
+              <button class="code-block__copy" aria-label="Copy code">Copy</button>
+            </div>
+            <pre class="code-block__body"><code>import socket
+
+def main():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((&#39;localhost&#39;, 4221))
+    server_socket.listen()
+    print(&#39;Server is listening on port 4221...&#39;)
+    
+    while True:
+        conn, addr = server_socket.accept()
+        request = conn.recv(1024).decode()
+        request_line = request.split(&#39;\r\n&#39;)[0]
+        method, path, version = request_line.split(&#39; &#39;)
+        
+        if path == &#39;/&#39;:
+            response = &#39;HTTP/1.1 200 OK\r\n\r\n&#39;
+        elif path.startswith(&#39;/echo/&#39;):
+            # Extract the string after /echo/
+            body = path[6:]  # everything after &#39;/echo/&#39;
+            response = (
+                f&#39;HTTP/1.1 200 OK\r\n&#39;
+                f&#39;Content-Type: text/plain\r\n&#39;
+                f&#39;Content-Length: {len(body)}\r\n&#39;
+                f&#39;\r\n&#39;
+                f&#39;{body}&#39;
+            )
+        else:
+            response = &#39;HTTP/1.1 404 Not Found\r\n\r\n&#39;
+        
+        conn.sendall(response.encode())
+        conn.close()
+
+if __name__ == &#39;__main__&#39;:
+    main()</code></pre>
+          </div>
+        <div class="terminal-output terminal-output--success" data-animate-terminal="true">
+            <div class="terminal-output__header">
+              <span class="terminal-dot terminal-dot--red"></span>
+              <span class="terminal-dot terminal-dot--yellow"></span>
+              <span class="terminal-dot terminal-dot--green"></span>
+              <span class="terminal-output__title">Terminal</span>
+            </div>
+            <pre class="terminal-output__body">$ curl -v http://localhost:4221/echo/hello-world
+&lt; HTTP/1.1 200 OK
+&lt; Content-Type: text/plain
+&lt; Content-Length: 11
+&lt;
+hello-world</pre>
+          </div>
+        <div class="hint-box" data-hint-index="0">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 1</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Use string slicing to extract everything after &#39;/echo/&#39; in the path.</p></div>
+        </div><div class="hint-box" data-hint-index="1">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 2</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Content-Length must be the byte length of the body, not the character length. For ASCII text these are the same, but keep this in mind for Unicode.</p></div>
+        </div>
+      </div><div class="stage-content" data-stage-panel="4">
+        <div class="stage-content__header">
+          <span class="stage-content__number">Stage 5</span>
+          <h3 class="stage-content__title">Parse headers</h3>
+        </div>
+        <div class="stage-content__instructions"><p>In this stage, you'll parse HTTP request headers and use them in your response.</p>
+<h3>Your Task</h3>
+<p>Implement the <code>/user-agent</code> endpoint. It should read the <code>User-Agent</code> header from the request and return its value in the response body.</p>
+<h3>Request Headers</h3>
+<p>After the request line, HTTP requests contain headers — one per line, formatted as:</p>
+<pre><code>Header-Name: header-value</code></pre>
+<p>For example, a full request might look like:</p>
+<pre><code>GET /user-agent HTTP/1.1\r\nHost: localhost:4221\r\nUser-Agent: curl/7.64.1\r\nAccept: */*\r\n\r\n</code></pre>
+<p>To parse headers:</p>
+<ol>
+<li>Split the request by <code>\r\n</code></li>
+<li>Skip the first line (that's the request line)</li>
+<li>For each subsequent line (until the empty line), split by <code>: </code> to get the header name and value</li>
+</ol></div>
+        <div class="code-block">
+            <div class="code-block__header">
+              <span class="code-block__filename">server.py</span>
+              <button class="code-block__copy" aria-label="Copy code">Copy</button>
+            </div>
+            <pre class="code-block__body"><code>import socket
+
+def parse_headers(request):
+    &quot;&quot;&quot;Parse HTTP headers from a request string into a dict.&quot;&quot;&quot;
+    lines = request.split(&#39;\r\n&#39;)
+    headers = {}
+    for line in lines[1:]:  # Skip the request line
+        if line == &#39;&#39;:
+            break  # Empty line = end of headers
+        key, value = line.split(&#39;: &#39;, 1)
+        headers[key.lower()] = value
+    return headers
+
+def main():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((&#39;localhost&#39;, 4221))
+    server_socket.listen()
+    print(&#39;Server is listening on port 4221...&#39;)
+    
+    while True:
+        conn, addr = server_socket.accept()
+        request = conn.recv(1024).decode()
+        request_line = request.split(&#39;\r\n&#39;)[0]
+        method, path, version = request_line.split(&#39; &#39;)
+        headers = parse_headers(request)
+        
+        if path == &#39;/&#39;:
+            response = &#39;HTTP/1.1 200 OK\r\n\r\n&#39;
+        elif path.startswith(&#39;/echo/&#39;):
+            body = path[6:]
+            response = (
+                f&#39;HTTP/1.1 200 OK\r\n&#39;
+                f&#39;Content-Type: text/plain\r\n&#39;
+                f&#39;Content-Length: {len(body)}\r\n&#39;
+                f&#39;\r\n{body}&#39;
+            )
+        elif path == &#39;/user-agent&#39;:
+            body = headers.get(&#39;user-agent&#39;, &#39;&#39;)
+            response = (
+                f&#39;HTTP/1.1 200 OK\r\n&#39;
+                f&#39;Content-Type: text/plain\r\n&#39;
+                f&#39;Content-Length: {len(body)}\r\n&#39;
+                f&#39;\r\n{body}&#39;
+            )
+        else:
+            response = &#39;HTTP/1.1 404 Not Found\r\n\r\n&#39;
+        
+        conn.sendall(response.encode())
+        conn.close()
+
+if __name__ == &#39;__main__&#39;:
+    main()</code></pre>
+          </div>
+        <div class="terminal-output terminal-output--success" data-animate-terminal="true">
+            <div class="terminal-output__header">
+              <span class="terminal-dot terminal-dot--red"></span>
+              <span class="terminal-dot terminal-dot--yellow"></span>
+              <span class="terminal-dot terminal-dot--green"></span>
+              <span class="terminal-output__title">Terminal</span>
+            </div>
+            <pre class="terminal-output__body">$ curl -v http://localhost:4221/user-agent
+&lt; HTTP/1.1 200 OK
+&lt; Content-Type: text/plain
+&lt; Content-Length: 11
+&lt;
+curl/7.64.1</pre>
+          </div>
+        <div class="hint-box" data-hint-index="0">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 1</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Remember to normalize header names to lowercase when storing them — HTTP headers are case-insensitive.</p></div>
+        </div><div class="hint-box" data-hint-index="1">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 2</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Use split(&#39;: &#39;, 1) (with maxsplit=1) because header values might contain colons too.</p></div>
+        </div>
+      </div><div class="stage-content" data-stage-panel="5">
+        <div class="stage-content__header">
+          <span class="stage-content__number">Stage 6</span>
+          <h3 class="stage-content__title">Serve a file</h3>
+        </div>
+        <div class="stage-content__instructions"><p>In this final stage, you'll serve files from a directory on disk.</p>
+<h3>Your Task</h3>
+<p>Implement the <code>/files/{filename}</code> endpoint. Your server should accept a <code>--directory</code> command-line argument specifying where to look for files.</p>
+<ul>
+<li>If the file exists, return it with <code>200 OK</code> and <code>Content-Type: application/octet-stream</code></li>
+<li>If the file doesn't exist, return <code>404 Not Found</code></li>
+</ul>
+<h3>Serving Files</h3>
+<p>Serving static files is a core capability of web servers. The process is:</p>
+<ol>
+<li>Extract the filename from the URL path</li>
+<li>Construct the full file path by joining the directory with the filename</li>
+<li>Check if the file exists</li>
+<li>If it does, read its contents and send them with appropriate headers</li>
+<li>If not, send a 404 response</li>
+</ol>
+<div class='tip-box'><strong>🎉 Congratulations!</strong> After completing this stage, you'll have built a functional HTTP server that can bind to a port, parse requests, route paths, handle headers, and serve files. These are the same fundamental operations that production web servers like Nginx and Apache perform!</div></div>
+        <div class="code-block">
+            <div class="code-block__header">
+              <span class="code-block__filename">server.py</span>
+              <button class="code-block__copy" aria-label="Copy code">Copy</button>
+            </div>
+            <pre class="code-block__body"><code>import socket
+import sys
+import os
+
+def parse_headers(request):
+    lines = request.split(&#39;\r\n&#39;)
+    headers = {}
+    for line in lines[1:]:
+        if line == &#39;&#39;:
+            break
+        key, value = line.split(&#39;: &#39;, 1)
+        headers[key.lower()] = value
+    return headers
+
+def main():
+    # Parse command-line arguments
+    directory = &#39;/tmp&#39;  # default
+    if &#39;--directory&#39; in sys.argv:
+        idx = sys.argv.index(&#39;--directory&#39;)
+        directory = sys.argv[idx + 1]
+    
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((&#39;localhost&#39;, 4221))
+    server_socket.listen()
+    print(f&#39;Serving files from {directory} on port 4221...&#39;)
+    
+    while True:
+        conn, addr = server_socket.accept()
+        request = conn.recv(1024).decode()
+        request_line = request.split(&#39;\r\n&#39;)[0]
+        method, path, version = request_line.split(&#39; &#39;)
+        headers = parse_headers(request)
+        
+        if path == &#39;/&#39;:
+            response = &#39;HTTP/1.1 200 OK\r\n\r\n&#39;
+        elif path.startswith(&#39;/echo/&#39;):
+            body = path[6:]
+            response = (
+                f&#39;HTTP/1.1 200 OK\r\n&#39;
+                f&#39;Content-Type: text/plain\r\n&#39;
+                f&#39;Content-Length: {len(body)}\r\n&#39;
+                f&#39;\r\n{body}&#39;
+            )
+        elif path == &#39;/user-agent&#39;:
+            body = headers.get(&#39;user-agent&#39;, &#39;&#39;)
+            response = (
+                f&#39;HTTP/1.1 200 OK\r\n&#39;
+                f&#39;Content-Type: text/plain\r\n&#39;
+                f&#39;Content-Length: {len(body)}\r\n&#39;
+                f&#39;\r\n{body}&#39;
+            )
+        elif path.startswith(&#39;/files/&#39;):
+            filename = path[7:]  # strip &#39;/files/&#39;
+            filepath = os.path.join(directory, filename)
+            if os.path.isfile(filepath):
+                with open(filepath, &#39;rb&#39;) as f:
+                    body = f.read()
+                response = (
+                    f&#39;HTTP/1.1 200 OK\r\n&#39;
+                    f&#39;Content-Type: application/octet-stream\r\n&#39;
+                    f&#39;Content-Length: {len(body)}\r\n&#39;
+                    f&#39;\r\n&#39;
+                ).encode() + body
+                conn.sendall(response)
+                conn.close()
+                continue
+            else:
+                response = &#39;HTTP/1.1 404 Not Found\r\n\r\n&#39;
+        else:
+            response = &#39;HTTP/1.1 404 Not Found\r\n\r\n&#39;
+        
+        conn.sendall(response.encode())
+        conn.close()
+
+if __name__ == &#39;__main__&#39;:
+    main()</code></pre>
+          </div>
+        <div class="terminal-output terminal-output--success" data-animate-terminal="true">
+            <div class="terminal-output__header">
+              <span class="terminal-dot terminal-dot--red"></span>
+              <span class="terminal-dot terminal-dot--yellow"></span>
+              <span class="terminal-dot terminal-dot--green"></span>
+              <span class="terminal-output__title">Terminal</span>
+            </div>
+            <pre class="terminal-output__body">$ echo -n &#39;Hello, World!&#39; &gt; /tmp/greeting.txt
+$ python server.py --directory /tmp
+Serving files from /tmp on port 4221...
+
+$ curl -v http://localhost:4221/files/greeting.txt
+&lt; HTTP/1.1 200 OK
+&lt; Content-Type: application/octet-stream
+&lt; Content-Length: 13
+&lt;
+Hello, World!</pre>
+          </div>
+        <div class="hint-box" data-hint-index="0">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 1</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Be careful with path traversal attacks. In production, you&#39;d want to verify the resolved path stays within the intended directory.</p></div>
+        </div><div class="hint-box" data-hint-index="1">
+          <button class="hint-box__header" aria-expanded="false">
+            <span>💡 Hint 2</span>
+            <span class="hint-box__chevron">▸</span>
+          </button>
+          <div class="hint-box__content"><p>Use &#39;rb&#39; mode (read binary) when opening files to handle both text and binary files correctly.</p></div>
+        </div>
+      </div>
+
+                <!-- Stage Navigation -->
+                <div class="stage-nav">
+                    <button class="btn btn-secondary stage-nav__prev" id="prev-stage-btn" disabled>
+                        &larr; Previous
+                    </button>
+                    <button class="btn stage-nav__complete" id="complete-stage-btn">
+                        ✓ Mark Complete
+                    </button>
+                    <button class="btn btn-primary stage-nav__next" id="next-stage-btn">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Celebration -->
+        <div class="challenge-complete-overlay" id="challenge-complete" style="display:none;">
+            <div class="challenge-complete__content">
+                <div class="challenge-complete__icon">🎉</div>
+                <h2 class="challenge-complete__title">Challenge Complete!</h2>
+                <p class="challenge-complete__text">You've built a working Build your own HTTP Server. Amazing work!</p>
+                <div class="challenge-complete__actions">
+                    <a href="../../challenges/" class="btn btn-primary">More Challenges</a>
+                    <button class="btn btn-secondary" onclick="document.getElementById('challenge-complete').style.display='none'">Review Stages</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer py-4 text-center text-sm">
+        &copy; 2026 Promit. All rights reserved.
+    </footer>
+
+    <script src="../../public/challenges.js"></script>
+    
+</body>
+
+</html>

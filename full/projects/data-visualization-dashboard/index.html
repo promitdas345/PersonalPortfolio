@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Visualization Dashboard | Promit's Projects</title>
+    <link rel="stylesheet" href="../../public/styles.css" />
+    <link rel="stylesheet" href="../../public/inline-editor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="../../" class="nav-link">Home</a></li>
+            <li><a href="../../projects/" class="nav-link">Projects</a></li>
+            <li><a href="../../blog/" class="nav-link">Blog</a></li>
+            <li><a href="../../photography/" class="nav-link">Photography</a></li>
+            <li><a href="../../about/" class="nav-link">About</a></li>
+            <li><a href="../../contact/" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="data-visualization-dashboard" data-project-id="1">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2" data-project-field="title">Data Visualization Dashboard</h2>
+          <p class="text-gray-600 mb-2" data-project-field="summary">A Plotly Dash experience that lets analysts explore millions of rows with fluid filtering and storytelling visuals.</p>
+          <p class="text-sm text-gray-500">Tech: <span data-project-field="technologies">Python, Plotly, Dash, FastAPI, Redis, AWS</span></p>
+        </header>
+        <figure class="mb-6">
+          <img src="../../public/images/placeholder.png" alt="Data Visualization Dashboard hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="highlights">
+            <li>Reduced exploratory analysis time by 60% through prebuilt insight panels.</li><li>Implemented server-side data paging so the dashboard scales to 5M+ records.</li><li>Designed adaptive color systems for dark/light palettes.</li>
+          </ul>
+        </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Impact & Metrics</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="metrics">
+      <li>4 analytics squads / 60+ weekly users rely on the dashboard for executive readouts.</li><li>p50 filter latency 180 ms, p95 320 ms after caching and query tracing.</li><li>35+ branded PDF exports generated per week directly from the UI.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">System Architecture</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="architecture">
+      <li>Dash UI runs on AWS Fargate behind an Application Load Balancer; heavy queries flow through a FastAPI aggregation layer.</li><li>ETL jobs orchestrated with Step Functions hydrate S3 + Redshift while Redis caches recent cross-filter payloads.</li><li>CloudWatch dashboards plus structured logging surface latency outliers and error budgets.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Ownership & Learnings</h3>
+    <p class="text-gray-600" data-project-field="ownership">Owned the ingestion-to-visualization pipeline, Terraform modules, caching strategy, and PDF export service, plus CI/CD (GitHub Actions) and observability dashboards.</p>
+  </section>
+        <section class="mb-6 prose max-w-none" data-project-field="content">
+          <p>The dashboard ingests CSV exports and database snapshots, cleans them with Pandas, and then streams curated data frames into Plotly Dash components. I focused on making interactions feel instantaneous—drill-down filters update cross-highlights in under 200ms thanks to memoized queries and lightweight JSON payloads.</p><p>Once the analysis is complete, analysts can export any state of the dashboard to a branded PDF report. The export pipeline renders the Plotly figures headlessly and stitches them together with narrative text.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Live Application</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        
+        <p class="mt-8"><a href="../../projects/" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      © 2026 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'data-visualization-dashboard';</script>
+    <script src="../../public/project-demos.js" defer></script>
+    <script src="../../public/inline-editor.js?v=2"></script>
+    
+  </body>
+</html>
+

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pac-Man | Promit's Portfolio</title>
+    <link rel="stylesheet" href="../public/styles.css" />
+    <link rel="stylesheet" href="../public/inline-editor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="../" class="nav-link">Home</a></li>
+            <li><a href="../projects/" class="nav-link">Projects</a></li>
+            <li><a href="../blog/" class="nav-link">Blog</a></li>
+            <li><a href="../photography/" class="nav-link">Photography</a></li>
+            <li><a href="../about/" class="nav-link">About</a></li>
+            <li><a href="../contact/" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8">
+      <section class="mb-6 section">
+        <h2 class="text-3xl font-semibold mb-2">Play Pac-Man</h2>
+        <p class="text-gray-600">
+          This is a handmade remake of the original maze: accurate pellet placement, four ghosts with unique personalities, wrap-around tunnels, and responsive controls—all powered by vanilla JavaScript and the Canvas API.
+        </p>
+      </section>
+      <section data-inline-dynamic="pacman">
+              <section class="pacman-panel section">
+        <div class="pacman-hud">
+          <div>
+            <p class="hud-label">Score</p>
+            <p id="pacmanScore" class="hud-value">0</p>
+          </div>
+          <div>
+            <p class="hud-label">Lives</p>
+            <p id="pacmanLives" class="hud-value">3</p>
+          </div>
+          <div>
+            <p class="hud-label">Level</p>
+            <p id="pacmanLevel" class="hud-value">1</p>
+          </div>
+        </div>
+        <div class="pacman-status">
+          <p id="pacmanStatus" class="status-text">Press “Start / Reset” to begin.</p>
+          <div class="pacman-buttons">
+            <button id="pacmanStart" class="btn btn-primary">Start / Reset</button>
+            <button id="pacmanPause" class="btn btn-secondary">Pause</button>
+          </div>
+          <div class="pacman-audio-controls" aria-label="Audio volume">
+            <label for="pacmanVolume" class="hud-label">Volume</label>
+            <input
+              id="pacmanVolume"
+              type="range"
+              min="0"
+              max="100"
+              value="75"
+              aria-label="Adjust Pac-Man volume"
+            />
+            <span id="pacmanVolumeValue" class="hud-value">75%</span>
+          </div>
+        </div>
+        <canvas
+          id="pacmanCanvas"
+          width="456"
+          height="504"
+          role="img"
+          aria-label="Pac-Man playfield"
+        ></canvas>
+      </section>
+      <section class="game-instructions section">
+        <h3 class="text-xl font-semibold mb-2">How to play</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-600">
+          <li>Use the arrow keys or WASD to steer Pac-Man through the maze.</li>
+          <li>Eat every pellet to advance; power pellets let you chomp ghosts for bonus points.</li>
+          <li>Queue your next move before an intersection to glide through turns like the arcade classic.</li>
+          <li>You have three lives. Colliding with a ghost without a power-up costs one life.</li>
+          <li>On phones or tablets, tap the on-screen arrows below to queue turns.</li>
+        </ul>
+        <div class="pacman-mobile-controls" aria-label="Touch direction pad">
+          <p class="mobile-controls__label">Tap to steer Pac-Man on touch devices</p>
+          <div class="pacman-dpad">
+            <button type="button" class="pacman-control-btn" data-pacman-direction="up" aria-label="Move up">↑</button>
+            <div class="pacman-dpad-bottom-row">
+              <button type="button" class="pacman-control-btn" data-pacman-direction="left" aria-label="Move left">←</button>
+              <button type="button" class="pacman-control-btn" data-pacman-direction="down" aria-label="Move down">↓</button>
+              <button type="button" class="pacman-control-btn" data-pacman-direction="right" aria-label="Move right">→</button>
+            </div>
+          </div>
+          <p class="mobile-controls__hint">Tip: tap rapidly ahead of intersections to queue turns, just like the arcade original.</p>
+        </div>
+      </section>
+
+      </section>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      © 2026 Promit. All rights reserved.
+    </footer>
+    <script src="../public/pacman.js" defer></script>
+    <script src="../public/inline-editor.js?v=2"></script>
+    
+  </body>
+</html>
+

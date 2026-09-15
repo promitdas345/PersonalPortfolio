@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="NeuroEdit — A full-stack AI image editing application using PyTorch, U²-Net, and FastAPI for neural background removal, sharpening, and denoising." />
+  <title>NeuroEdit — AI Image Editor | Promit's Portfolio</title>
+  <link rel="stylesheet" href="../public/styles.css" />
+  <link rel="stylesheet" href="../public/neuroedit.css?v=3" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container flex justify-between items-center py-4">
+      <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+      <nav>
+        <ul class="flex space-x-4 text-lg">
+          <li><a href="../" class="nav-link">Home</a></li>
+          <li><a href="../projects/" class="nav-link">Projects</a></li>
+          <li><a href="../blog/" class="nav-link">Blog</a></li>
+          <li><a href="../photography/" class="nav-link">Photography</a></li>
+          <li><a href="../about/" class="nav-link">About</a></li>
+          <li><a href="../contact/" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container py-8">
+    <!-- Hero -->
+    <section class="section neuroedit-page-hero">
+      <div class="neuroedit-page-hero-content">
+        <div class="neuroedit-badge">🧠 AI / Computer Vision</div>
+        <h2 class="text-3xl font-semibold mb-2">NeuroEdit</h2>
+        <p class="neuroedit-tagline">Premium-for-free AI image editing, powered by neural networks.</p>
+        <p class="text-gray-600 mb-4">
+          NeuroEdit provides capabilities typically locked behind "Pro" subscriptions in apps like Picsart Mobile — entirely for free. 
+          It uses <strong>salient object detection</strong> via PyTorch's U²-Net to deliver pixel-perfect
+          background removal. Paired with <strong>AI Generative Fill</strong> outpainting and <strong>Cinematic Color Grading</strong>, 
+          it's a full computer vision toolkit wrapped in a polished Next.js interface.
+        </p>
+        <div class="neuroedit-hero-badges">
+          <span class="ne-tech-badge">PyTorch</span>
+          <span class="ne-tech-badge">U²-Net</span>
+          <span class="ne-tech-badge">FastAPI</span>
+          <span class="ne-tech-badge">Next.js</span>
+          <span class="ne-tech-badge">OpenCV</span>
+          <span class="ne-tech-badge">Flask</span>
+        </div>
+      </div>
+      <div class="neuroedit-page-hero-visual">
+        <img src="../public/images/neuroedit_hero.png"
+          alt="NeuroEdit interface showing AI-powered background removal with U²-Net" />
+      </div>
+    </section>
+
+    <!-- NeuroEdit App UI -->
+    <section class="section mt-8" id="neuroedit-demo">
+      <h3 class="text-2xl font-semibold mb-2">🎨 NeuroEdit Web Studio</h3>
+      <p class="text-gray-600 mb-4">
+        Use the NeuroEdit Web Studio below to process your images. Remove backgrounds with alpha matte precision 
+        using our U²-Net backend, and apply our premium color matrices instantly.
+      </p>
+      <div class="ne-demo-container">
+        <div class="ne-editor-layout">
+          <div class="ne-editor-canvas-wrapper">
+            <canvas id="neuroEditCanvas" width="800" height="500"></canvas>
+            <div class="ne-demo-status" id="neDemoStatus">Please upload an image to begin editing</div>
+          </div>
+          <div class="ne-editor-sidebar">
+            <div class="ne-editor-section">
+              <h4>Image Source</h4>
+              <label class="btn btn-primary ne-demo-btn w-full text-center cursor-pointer" style="display:block; position:relative; overflow:hidden;">
+                <input type="file" id="neUploadImage" accept="image/*" style="opacity:0; position:absolute; left:0; top:0; width:100%; height:100%; cursor:pointer;" />
+                📁 Upload Photo
+              </label>
+            </div>
+            
+            <div class="ne-editor-section">
+              <h4>Adjustments</h4>
+              <div class="ne-slider-group">
+                <label>Brightness</label>
+                <input type="range" id="neBrightness" min="-100" max="100" value="0">
+              </div>
+              <div class="ne-slider-group">
+                <label>Contrast</label>
+                <input type="range" id="neContrast" min="-100" max="100" value="0">
+              </div>
+              <div class="ne-slider-group">
+                <label>Saturation</label>
+                <input type="range" id="neSaturation" min="-100" max="100" value="0">
+              </div>
+              <div class="ne-slider-group">
+                <label>Blur</label>
+                <input type="range" id="neBlur" min="0" max="20" value="0">
+              </div>
+            </div>
+
+            <div class="ne-editor-section">
+              <h4>Quick Filters</h4>
+              <div class="ne-filter-grid">
+                <button class="btn btn-secondary ne-filter-btn" data-filter="cinematic">🎬 Cinematic</button>
+                <button class="btn btn-secondary ne-filter-btn" data-filter="vintage">📻 Vintage</button>
+                <button class="btn btn-secondary ne-filter-btn" data-filter="bw">⚫ B&W</button>
+                <button class="btn btn-secondary ne-filter-btn active" data-filter="none">🚫 None</button>
+              </div>
+            </div>
+
+            <div class="ne-editor-section">
+              <h4>AI Tools</h4>
+              <button class="btn btn-primary ne-demo-btn w-full" id="neRemoveBgBtn" style="background: linear-gradient(135deg, #00A3A3, #007C7C); border: none; color: #fff;">🧠 Remove Background</button>
+            </div>
+
+            <div class="ne-editor-section ne-editor-actions">
+              <button class="btn btn-secondary ne-demo-btn w-full" id="neReset" style="margin-bottom:0.5rem; display:block;">↩ Reset Edits</button>
+              <button class="btn btn-primary ne-demo-btn w-full" id="neDownload" style="background:#00A3A3; border-color:#00A3A3; display:block;">⬇️ Download Image</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture Deep-Dive -->
+    <section class="section mt-8">
+      <h3 class="text-2xl font-semibold mb-4">🏗️ System Architecture</h3>
+      <div class="ne-arch-grid">
+        <div class="ne-arch-card">
+          <div class="ne-arch-card-header">
+            <span class="ne-arch-num">01</span>
+            <h4>Next.js Frontend</h4>
+          </div>
+          <p>React-based SPA with image upload, real-time preview, before/after comparison slider, and batch
+            processing queue. Client-side image optimization reduces payload size before API calls.</p>
+          <div class="ne-arch-tech">
+            <span>React</span><span>Next.js</span><span>Canvas API</span><span>WebSocket</span>
+          </div>
+        </div>
+        <div class="ne-arch-card">
+          <div class="ne-arch-card-header">
+            <span class="ne-arch-num">02</span>
+            <h4>FastAPI Gateway</h4>
+          </div>
+          <p>High-performance async Python API that receives images, validates inputs, orchestrates model inference,
+            and streams processed results. Built for horizontal scaling with uvicorn workers.</p>
+          <div class="ne-arch-tech">
+            <span>FastAPI</span><span>Uvicorn</span><span>Pydantic</span><span>async/await</span>
+          </div>
+        </div>
+        <div class="ne-arch-card">
+          <div class="ne-arch-card-header">
+            <span class="ne-arch-num">03</span>
+            <h4>U²-Net Engine</h4>
+          </div>
+          <p>U²-Net (nested U-structure) specifically designed for salient object detection.
+            Generates pixel-level saliency maps that produce rich alpha mattes — capturing hair, fur,
+            and semi-transparent edges that general-purpose segmentation models miss.</p>
+          <div class="ne-arch-tech">
+            <span>PyTorch</span><span>U²-Net</span><span>RSU Blocks</span><span>CUDA</span>
+          </div>
+        </div>
+        <div class="ne-arch-card">
+          <div class="ne-arch-card-header">
+            <span class="ne-arch-num">04</span>
+            <h4>Enhancement Pipeline</h4>
+          </div>
+          <p>Post-segmentation processing includes unsharp masking for sharpening, bilateral filtering for
+            noise reduction, and alpha channel composition for transparent background output.</p>
+          <div class="ne-arch-tech">
+            <span>OpenCV</span><span>NumPy</span><span>Pillow</span><span>scikit-image</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pipeline Visualization -->
+    <section class="section mt-8">
+      <h3 class="text-2xl font-semibold mb-4">🔬 ML Pipeline Flow</h3>
+      <div class="ne-pipeline-full">
+        <div class="ne-pipeline-stage">
+          <div class="ne-pipeline-stage-num">1</div>
+          <div class="ne-pipeline-stage-content">
+            <h4>Image Ingestion</h4>
+            <p>Upload via Next.js → client-side resize to 1024px max → base64 encode → POST to FastAPI</p>
+          </div>
+        </div>
+        <div class="ne-pipeline-connector"></div>
+        <div class="ne-pipeline-stage">
+          <div class="ne-pipeline-stage-num">2</div>
+          <div class="ne-pipeline-stage-content">
+            <h4>Preprocessing</h4>
+            <p>Decode image → normalize to ImageNet mean/std → resize to model input dimensions → tensor conversion</p>
+          </div>
+        </div>
+        <div class="ne-pipeline-connector"></div>
+        <div class="ne-pipeline-stage highlight">
+          <div class="ne-pipeline-stage-num">3</div>
+          <div class="ne-pipeline-stage-content">
+            <h4>Salient Object Detection</h4>
+            <p>U²-Net forward pass → pixel-level saliency map → threshold to alpha matte with soft edges</p>
+          </div>
+        </div>
+        <div class="ne-pipeline-connector"></div>
+        <div class="ne-pipeline-stage">
+          <div class="ne-pipeline-stage-num">4</div>
+          <div class="ne-pipeline-stage-content">
+            <h4>Mask Refinement</h4>
+            <p>Morphological operations (erode/dilate) → Gaussian blur on edges → alpha matte for smooth transitions</p>
+          </div>
+        </div>
+        <div class="ne-pipeline-connector"></div>
+        <div class="ne-pipeline-stage">
+          <div class="ne-pipeline-stage-num">5</div>
+          <div class="ne-pipeline-stage-content">
+            <h4>Composition &amp; Delivery</h4>
+            <p>Apply mask to original → optional enhancement (sharpen/denoise) → encode PNG with alpha → stream response</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Metrics -->
+    <section class="section mt-8">
+      <h3 class="text-2xl font-semibold mb-4">📊 Key Technical Metrics</h3>
+      <div class="ne-metrics-grid">
+        <div class="ne-metric">
+          <div class="ne-metric-value">&lt;1s</div>
+          <div class="ne-metric-label">Inference Time</div>
+          <div class="ne-metric-detail">Per image on standard hardware</div>
+        </div>
+        <div class="ne-metric">
+          <div class="ne-metric-value">Pixel</div>
+          <div class="ne-metric-label">Alpha Matte</div>
+          <div class="ne-metric-detail">Per-pixel saliency with soft edges</div>
+        </div>
+        <div class="ne-metric">
+          <div class="ne-metric-value">100%</div>
+          <div class="ne-metric-label">Python Backend</div>
+          <div class="ne-metric-detail">FastAPI + Flask serving layer</div>
+        </div>
+        <div class="ne-metric">
+          <div class="ne-metric-value">Included</div>
+          <div class="ne-metric-label">Pro Features</div>
+          <div class="ne-metric-detail">Advanced Filters &amp; BG Removal</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ne-back-link">
+      <a href="../projects/" class="text-blue-600 hover:underline">← Back to all projects</a>
+    </div>
+  </main>
+
+  <footer class="site-footer py-4 text-center text-sm">
+    © 2026 Promit. All rights reserved.
+  </footer>
+  <script src="../public/neuroedit-demo.js?v=4" defer></script>
+  
+</body>
+
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flappy Bird AI | Promit's Projects</title>
+    <link rel="stylesheet" href="../../public/styles.css" />
+    <link rel="stylesheet" href="../../public/inline-editor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="../../" class="nav-link">Home</a></li>
+            <li><a href="../../projects/" class="nav-link">Projects</a></li>
+            <li><a href="../../blog/" class="nav-link">Blog</a></li>
+            <li><a href="../../photography/" class="nav-link">Photography</a></li>
+            <li><a href="../../about/" class="nav-link">About</a></li>
+            <li><a href="../../contact/" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="flappy-bird-ai" data-project-id="4">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2" data-project-field="title">Flappy Bird AI</h2>
+          <p class="text-gray-600 mb-2" data-project-field="summary">Watch a NEAT autoplayer learn Flappy Bird: mutate/crossover, evaluate, keep the best genome, and repeat.</p>
+          <p class="text-sm text-gray-500">Tech: <span data-project-field="technologies">JavaScript, p5.js, NEAT</span></p>
+        </header>
+        <figure class="mb-6">
+          <img src="../../public/flappy-bird-ai/images/background.png" alt="Flappy Bird AI hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="highlights">
+            <li>Implemented Flappy physics, obstacle spawning, and collision checks in p5.js with responsive rendering.</li><li>Built a NEAT implementation (genomes, species, mutation/crossover) so the bird learns without labels.</li><li>Persists the best genome locally and seeds the next population to speed up future runs.</li>
+          </ul>
+        </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Impact & Metrics</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="metrics">
+      <li>100% offline-capable; training and replay run fully in-browser.</li><li>Autoplayer typically reaches double-digit scores within a few generations on a laptop.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">System Architecture</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="architecture">
+      <li>Game loop + rendering handled by p5.js; physics and collision checks drive the fitness signal.</li><li>Custom NEAT stack (genomes, species, crossover/mutation, innovation history) evolves the bird agent.</li><li>LocalStorage caches the top-performing genome to replay and seed new generations.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Ownership & Learnings</h3>
+    <p class="text-gray-600" data-project-field="ownership">Solo build: game physics, NEAT implementation, visualizer, and local persistence of best genomes.</p>
+  </section>
+        <section class="mb-6 prose max-w-none" data-project-field="content">
+          <p>This project pairs a classic Flappy Bird clone with a NEAT autoplayer. Each generation of birds gets fitness from how far they travel before crashing; genomes mutate and crossover, and the best genome is stored locally so reruns start from a strong baseline.</p><p>The loop is simple to follow: spawn a population, simulate flights, score by distance, breed the fittest, repeat. A lightweight brain visualizer shows the network structure so you can see why the agent flaps when it does.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Live Application</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        <p class="mt-4"><a href="https://github.com/promitdas345/FlappyBirdAi" class="btn btn-primary" target="_blank" rel="noopener">View Repository</a></p>
+        <p class="mt-8"><a href="../../projects/" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      © 2026 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'flappy-bird-ai';</script>
+    <script src="../../public/project-demos.js" defer></script>
+    <script src="../../public/inline-editor.js?v=2"></script>
+    
+  </body>
+</html>
+

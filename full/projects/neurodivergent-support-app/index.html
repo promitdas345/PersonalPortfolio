@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neurodivergent Support App (In Progress) | Promit's Projects</title>
+    <link rel="stylesheet" href="../../public/styles.css" />
+    <link rel="stylesheet" href="../../public/inline-editor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="../../" class="nav-link">Home</a></li>
+            <li><a href="../../projects/" class="nav-link">Projects</a></li>
+            <li><a href="../../blog/" class="nav-link">Blog</a></li>
+            <li><a href="../../photography/" class="nav-link">Photography</a></li>
+            <li><a href="../../about/" class="nav-link">About</a></li>
+            <li><a href="../../contact/" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="neurodivergent-support-app" data-project-id="5">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2" data-project-field="title">Neurodivergent Support App (In Progress)</h2>
+          <p class="text-gray-600 mb-2" data-project-field="summary">A guided companion with configurable routines, sensory check-ins, and low-stimulus UI patterns.</p>
+          <p class="text-sm text-gray-500">Tech: <span data-project-field="technologies">TypeScript, React, Node.js, PostgreSQL</span></p>
+        </header>
+        <figure class="mb-6">
+          <img src="../../public/images/placeholder.png" alt="Neurodivergent Support App (In Progress) hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="highlights">
+            <li>Co-designing with students to define calming color palettes and typography that avoid sensory overload.</li><li>Building routine templates (class, study, commute) with reminders and adjustable pacing.</li><li>Planning a privacy-first analytics layer to surface gentle nudges without tracking PII.</li>
+          </ul>
+        </section>
+        
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">System Architecture</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="architecture">
+      <li>React front-end with offline-friendly caching; minimal motion and strong focus states.</li><li>API layer in Node.js with PostgreSQL for templates and user preferences; feature-flagged rollout.</li><li>Background jobs to batch reminder deliveries and feedback summaries without spamming users.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Ownership & Learnings</h3>
+    <p class="text-gray-600" data-project-field="ownership">Leading design and build; currently prototyping flows, defining accessibility guardrails, and stubbing the API.</p>
+  </section>
+        <section class="mb-6 prose max-w-none" data-project-field="content">
+          <p>This project is co-designed with neurodivergent classmates to make daily routines feel calmer and predictable. The UI defaults to low-stimulus colors, strong focus indicators, and motion reduced by default. Routines come with adjustable pacing and optional reminders.</p><p>I'm prototyping the React front-end with offline caching, while the Node/PostgreSQL backend will store templates and preferences. Analytics are opt-in and anonymized; the goal is to provide gentle, user-controlled insights rather than surveillance.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Live Application</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        
+        <p class="mt-8"><a href="../../projects/" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      © 2026 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'neurodivergent-support-app';</script>
+    <script src="../../public/project-demos.js" defer></script>
+    <script src="../../public/inline-editor.js?v=2"></script>
+    
+  </body>
+</html>
+

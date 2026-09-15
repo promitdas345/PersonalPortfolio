@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connect 4 vs AI | Promit's Projects</title>
+    <link rel="stylesheet" href="../../public/styles.css" />
+    <link rel="stylesheet" href="../../public/inline-editor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="../../" class="nav-link">Home</a></li>
+            <li><a href="../../projects/" class="nav-link">Projects</a></li>
+            <li><a href="../../blog/" class="nav-link">Blog</a></li>
+            <li><a href="../../photography/" class="nav-link">Photography</a></li>
+            <li><a href="../../about/" class="nav-link">About</a></li>
+            <li><a href="../../contact/" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="connect-4-ai" data-project-id="6">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2" data-project-field="title">Connect 4 vs AI</h2>
+          <p class="text-gray-600 mb-2" data-project-field="summary">Challenge a strong AI powered by minimax with alpha‑beta pruning — it searches millions of positions per move and plays at a very high level.</p>
+          <p class="text-sm text-gray-500">Tech: <span data-project-field="technologies">JavaScript, Canvas API, Minimax Algorithm, HTML5</span></p>
+        </header>
+        <figure class="mb-6">
+          <img src="../../public/images/placeholder.png" alt="Connect 4 vs AI hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="highlights">
+            <li>Implemented Minimax with Alpha-Beta pruning to prune the search tree efficiently.</li><li>Used Zobrist hashing and a transposition table to cache millions of board states.</li><li>Designed a premium, responsive UI with glassmorphism and glossy HTML5 Canvas rendering.</li>
+          </ul>
+        </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Impact & Metrics</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="metrics">
+      <li>Search depth of 14 moves achieved in real-time on standard client hardware.</li><li>Transposition table hit rate &gt;60% in mid-game, significantly speeding up calculation.</li><li>Zero dependencies — built entirely with vanilla JavaScript and CSS.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">System Architecture</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="architecture">
+      <li>Game loop decoupled from rendering; AI runs in the main thread (optimized) without blocking UI.</li><li>Bitboard-based move generation allows for O(1) win checking and fast board manipulation.</li><li>Responsive Canvas renderer handles animations and scaling for all device sizes.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Ownership & Learnings</h3>
+    <p class="text-gray-600" data-project-field="ownership">Solo engineering: implemented the entire game engine, AI strategies, and frontend design.</p>
+  </section>
+        <section class="mb-6 prose max-w-none" data-project-field="content">
+          <p>This Connect 4 implementation isn't just a game; it's a demonstration of classical game AI optimization. I built a Minimax engine that looks 14 moves ahead, using Alpha-Beta pruning to discard irrelevant branches and Zobrist hashing to remember positions it has already seen.</p><p>The frontend matches the AI's sophistication with a premium 'Dark Mode' aesthetic. Using the HTML5 Canvas API, I simulated glossy tokens and smooth drop animations. The result is a game that feels native and responsive, running entirely in the browser with no server-side logic required for the gameplay itself.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Live Application</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        <p class="mt-4"><a href="../../connect4/" class="btn btn-primary" target="_blank" rel="noopener">View Repository</a></p>
+        <p class="mt-8"><a href="../../projects/" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      © 2026 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'connect-4-ai';</script>
+    <script src="../../public/project-demos.js" defer></script>
+    <script src="../../public/inline-editor.js?v=2"></script>
+    
+  </body>
+</html>
+

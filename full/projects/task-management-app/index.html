@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Management App | Promit's Projects</title>
+    <link rel="stylesheet" href="../../public/styles.css" />
+    <link rel="stylesheet" href="../../public/inline-editor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Portfolio</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="../../" class="nav-link">Home</a></li>
+            <li><a href="../../projects/" class="nav-link">Projects</a></li>
+            <li><a href="../../blog/" class="nav-link">Blog</a></li>
+            <li><a href="../../photography/" class="nav-link">Photography</a></li>
+            <li><a href="../../about/" class="nav-link">About</a></li>
+            <li><a href="../../contact/" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto" data-project-slug="task-management-app" data-project-id="2">
+      <article class="section">
+        <header class="mb-6">
+          <h2 class="text-3xl font-semibold mb-2" data-project-field="title">Task Management App</h2>
+          <p class="text-gray-600 mb-2" data-project-field="summary">Realtime collaboration, kanban-style boards, and focus analytics for busy student teams.</p>
+          <p class="text-sm text-gray-500">Tech: <span data-project-field="technologies">Node.js, Express, MongoDB, Socket.IO, Docker, AWS</span></p>
+        </header>
+        <figure class="mb-6">
+          <img src="../../public/images/placeholder.png" alt="Task Management App hero" style="width:100%;border-radius:1rem;box-shadow:0 12px 30px rgba(10,37,64,0.2);" />
+        </figure>
+        <section class="mb-6">
+          <h3 class="text-2xl font-semibold mb-2">Highlights</h3>
+          <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="highlights">
+            <li>Delivered live board updates with Socket.IO and optimistic UI patterns.</li><li>Role-based access control plus passwordless magic links for onboarding.</li><li>Weekly focus insights built with aggregated completion stats.</li>
+          </ul>
+        </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Impact & Metrics</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="metrics">
+      <li>Average WebSocket broadcast latency 640 ms for 150 concurrent clients.</li><li>Role-based access rollout cut unauthorized access attempts to zero across 6 months.</li><li>Deployed Dockerized stack to Fly.io and ECS with GitHub Actions CI/CD in under 8 minutes.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">System Architecture</h3>
+    <ul class="list-disc list-inside space-y-1 text-gray-600" data-project-field="architecture">
+      <li>Express REST API + Socket.IO gateway sit behind Nginx; MongoDB Atlas stores boards and leverages change streams for realtime fan-out.</li><li>Background workers crunch completion stats nightly and publish insights through the same WebSocket channel.</li><li>Infrastructure-as-code scripts provision Fly.io and AWS ECS services plus secrets management.</li>
+    </ul>
+  </section>
+        <section class="mb-6">
+    <h3 class="text-2xl font-semibold mb-2">Ownership & Learnings</h3>
+    <p class="text-gray-600" data-project-field="ownership">Led end-to-end delivery: schema design, RBAC security review, integration tests, deployment automation, and on-call runbooks for Socket.IO health.</p>
+  </section>
+        <section class="mb-6 prose max-w-none" data-project-field="content">
+          <p>This app grew out of my own need to coordinate coursework, research, and freelance gigs. I built a kanban-first interface with drag-and-drop cards, subtasks, and recurring task templates. Users invite teammates, assign work, and track velocity charts generated nightly.</p><p>The backend exposes a clean REST API plus WebSocket gateways for realtime events. MongoDB change streams keep the Socket.IO layer in sync, and JSON Web Tokens secure every request. I containerized the stack so deployments to Fly.io or Render only take a few minutes.</p>
+        </section>
+        <section id="projectDemo" class="project-demo section">
+          <h3 class="text-2xl font-semibold mb-3">Live Application</h3>
+          <div id="projectDemoMount" class="demo-surface">
+            <p>Loading interactive experience…</p>
+          </div>
+        </section>
+        
+        <p class="mt-8"><a href="../../projects/" class="text-blue-600 hover:underline">← Back to projects</a></p>
+      </article>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      © 2026 Promit. All rights reserved.
+    </footer>
+    <script>window.__PROJECT_SLUG__ = 'task-management-app';</script>
+    <script src="../../public/project-demos.js" defer></script>
+    <script src="../../public/inline-editor.js?v=2"></script>
+    
+  </body>
+</html>
+

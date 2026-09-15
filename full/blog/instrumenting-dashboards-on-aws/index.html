@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Instrumenting Dashboards on AWS for Sub-200 ms Filters - a blog post by Promit Das." />
+    <title>Instrumenting Dashboards on AWS for Sub-200 ms Filters | Promit's Blog</title>
+    <link rel="stylesheet" href="../../public/styles.css" />
+    <link rel="stylesheet" href="../../public/inline-editor.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-blue-700">Promit's Blog</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="../../" class="nav-link">Home</a></li>
+            <li><a href="../../projects/" class="nav-link">Projects</a></li>
+            <li><a href="../../blog/" class="nav-link">Blog</a></li>
+            <li><a href="../../photography/" class="nav-link">Photography</a></li>
+            <li><a href="../../about/" class="nav-link">About</a></li>
+            <li><a href="../../contact/" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8 max-w-3xl mx-auto post-container" data-post-slug="instrumenting-dashboards-on-aws">
+      
+      <button id="delete-post-btn" class="delete-post-btn" aria-label="Delete post" title="Delete this post" style="display: none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
+      <article class="prose max-w-none section" data-post-id="abe8df8b-f66e-492d-b366-04f42384f70c">
+        <h1 class="mb-2" data-post-field="title">Instrumenting Dashboards on AWS for Sub-200 ms Filters</h1>
+        <p class="text-sm text-gray-600 mb-4">
+          <span data-post-field="date">2025-10-18</span> &bull; 1 min read
+        </p>
+        
+        
+        <div data-post-field="contentMarkdown">
+          <p>Analysts loved the flexibility of the Dash UI, but once we crossed 5 million rows the filters started to drag. In this post I cover the profiling and observability work that brought the experience back to &quot;buttery smooth.&quot;</p><p>I containerized the Dash front end on AWS Fargate and split the heavy lifting into a FastAPI microservice. Structured logs flowed into CloudWatch Log Insights so I could query slow endpoints and correlate them with Redis cache misses. We also added Redshift materialized views plus a thin caching layer inside the Dash callbacks.</p><p>The end result: p50 filter latency sits at 180 ms, p95 at 320 ms, and we have alarms that ping my on-call Slack channel whenever either drifts. The post includes code snippets for the middleware, tracing IDs, and Terraform bits that provisioned the dashboards.</p>
+        </div>
+        <div class="blog-engagement"><span>0 reactions</span><span>0 comments</span><span>0 reposts</span></div>
+        
+        
+      </article>
+      <p class="mt-8"><a href="../../blog/" class="text-blue-600 hover:underline">&larr; Back to blog</a></p>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      &copy; 2025 Promit. All rights reserved.
+    </footer>
+    <script src="../../public/post-reactions.js"></script>
+    <script src="../../public/inline-editor.js?v=2"></script>
+  
+  </body>
+</html>
