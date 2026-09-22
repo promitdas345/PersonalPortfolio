@@ -1163,22 +1163,67 @@ details summary {
   border-radius: 2px;
 }
 
-/* === Contact Form Inputs UX === */
+/* === Form Controls UX === */
+/* Forms sit on the white `main` card and inside the white admin dialogs, so
+   controls are dark-on-light. Components with their own dark surfaces (the
+   challenges search, the blog editor) set their own colors and are unaffected. */
 .contact-form input,
 .contact-form textarea,
-input[type="text"], input[type="email"], textarea {
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+textarea {
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(10, 37, 64, 0.25);
   border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: var(--color-white);
+  color: var(--color-oxford-blue);
+  /* A textarea does not inherit the page font on its own. */
+  font-family: inherit;
+  font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+.contact-form input::placeholder,
+.contact-form textarea::placeholder,
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="search"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="url"]::placeholder,
+input[type="number"]::placeholder,
+textarea::placeholder {
+  color: var(--color-slate-gray);
+  opacity: 1;
+}
+
+/* Chrome paints its own background over autofilled fields; keep the value readable. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-oxford-blue);
+  caret-color: var(--color-oxford-blue);
+  box-shadow: 0 0 0 1000px #f8fbff inset;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+textarea:focus {
   outline: none;
-  border-color: #5ee7e7;
-  box-shadow: 0 0 0 3px rgba(94, 231, 231, 0.2);
+  border-color: var(--color-light-sea-green);
+  box-shadow: 0 0 0 3px rgba(0, 124, 124, 0.25);
 }
 
 /* === Project Tech Tags Contrast (WCAG fix) === */
