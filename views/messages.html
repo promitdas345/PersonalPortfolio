@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Contact form messages received through the portfolio." />
+    <title>Inbox | Promit's Portfolio</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+    <link rel="stylesheet" href="/public/messages.css" />
+  </head>
+  <body data-csrf-token="{{ csrfToken }}">
+    <header class="site-header">
+      <div class="container flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold">Inbox</h1>
+        <nav>
+          <ul class="flex space-x-4 text-lg">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/blog" class="nav-link">Blog</a></li>
+            <li><a href="/contact" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="container py-8">
+      <section class="section">
+        <div class="inbox-header">
+          <div>
+            <h2 class="text-3xl font-semibold mb-1">Contact messages</h2>
+            <p id="inboxSummary" class="inbox-summary">Loading messages…</p>
+          </div>
+          <div class="inbox-filters">
+            <button type="button" class="btn btn-secondary is-active" data-filter="all">All</button>
+            <button type="button" class="btn btn-secondary" data-filter="unread">Unread</button>
+          </div>
+        </div>
+        <p id="inboxStatus" class="form-status" role="status"></p>
+        <ul id="inboxList" class="inbox-list"></ul>
+      </section>
+    </main>
+    <footer class="site-footer py-4 text-center text-sm">
+      © 2026 Promit. All rights reserved.
+    </footer>
+    <script src="/public/messages.js"></script>
+  {{ analytics }}
+  </body>
+</html>

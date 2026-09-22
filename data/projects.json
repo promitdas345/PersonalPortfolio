@@ -205,7 +205,7 @@
     "id": 6,
     "slug": "connect-4-ai",
     "title": "Connect 4 vs AI",
-    "description": "A solved-game AI that uses minimax, alpha-beta pruning, and transpositon tables to play perfectly.",
+    "description": "A solved-game AI that uses minimax, alpha-beta pruning, and transposition tables to play perfectly.",
     "summary": "Challenge a strong AI powered by minimax with alpha‑beta pruning — it searches millions of positions per move and plays at a very high level.",
     "technologies": [
       "JavaScript",

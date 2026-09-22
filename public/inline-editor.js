@@ -253,6 +253,8 @@
     const routeType = getRouteType();
     const showCreate = routeType === 'blog' || routeType === 'projects';
     const createLabel = routeType === 'blog' ? 'New post' : 'New project';
+    const showInbox =
+      state.capabilities.includes('*') || state.capabilities.includes('contact.messages.read');
 
     const toolbar = document.createElement('div');
     toolbar.id = 'inline-editor-toolbar';
@@ -263,6 +265,7 @@
           <button id="inline-save-button" type="button" class="toolbar-btn toolbar-btn-save" disabled>Save</button>
           <button id="inline-cancel-button" type="button" class="toolbar-btn">Cancel</button>
           ${showCreate ? `<button id="inline-create-button" type="button" class="toolbar-btn">${createLabel}</button>` : ''}
+          ${showInbox ? '<a id="inline-inbox-link" class="toolbar-btn" href="/admin/messages">Inbox</a>' : ''}
           <button id="inline-logout-button" type="button" class="toolbar-btn">Log out</button>
           <button id="inline-exit-button" type="button" class="toolbar-btn toolbar-btn-exit">Exit</button>
         </div>

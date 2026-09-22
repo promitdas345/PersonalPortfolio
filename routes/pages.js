@@ -1,4 +1,5 @@
 const { sendHtml, sendText } = require('../lib/http');
+const { hasCapability } = require('../lib/admin-store');
 const fs = require('fs/promises');
 const path = require('path');
 
@@ -177,6 +178,19 @@ function createPageRoutes(deps) {
     if (normalizedPathname === '/contact') {
       const analytics = await getAnalyticsHtml();
       return sendHtml(res, await renderTemplate('contact.html', { analytics }));
+    }
+    if (normalizedPathname === '/admin/messages') {
+      const context = await auth.authContext(req);
+      // Anyone not signed in gets bounced to the contact page, which offers the sign-in flow.
+      if (!context.session) return sendHtml(res, '<script>window.location.href="/contact";</script>', 302);
+      if (!hasCapability(context.capabilities, 'contact.messages.read')) {
+        return sendText(res, 403, 'You do not have permission to read contact messages.');
+      }
+      const analytics = await getAnalyticsHtml();
+      return sendHtml(
+        res,
+        await renderTemplate('messages.html', { csrfToken: escapeHtml(context.session.csrfToken || ''), analytics })
+      );
     }
     if (normalizedPathname === '/pacman') {
       const analytics = await getAnalyticsHtml();

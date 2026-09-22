@@ -2,6 +2,7 @@ node_modules
 dist
 .DS_Store
 data/admin-auth.json
+data/messages.json
 data/admin-store.json
 admin.cookies
 .env

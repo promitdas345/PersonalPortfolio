@@ -84,6 +84,14 @@ main > section:first-of-type {
   color: var(--color-selective-yellow);
 }
 
+/* The nav is a plain <ul>; without this the browser draws list bullets between links. */
+.site-header nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
 .nav-link {
   color: var(--color-white);
   font-weight: 600;

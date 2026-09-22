@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased] — 2026-09-22 — Readable forms and a contact inbox that cannot lose messages
+
+### Fixed
+
+- **Fixed: every form on the site rendered its text white on white.** `main` is a white content card (`public/styles.css`), but the form-control rule set `color: #fff` over a near-transparent background — styling written for the dark page background behind the card. Anything typed into the contact form was invisible, and so was the username field in the admin sign-in dialog (the password field escaped it only because `input[type="password"]` was missing from the selector list). Controls are now dark-on-white with readable placeholders, a legible Chrome autofill state, and coverage for every text-like input type. Verified by rendering the contact page and the sign-in dialog in headless Chrome before and after.
+- **Fixed: the header nav drew list bullets between links** on every page — the `<ul>` had no list reset.
+- **Fixed: the Snake page's controls tip was grey-on-grey.** It was styled for a dark surface while sitting on the white card.
+- **Fixed a typo** in the Connect 4 project description ("transpositon" → "transposition").
+
+### Added
+
+- **Contact form submissions are now stored** in `data/messages.json` (`lib/messages.js`, atomic writes, newest first, capped at 1000). Previously a submission existed only as an outbound email: if SMTP was misconfigured, rate limited, or down, the message was gone with no record anywhere, and the static build — which has no `/api/contact` behind it at all — dropped every submission it received. The message is saved *before* the email is attempted, so delivery failure is now reported (`emailed: false`, flagged in the inbox) instead of losing what the visitor wrote.
+- **Added an admin inbox** at `/admin/messages` plus `GET /api/admin/messages`, `PATCH /api/admin/messages/:id` (read/unread), and `DELETE /api/admin/messages/:id`. Gated behind two new capabilities, `contact.messages.read` and `contact.messages.manage`, granted to `owner` and `admin` only — contact messages are private, so `editor` and `author` do not get them. An **Inbox** link appears in the edit toolbar for anyone holding the read capability.
+- **Added rate limiting to `POST /api/contact`** — 5 submissions per sender IP per 10 minutes, so a persisted inbox cannot be flooded.
+- **Added a `mailto:` fallback to the contact form.** When the API is unreachable (the static build, or a server outage), the page now offers the visitor a prefilled email instead of only showing an error.
+- **Added tests:** `tests/messages.unit.test.js` covers the store (persistence, reload, read/delete, failed-email recording), and the integration suite now asserts a submission survives an SMTP failure, that validation still rejects empty fields, and that visitors cannot read or change the inbox. The integration tests point SMTP at a closed port so `npm test` never sends real mail.
+
 ## [Unreleased] — 2026-07-21 — Site-wide audit: security, reliability, accessibility, CI
 
 A full pass over the codebase covering security, functional correctness, engineering infrastructure, and UI accessibility. Every item below was verified empirically (automated tests, a live server hit with `curl`/Playwright, or a reproduced exploit payload) rather than assumed fixed from reading the diff.

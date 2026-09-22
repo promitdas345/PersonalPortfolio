@@ -3,10 +3,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusEl = document.getElementById('formStatus');
   if (!form || !statusEl) return;
 
+  const contactAddress = 'promitd@mun.ca';
+
   const setStatus = (message, variant) => {
     statusEl.textContent = message;
     statusEl.classList.remove('success', 'error');
     if (variant) statusEl.classList.add(variant);
+  };
+
+  /**
+   * The static build (GitHub Pages, the CS server) ships this page without the API
+   * behind it, so a failed POST there is expected rather than exceptional. Offer the
+   * same message as a prefilled email instead of dropping what the visitor wrote.
+   */
+  const offerMailtoFallback = payload => {
+    const subject = encodeURIComponent(`Portfolio contact from ${payload.name || 'a visitor'}`);
+    const body = encodeURIComponent(`${payload.message}\n\n— ${payload.name}\n${payload.email}`);
+    const link = document.createElement('a');
+    link.href = `mailto:${contactAddress}?subject=${subject}&body=${body}`;
+    link.textContent = `Send it as an email instead`;
+    statusEl.append(' ', link);
   };
 
   const grabFormData = () => {
@@ -32,18 +48,22 @@ document.addEventListener('DOMContentLoaded', () => {
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.success) {
+        // A validation or rate-limit refusal is the server's to explain; show it as-is
+        // and keep what the visitor typed so they can correct and resend.
+        if (result.error) {
+          setStatus(result.error, 'error');
+          return;
+        }
         throw new Error(`Contact form failed: ${response.status}`);
       }
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error('Server rejected message');
-      }
-      setStatus('Thanks! I will get back to you shortly.', 'success');
+      setStatus('Thanks! Your message is in my inbox — I will get back to you shortly.', 'success');
       form.reset();
     } catch (err) {
       console.error('Contact form error', err);
-      setStatus('Could not send message right now. Email me directly?', 'error');
+      setStatus('Could not send your message right now.', 'error');
+      offerMailtoFallback(payload);
     }
   });
 });

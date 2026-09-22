@@ -14,10 +14,15 @@ const {
 } = require('../lib/post-helpers');
 const { validateImageFile, generateUploadFilename, ensureUploadDir, parseMultipartBody, MAX_IMAGE_BYTES } = require('../lib/upload-helpers');
 
+/** A single sender may post this many contact messages inside the window below. */
+const CONTACT_RATE_LIMIT = 5;
+const CONTACT_RATE_WINDOW_MS = 10 * 60 * 1000;
+
 function createApiRoutes(deps) {
   const {
     auth,
     loaders,
+    messages,
     transporter,
     resolveEditablePath,
     projectsFile,
@@ -35,9 +40,30 @@ function createApiRoutes(deps) {
     return normalized === '#' ? '/public/images/placeholder.png' : normalized;
   };
 
+  // Submissions now persist, so an unthrottled form would let one sender fill the inbox.
+  const contactAttempts = new Map();
+  function isContactFlooding(ip) {
+    const key = String(ip || 'unknown');
+    const now = Date.now();
+    const recent = (contactAttempts.get(key) || []).filter(at => now - at < CONTACT_RATE_WINDOW_MS);
+    if (recent.length >= CONTACT_RATE_LIMIT) {
+      contactAttempts.set(key, recent);
+      return true;
+    }
+    recent.push(now);
+    contactAttempts.set(key, recent);
+    if (contactAttempts.size > 5000) {
+      for (const [candidate, times] of contactAttempts) {
+        if (!times.some(at => now - at < CONTACT_RATE_WINDOW_MS)) contactAttempts.delete(candidate);
+      }
+    }
+    return false;
+  }
+
   async function handleApiRoute(req, res, normalizedPathname, method, url) {
     const adminPostMatch = normalizedPathname.match(/^\/api\/admin\/posts\/([^/]+)$/);
     const adminProjectMatch = normalizedPathname.match(/^\/api\/admin\/projects\/([^/]+)$/);
+    const adminMessageMatch = normalizedPathname.match(/^\/api\/admin\/messages\/([^/]+)$/);
     const publicReactionMatch = normalizedPathname.match(/^\/api\/posts\/([^/]+)\/reactions$/);
 
     if (normalizedPathname === '/api/admin/session' && method === 'GET') {
@@ -560,6 +586,7 @@ function createApiRoutes(deps) {
 
     if (normalizedPathname === '/api/contact' && method === 'POST') {
       if (!enforceMutationGuards(req, res, null, false)) return;
+      let stored = null;
       try {
         const formData = await parseJsonBody(req);
         const name = trim(formData.name, 100).replace(/[^\x20-\x7E]/g, '').replace(/"/g, "'");
@@ -571,29 +598,89 @@ function createApiRoutes(deps) {
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
           return sendJson(res, 400, { success: false, error: 'Please provide a valid email address.' });
         }
-        console.log(`[email] Attempting to send email from ${email} (${name})`);
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER || 'noreply@example.com',
-          replyTo: { name, address: email },
-          to: process.env.EMAIL_TO || 'your-email@example.com',
-          subject: `New contact from ${name}`.slice(0, 200),
-          text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
-          html: `<p>You have a new contact form submission from:</p>
-               <ul>
-                 <li><strong>Name:</strong> ${escapeHtml(name)}</li>
-                 <li><strong>Email:</strong> ${escapeHtml(email)}</li>
-               </ul>
-               <p><strong>Message:</strong></p>
-               <p>${escapeHtml(message)}</p>`,
+        const senderIp = auth.getRequestIp(req);
+        if (isContactFlooding(senderIp)) {
+          return sendJson(res, 429, {
+            success: false,
+            error: 'Too many messages from this address. Please try again later.',
+          });
+        }
+
+        // Save first: a message that reaches the inbox is never lost to a mail failure.
+        stored = await messages.addMessage({
+          name,
+          email,
+          message,
+          ip: senderIp,
+          userAgent: String(req.headers['user-agent'] || '').slice(0, 300),
         });
-        console.log(`[email] ✓ Email sent successfully`);
-        return sendJson(res, 200, { success: true });
       } catch (err) {
-        console.error(`[email] ✗ Failed to send email:`, err.message, err.code || '');
         return sendJson(res, err.message === 'Payload too large' ? 413 : err.message === 'Invalid JSON' ? 400 : 500, {
           success: false,
-          error: err.message === 'Invalid JSON' ? err.message : 'Could not send email',
+          error: err.message === 'Invalid JSON' || err.message === 'Payload too large' ? err.message : 'Could not save your message',
         });
+      }
+
+      // The submission is already safe on disk, so a failed send is reported, not fatal.
+      let emailed = false;
+      try {
+        console.log(`[email] Attempting to send email from ${stored.email} (${stored.name})`);
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER || 'noreply@example.com',
+          replyTo: { name: stored.name, address: stored.email },
+          to: process.env.EMAIL_TO || 'your-email@example.com',
+          subject: `New contact from ${stored.name}`.slice(0, 200),
+          text: `Name: ${stored.name}\nEmail: ${stored.email}\n\n${stored.message}`,
+          html: `<p>You have a new contact form submission from:</p>
+               <ul>
+                 <li><strong>Name:</strong> ${escapeHtml(stored.name)}</li>
+                 <li><strong>Email:</strong> ${escapeHtml(stored.email)}</li>
+               </ul>
+               <p><strong>Message:</strong></p>
+               <p>${escapeHtml(stored.message)}</p>`,
+        });
+        emailed = true;
+        console.log('[email] ✓ Email sent successfully');
+      } catch (err) {
+        console.error('[email] ✗ Failed to send email:', err.message, err.code || '');
+        console.error(`[email] The message is still readable at /admin/messages (id ${stored.id}).`);
+      }
+      await messages
+        .recordEmailResult(stored.id, { emailed, error: emailed ? null : 'Email delivery failed.' })
+        .catch(err => console.error('[messages] Could not record email result:', err.message));
+
+      return sendJson(res, 200, { success: true, emailed });
+    }
+
+    if (normalizedPathname === '/api/admin/messages' && method === 'GET') {
+      const context = await auth.requireAuth(req, res);
+      if (!context || !auth.requireCapability(context, 'contact.messages.read', res)) return;
+      const all = await messages.loadMessages();
+      const unreadOnly = url.searchParams.get('status') === 'unread';
+      const visible = unreadOnly ? all.filter(item => !item.read) : all;
+      return sendJson(res, 200, {
+        success: true,
+        messages: visible,
+        total: all.length,
+        unreadCount: all.filter(item => !item.read).length,
+      });
+    }
+
+    if (adminMessageMatch && (method === 'PATCH' || method === 'DELETE')) {
+      const context = await auth.requireAuth(req, res);
+      if (!context || !auth.requireCapability(context, 'contact.messages.manage', res)) return;
+      if (!enforceMutationGuards(req, res, context.session)) return;
+      const messageId = decodeURIComponent(adminMessageMatch[1]);
+      try {
+        if (method === 'DELETE') {
+          await messages.deleteMessage(messageId);
+          return sendJson(res, 200, { success: true });
+        }
+        const body = await parseJsonBody(req);
+        const updated = await messages.setRead(messageId, body.read !== false);
+        return sendJson(res, 200, { success: true, message: updated });
+      } catch (err) {
+        return sendJson(res, err.message === 'Message not found.' ? 404 : 400, { success: false, error: err.message });
       }
     }
 

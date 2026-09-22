@@ -30,7 +30,8 @@ npm start               # → http://localhost:3000
 | 📝 Blog | Markdown + rich HTML posts with status workflow (draft → review → published) |
 | 💼 Projects | Detailed project pages with metrics, architecture, and ownership sections |
 | 🔐 Inline Editing | Edit any page directly in the browser — no separate admin dashboard |
-| 📧 Contact Form | Server-side email sending via Nodemailer |
+| 📧 Contact Form | Submissions are stored on disk **and** emailed via Nodemailer |
+| 📥 Contact Inbox | Read, mark, and delete messages at `/admin/messages` |
 | 🏗️ Static Build | Generate a static `dist/` folder for deployment on any hosting |
 | 🎮 Pac-Man | Interactive game section embedded in the portfolio |
 | 📊 Analytics | Optional Google Analytics 4 integration |
@@ -56,6 +57,7 @@ PersonalPortfolio/
 │   ├── auth.js                # Authentication, sessions, rate limiting
 │   ├── admin-store.js         # Admin data store (users, roles, audit logs)
 │   ├── data.js                # Data loading (JSON files), sanitization, markdown
+│   ├── messages.js            # Contact form inbox (atomic JSON storage)
 │   ├── data-mongodb.js        # MongoDB adapter (alternative to JSON files)
 │   ├── database.js            # Mongoose connection manager
 │   ├── http.js                # HTTP helpers (cookies, CSRF, static files, body parsing)
@@ -101,12 +103,14 @@ PersonalPortfolio/
 ├── data/                      # Persistent JSON data (gitignored in production)
 │   ├── posts.json             # Blog posts
 │   ├── projects.json          # Projects
+│   ├── messages.json          # Contact form submissions (auto-generated, gitignored)
 │   ├── admin-auth.json        # Admin credentials (auto-generated)
 │   └── admin-store.json       # Users, sessions, roles, audit logs (auto-generated)
 │
 ├── tests/                     # Test suite
 │   ├── server.integration.test.js  # Integration tests (runs actual HTTP server)
 │   ├── data.unit.test.js           # Unit tests for data utilities
+│   ├── messages.unit.test.js       # Unit tests for the contact inbox store
 │   └── public-scripts.unit.test.js # Syntax-checks every public/*.js file
 │
 ├── scripts/
@@ -173,6 +177,19 @@ Blog posts and projects can also be created via **New Post** / **New Project** b
 
 ---
 
+## Contact Inbox
+
+Every contact form submission is written to `data/messages.json` before the notification
+email is attempted, so nothing is lost when SMTP is misconfigured or unreachable. Sign in
+and open **Inbox** in the edit toolbar (or go to `/admin/messages`) to read messages, mark
+them read, and delete them. A message whose email notification failed is flagged in the
+list, and each sender is limited to 5 submissions per 10 minutes.
+
+Reading the inbox needs the `contact.messages.read` capability and changing it needs
+`contact.messages.manage` — both held by the `owner` and `admin` roles only.
+
+---
+
 ## Running Tests
 
 ```bash
@@ -214,7 +231,10 @@ npm run build
 
 This generates a `dist/` folder with pure HTML files (no server needed). Deploy to any static hosting (Netlify, Vercel, GitHub Pages).
 
-> **Note:** The static build does **not** include the admin API, inline editing, or contact form. It's a read-only snapshot of your content.
+> **Note:** The static build does **not** include the admin API, inline editing, or the
+> contact API. The contact page still renders, and because there is no server behind it,
+> submitting the form offers the visitor a prefilled `mailto:` link instead of silently
+> failing. It's otherwise a read-only snapshot of your content.
 
 ---
 

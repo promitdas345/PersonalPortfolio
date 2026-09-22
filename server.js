@@ -5,6 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const { createLoaders } = require('./lib/data');
+const { createMessageStore } = require('./lib/messages');
 const { createRenderer } = require('./lib/templates');
 const { send, sendText, createStaticFileServer, createEditableFileResolver } = require('./lib/http');
 const { createAuthSystem } = require('./lib/auth');
@@ -21,6 +22,7 @@ const POSTS_FILE = path.join(DATA_DIR, 'posts.json');
 const PROJECTS_FILE = path.join(DATA_DIR, 'projects.json');
 const PACMAN_SECTION_FILE = path.join(VIEWS_DIR, 'partials', 'pacman-section.html');
 const ANALYTICS_PARTIAL_FILE = path.join(VIEWS_DIR, 'partials', 'analytics.html');
+const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
 const ADMIN_AUTH_FILE = path.join(DATA_DIR, 'admin-auth.json');
 const ADMIN_STORE_FILE = path.join(DATA_DIR, 'admin-store.json');
 
@@ -60,6 +62,8 @@ const loaders = createLoaders({
   analyticsPartialFile: ANALYTICS_PARTIAL_FILE,
 });
 
+const messages = createMessageStore({ messagesFile: MESSAGES_FILE });
+
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.example.com',
   port: process.env.EMAIL_PORT || 587,
@@ -89,6 +93,7 @@ const htmlBuilders = createHtmlBuilders(loaders.escapeHtml);
 const handleApiRoute = createApiRoutes({
   auth,
   loaders,
+  messages,
   transporter,
   resolveEditablePath,
   projectsFile: PROJECTS_FILE,

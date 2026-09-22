@@ -64,6 +64,12 @@ body.inline-edit-active {
   gap: 0.5rem;
 }
 
+a.toolbar-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
 .toolbar-btn {
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.08);

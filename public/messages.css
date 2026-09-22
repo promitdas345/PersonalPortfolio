@@ -1,0 +1,113 @@
+/* Admin inbox — sits on the white content card, so everything here is dark-on-light. */
+
+.inbox-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.inbox-summary {
+  color: var(--color-slate-gray);
+  margin: 0;
+}
+
+.inbox-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inbox-filters .btn.is-active {
+  border-color: var(--color-light-sea-green);
+  color: var(--color-light-sea-green);
+}
+
+.inbox-list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inbox-item {
+  border: 1px solid rgba(10, 37, 64, 0.12);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background: #f8fbff;
+}
+
+.inbox-item.is-unread {
+  border-left: 4px solid var(--color-light-sea-green);
+  background: var(--color-white);
+}
+
+.inbox-item-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.inbox-from {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-oxford-blue);
+}
+
+.inbox-meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-slate-gray);
+}
+
+.inbox-body {
+  margin: 0.85rem 0 0;
+  color: var(--color-oxford-blue);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.inbox-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+}
+
+.inbox-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  background: rgba(10, 37, 64, 0.08);
+  color: var(--color-slate-gray);
+}
+
+.inbox-badge.is-warning {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-crimson);
+}
+
+.inbox-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.inbox-empty {
+  color: var(--color-slate-gray);
+  padding: 2rem 0;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .inbox-header {
+    flex-direction: column;
+  }
+}

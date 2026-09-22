@@ -1,4 +1,8 @@
 process.env.MONGODB_URI = '';
+// Point SMTP at a closed local port: the contact route must still accept and store a
+// message when delivery fails, and no test run should send real mail.
+process.env.EMAIL_HOST = '127.0.0.1';
+process.env.EMAIL_PORT = '9';
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -10,6 +14,7 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const SNAPSHOT_FILES = [
   path.join(ROOT_DIR, 'data', 'admin-store.json'),
   path.join(ROOT_DIR, 'data', 'admin-auth.json'),
+  path.join(ROOT_DIR, 'data', 'messages.json'),
 ];
 
 const fileSnapshots = new Map();
@@ -138,4 +143,57 @@ test('login endpoint enforces rate limiting after repeated failures', { concurre
   }
 
   assert.fail(`Expected login rate limiting (429) within 12 attempts, last status=${status}`);
+});
+
+test('a contact submission is stored even when the email cannot be sent', { concurrency: false }, async () => {
+  const marker = `integration-${Date.now()}`;
+  const { response, payload } = await fetchJson('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Integration Visitor', email: 'visitor@example.com', message: marker }),
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.success, true);
+  assert.equal(payload.emailed, false, 'SMTP is pointed at a closed port for tests');
+
+  const stored = JSON.parse(await fs.readFile(path.join(ROOT_DIR, 'data', 'messages.json'), 'utf8'));
+  const saved = stored.find(item => item.message === marker);
+  assert.ok(saved, 'the submission should be readable from the inbox file');
+  assert.equal(saved.name, 'Integration Visitor');
+  assert.equal(saved.emailed, false);
+  assert.equal(saved.read, false);
+});
+
+test('contact submissions are rejected without a name, email, and message', { concurrency: false }, async () => {
+  const { response, payload } = await fetchJson('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'No Message', email: 'visitor@example.com', message: '   ' }),
+  });
+
+  assert.equal(response.status, 400);
+  assert.equal(payload.success, false);
+});
+
+test('visitors cannot read or change the contact inbox', { concurrency: false }, async () => {
+  const listing = await fetchJson('/api/admin/messages');
+  assert.equal(listing.response.status, 401);
+  assert.equal(listing.payload.success, false);
+
+  const patch = await fetchJson('/api/admin/messages/some-id', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ read: true }),
+  });
+  assert.equal(patch.response.status, 401);
+
+  const removal = await fetchJson('/api/admin/messages/some-id', { method: 'DELETE' });
+  assert.equal(removal.response.status, 401);
+});
+
+test('the inbox page redirects anyone who is not signed in', { concurrency: false }, async () => {
+  const response = await fetch(`${baseUrl}/admin/messages`, { redirect: 'manual' });
+  assert.equal(response.status, 302);
+  await response.text();
 });

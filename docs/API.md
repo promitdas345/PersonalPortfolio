@@ -333,7 +333,15 @@ Upload an image file.
 
 #### `POST /api/contact`
 
-Send a contact form message via email. No authentication required.
+Submit a contact form message. No authentication required.
+
+The message is written to `data/messages.json` **before** the notification email is
+attempted, so a message survives an SMTP outage and stays readable in the admin inbox
+(`GET /api/admin/messages`, or the `/admin/messages` page). `emailed` in the response
+reports whether the notification email also went out; `success: true` means the message
+is stored either way.
+
+Each sender IP may submit 5 messages per 10 minutes.
 
 **Request body:**
 ```json
@@ -344,13 +352,88 @@ Send a contact form message via email. No authentication required.
 }
 ```
 
-**Response (200):** `{ "success": true }`
+**Response (200):** `{ "success": true, "emailed": true }`
 
 **Error responses:**
 | Status | Reason |
 |--------|--------|
 | 400 | Missing fields or invalid email |
-| 500 | Email sending failed |
+| 413 | Payload too large |
+| 429 | Too many messages from this sender |
+| 500 | The message could not be stored |
+
+---
+
+### Contact Inbox
+
+#### `GET /api/admin/messages`
+
+List stored contact form submissions, newest first.
+
+**Auth:** Requires `contact.messages.read` capability (`owner` and `admin` roles).
+
+**Query parameters:**
+| Parameter | Description |
+|-----------|-------------|
+| `status` | `unread` returns only unread messages; anything else returns all |
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "messages": [
+    {
+      "id": "b1c2...",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "message": "Hello, I'd like to connect!",
+      "createdAt": "2026-09-22T15:24:40.647Z",
+      "read": false,
+      "readAt": null,
+      "emailed": true,
+      "emailError": null,
+      "ip": "203.0.113.5",
+      "userAgent": "Mozilla/5.0 ..."
+    }
+  ],
+  "total": 1,
+  "unreadCount": 1
+}
+```
+
+---
+
+#### `PATCH /api/admin/messages/:id`
+
+Mark a message read or unread.
+
+**Auth:** Requires `contact.messages.manage` capability.
+
+**Request body:** `{ "read": true }` (`read: false` marks it unread again)
+
+**Response (200):** `{ "success": true, "message": { ... } }`
+
+**Error responses:**
+| Status | Reason |
+|--------|--------|
+| 403 | Missing capability or CSRF token |
+| 404 | Message not found |
+
+---
+
+#### `DELETE /api/admin/messages/:id`
+
+Delete a message permanently.
+
+**Auth:** Requires `contact.messages.manage` capability.
+
+**Response (200):** `{ "success": true }`
+
+**Error responses:**
+| Status | Reason |
+|--------|--------|
+| 403 | Missing capability or CSRF token |
+| 404 | Message not found |
 
 ---
 
