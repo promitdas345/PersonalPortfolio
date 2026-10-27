@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased] — 2026-10-27 — Pin the production Node.js version
+
+### Security
+
+- **Pinned Node.js to the 24.x line via `.node-version`.** Nothing in the repo set a Node version, so Render ran the default it assigned when the service was created, a release older than the October 2026 Node.js security releases. Those releases fix TLS certificate hostname check bypasses and a Brotli decompression RCE, and stop trusting the compromised eMudhra intermediate certificates. Without the fix, an attacker positioned on the network could impersonate the SMTP server (Nodemailer) or MongoDB Atlas (Mongoose) and capture their credentials. `24` resolves to the newest 24.x at each build (24.22.1 or later today). Lint and the full test suite pass on 24.22.1.
+
 ## [Unreleased] — 2026-09-22 — Readable forms and a contact inbox that cannot lose messages
 
 ### Fixed

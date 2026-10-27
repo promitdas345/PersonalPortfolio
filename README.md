@@ -247,6 +247,8 @@ This generates a `dist/` folder with pure HTML files (no server needed). Deploy 
 3. Set start command: `npm start`
 4. The server runs on the `PORT` provided by the platform
 
+The Node.js version is pinned to the latest 24.x release by `.node-version`, so every rebuild picks up new security patches within that major version. A `NODE_VERSION` environment variable in the Render dashboard takes precedence over the file, so leave it unset (or set it to `24`).
+
 ### Static Hosting (Netlify, Vercel, GitHub Pages)
 
 1. Run `npm run build` locally
