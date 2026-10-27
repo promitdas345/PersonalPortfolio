@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased] — 2026-10-27 — Clear the npm audit findings
+
+### Security
+
+- **Upgraded `nodemailer` 9.1.1 → 10.2.1.** Nine advisories against `<=10.1.3`, among them an address-parser bug that turns display text or a quoted local part into an extra recipient, and several remote denial-of-service issues in address and header parsing. The contact form hands visitor-supplied names and addresses to nodemailer (as `replyTo`). 10.0 only drops support for Node.js older than 20; the `createTransport`/`sendMail` API the site uses is unchanged. Verified by sending a contact submission through the real route into a local SMTP sink: auth, envelope, `Reply-To`, body, and HTML escaping all arrive intact.
+- **Upgraded `sanitize-html` 2.17.7 → 2.18.1**, fixing an XSS bypass via SMIL animation namespace prefixes, `<noscript>` content leaking through, and `javascript:`/`data:` URLs surviving in `meta http-equiv=refresh`. `sanitizeRichHtml()` (`lib/data.js`) runs every rich-text blog post through it. The `package.json` floor is raised to `^2.18.1` so a fresh install cannot resolve a vulnerable version.
+- **Patched the transitive dev dependencies** `brace-expansion` (1.1.18 → 1.1.21, via ESLint) and `source-map-js` (1.2.1 → 1.2.2, via `sanitize-html` → `postcss`), both denial-of-service fixes.
+- `npm audit` is back to 0 vulnerabilities, so the CI audit step passes again. Lint and the full test suite pass on Node 24.22.1.
+
 ## [Unreleased] — 2026-10-27 — Pin the production Node.js version
 
 ### Security
